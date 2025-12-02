@@ -46,6 +46,7 @@ import org.osmdroid.tileprovider.tilesource.TileSourceFactory
 import org.osmdroid.util.GeoPoint
 import org.osmdroid.views.MapView
 import org.osmdroid.views.overlay.Marker
+import org.osmdroid.views.overlay.Polygon
 import org.osmdroid.views.overlay.mylocation.GpsMyLocationProvider
 import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay
 
@@ -121,6 +122,7 @@ fun MapScreen(
             is MapUiState.Success -> {
                 MapContent(
                     points = state.points,
+                    proximityDistanceMeters = state.settings.proximityDistanceMeters,
                     hasLocationPermission = hasLocationPermission,
                     onRequestPermission = {
                         permissionLauncher.launch(
@@ -142,6 +144,7 @@ fun MapScreen(
 @Composable
 private fun MapContent(
     points: List<MapPoint>,
+    proximityDistanceMeters: Int,
     hasLocationPermission: Boolean,
     onRequestPermission: () -> Unit,
     onAddPoint: (Double, Double) -> Unit,
@@ -242,14 +245,27 @@ private fun MapContent(
                 }
             },
             update = { map ->
-                // Remove old markers
-                map.overlays.removeAll { it is Marker }
+                // Remove old markers and circles
+                map.overlays.removeAll { it is Marker || it is Polygon }
                 
-                // Add markers for each point
-                points.forEach { point ->
+                // Add circles and markers for each point
+                points.forEach { mapPoint ->
+                    // Create circle overlay for proximity distance
+                    val circlePoints = Polygon.pointsAsCircle(
+                        GeoPoint(mapPoint.latitude, mapPoint.longitude),
+                        proximityDistanceMeters.toDouble()
+                    )
+                    val circle = Polygon(map)
+                    circle.points = circlePoints
+                    circle.fillPaint.color = 0x20FF0000.toInt() // Semi-transparent red
+                    circle.outlinePaint.color = 0x80FF0000.toInt() // Semi-transparent red border
+                    circle.outlinePaint.strokeWidth = 2f
+                    map.overlays.add(circle)
+                    
+                    // Create marker
                     val marker = Marker(map).apply {
-                        position = GeoPoint(point.latitude, point.longitude)
-                        title = point.name ?: "Point #${point.id}"
+                        position = GeoPoint(mapPoint.latitude, mapPoint.longitude)
+                        title = mapPoint.name ?: "Point #${mapPoint.id}"
                         setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
                         
                         // Variables to track long press on marker
@@ -263,7 +279,7 @@ private fun MapContent(
                             // Setup long press detection
                             longPressRunnable = Runnable {
                                 // Long press detected - delete the marker
-                                onDeletePoint(point.id)
+                                onDeletePoint(mapPoint.id)
                             }
                             handler.postDelayed(longPressRunnable!!, 500)
                             
