@@ -45,6 +45,11 @@ jobs:
           ./update-version.sh "$CURRENT_TAG"
           echo "✅ Version updated to $CURRENT_TAG"
           
+      - name: Create debug keystore for signing
+        run: |
+          mkdir -p ~/.android
+          keytool -genkey -v -keystore ~/.android/debug.keystore -storepass android -alias androiddebugkey -keypass android -keyalg RSA -keysize 2048 -validity 10000 -dname "CN=Android Debug,O=Android,C=US"
+          
       - name: Generate release notes from commits
         id: release_notes
         run: |

@@ -179,6 +179,12 @@ jobs:
           ./update-version.sh "$NEW_VERSION"
           echo "✅ Version updated to $NEW_VERSION"
           
+      - name: Create debug keystore for signing
+        if: steps.analyze_commits.outputs.should_release == 'true'
+        run: |
+          mkdir -p ~/.android
+          keytool -genkey -v -keystore ~/.android/debug.keystore -storepass android -alias androiddebugkey -keypass android -keyalg RSA -keysize 2048 -validity 10000 -dname "CN=Android Debug,O=Android,C=US"
+          
       - name: Build Release APK
         if: steps.analyze_commits.outputs.should_release == 'true'
         run: ./gradlew assembleRelease
