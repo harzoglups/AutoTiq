@@ -9,6 +9,7 @@ import com.fairlaunch.domain.usecase.AddMapPointUseCase
 import com.fairlaunch.domain.usecase.DeleteMapPointUseCase
 import com.fairlaunch.domain.usecase.GetMapPointsUseCase
 import com.fairlaunch.domain.usecase.GetSettingsUseCase
+import com.fairlaunch.domain.usecase.UpdateMapPointUseCase
 import com.fairlaunch.domain.usecase.UpdateSettingsUseCase
 import com.fairlaunch.domain.util.Result
 import com.fairlaunch.worker.LocationWorkScheduler
@@ -25,6 +26,7 @@ class MapViewModel @Inject constructor(
     private val getMapPointsUseCase: GetMapPointsUseCase,
     private val addMapPointUseCase: AddMapPointUseCase,
     private val deleteMapPointUseCase: DeleteMapPointUseCase,
+    private val updateMapPointUseCase: UpdateMapPointUseCase,
     private val getSettingsUseCase: GetSettingsUseCase,
     private val updateSettingsUseCase: UpdateSettingsUseCase,
     private val locationWorkScheduler: LocationWorkScheduler
@@ -67,6 +69,20 @@ class MapViewModel @Inject constructor(
     fun deletePoint(id: Long) {
         viewModelScope.launch {
             deleteMapPointUseCase(id)
+        }
+    }
+    
+    fun updatePoint(point: MapPoint) {
+        viewModelScope.launch {
+            when (updateMapPointUseCase(point)) {
+                is Result.Success -> {
+                    // Point updated successfully, flow will update automatically
+                }
+                is Result.Error -> {
+                    // Handle error if needed
+                }
+                Result.Loading -> {}
+            }
         }
     }
 

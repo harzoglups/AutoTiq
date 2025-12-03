@@ -89,8 +89,24 @@ class LocationCheckWorker @AssistedInject constructor(
             )
 
             if (pointsToTrigger.isNotEmpty()) {
-                Log.d(TAG, "Entered proximity zone for ${pointsToTrigger.size} point(s)")
-                launchFairtiqAndVibrate()
+                // Get current hour (0-23)
+                val calendar = java.util.Calendar.getInstance()
+                val currentHour = calendar.get(java.util.Calendar.HOUR_OF_DAY)
+                
+                // Filter points that are within their time window
+                val activePoints = pointsToTrigger.filter { point ->
+                    isWithinTimeWindow(currentHour, point.startHour, point.endHour)
+                }
+                
+                if (activePoints.isNotEmpty()) {
+                    Log.d(TAG, "Entered proximity zone for ${activePoints.size} point(s) within time window (current hour: $currentHour)")
+                    activePoints.forEach { point ->
+                        Log.d(TAG, "  Point '${point.name}' (${point.startHour}:00-${point.endHour}:00)")
+                    }
+                    launchFairtiqAndVibrate()
+                } else {
+                    Log.d(TAG, "Entered ${pointsToTrigger.size} proximity zone(s) but none are active at current hour: $currentHour")
+                }
             } else {
                 Log.d(TAG, "No proximity zones entered")
             }
@@ -163,11 +179,17 @@ class LocationCheckWorker @AssistedInject constructor(
     private fun rescheduleIfNeeded(intervalSeconds: Int) {
         // Only reschedule if interval is less than 15 minutes (WorkManager minimum for PeriodicWork)
         if (intervalSeconds < 900) {
-            Log.d(TAG, "Rescheduling next check in ${intervalSeconds}s")
-            val scheduler = LocationWorkScheduler(context)
-            scheduler.scheduleLocationChecks(intervalSeconds)
+            LocationWorkScheduler(context).scheduleLocationChecks(intervalSeconds)
+        }
+    }
+    
+    private fun isWithinTimeWindow(currentHour: Int, startHour: Int, endHour: Int): Boolean {
+        return if (startHour <= endHour) {
+            // Normal case: e.g., 8:00 - 18:00
+            currentHour in startHour..endHour
         } else {
-            Log.d(TAG, "Interval >= 15min, using PeriodicWork (will be scheduled by LocationWorkScheduler)")
+            // Wraps around midnight: e.g., 22:00 - 6:00
+            currentHour >= startHour || currentHour <= endHour
         }
     }
 

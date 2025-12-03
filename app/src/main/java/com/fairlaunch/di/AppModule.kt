@@ -14,6 +14,7 @@ import com.fairlaunch.domain.usecase.CheckProximityUseCase
 import com.fairlaunch.domain.usecase.DeleteMapPointUseCase
 import com.fairlaunch.domain.usecase.GetMapPointsUseCase
 import com.fairlaunch.domain.usecase.GetSettingsUseCase
+import com.fairlaunch.domain.usecase.UpdateMapPointUseCase
 import com.fairlaunch.domain.usecase.UpdateSettingsUseCase
 import com.fairlaunch.worker.LocationWorkScheduler
 import dagger.Module
@@ -64,6 +65,12 @@ object AppModule {
         proximityRepository: ProximityRepository
     ): DeleteMapPointUseCase {
         return DeleteMapPointUseCase(mapPointRepository, proximityRepository)
+    }
+
+    @Provides
+    @Singleton
+    fun provideUpdateMapPointUseCase(repository: MapPointRepository): UpdateMapPointUseCase {
+        return UpdateMapPointUseCase(repository)
     }
 
     @Provides

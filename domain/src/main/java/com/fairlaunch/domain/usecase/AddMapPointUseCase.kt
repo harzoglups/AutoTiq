@@ -11,7 +11,7 @@ class AddMapPointUseCase(
         val point = MapPoint(
             latitude = latitude,
             longitude = longitude,
-            name = name
+            name = name ?: ""
         )
         return repository.insertPoint(point)
     }

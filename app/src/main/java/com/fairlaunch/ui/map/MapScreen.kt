@@ -66,6 +66,8 @@ fun MapScreen(
     val context = LocalContext.current
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     var showLayerMenu by remember { mutableStateOf(false) }
+    var editingPoint by remember { mutableStateOf<MapPoint?>(null) }
+    var selectedPoint by remember { mutableStateOf<MapPoint?>(null) } // For showing info bubble
     
     var hasLocationPermission by remember {
         mutableStateOf(
@@ -145,8 +147,27 @@ fun MapScreen(
                         },
                         onAddPoint = { lat, lon -> viewModel.addPoint(lat, lon) },
                         onDeletePoint = { id -> viewModel.deletePoint(id) },
+                        onMarkerClick = { point -> 
+                            // Toggle: if same point clicked, close info; otherwise show info
+                            selectedPoint = if (selectedPoint?.id == point.id) null else point
+                        },
+                        onMapClick = { selectedPoint = null }, // Close info card when clicking on map
                         modifier = Modifier.padding(padding)
                     )
+                    
+                    // Show info card for selected marker
+                    selectedPoint?.let { point ->
+                        MarkerInfoCard(
+                            point = point,
+                            onEdit = { 
+                                editingPoint = point
+                            },
+                            onClose = { selectedPoint = null },
+                            modifier = Modifier
+                                .align(Alignment.BottomCenter)
+                                .padding(16.dp)
+                        )
+                    }
                     
                     // Floating layer selection button
                     Box(
@@ -184,6 +205,55 @@ fun MapScreen(
             }
         }
     }
+    
+    // Show edit dialog if a point is being edited
+    editingPoint?.let { point ->
+        EditMarkerDialog(
+            point = point,
+            onDismiss = { editingPoint = null },
+            onSave = { updatedPoint ->
+                viewModel.updatePoint(updatedPoint)
+                editingPoint = null
+            }
+        )
+    }
+}
+
+@Composable
+private fun MarkerInfoCard(
+    point: MapPoint,
+    onEdit: () -> Unit,
+    onClose: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    androidx.compose.material3.Card(
+        modifier = modifier.fillMaxWidth(),
+        elevation = androidx.compose.material3.CardDefaults.cardElevation(defaultElevation = 8.dp)
+    ) {
+        Column(
+            modifier = Modifier.padding(16.dp)
+        ) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = androidx.compose.foundation.layout.Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Column(modifier = Modifier.weight(1f)) {
+                    Text(
+                        text = if (point.name.isNotEmpty()) point.name else "Point #${point.id}",
+                        style = MaterialTheme.typography.titleMedium
+                    )
+                    Text(
+                        text = "Active: ${String.format("%02d:00", point.startHour)} - ${String.format("%02d:00", point.endHour)}",
+                        style = MaterialTheme.typography.bodyMedium
+                    )
+                }
+                androidx.compose.material3.TextButton(onClick = onEdit) {
+                    Text("Edit")
+                }
+            }
+        }
+    }
 }
 
 @Composable
@@ -195,10 +265,19 @@ private fun MapContent(
     onRequestPermission: () -> Unit,
     onAddPoint: (Double, Double) -> Unit,
     onDeletePoint: (Long) -> Unit,
+    onMarkerClick: (MapPoint) -> Unit,
+    onMapClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val context = LocalContext.current
     var mapView: MapView? by remember { mutableStateOf(null) }
+    
+    // Use rememberUpdatedState to ensure callbacks always use latest values
+    val currentOnMarkerClick by androidx.compose.runtime.rememberUpdatedState(onMarkerClick)
+    val currentOnMapClick by androidx.compose.runtime.rememberUpdatedState(onMapClick)
+    val currentOnAddPoint by androidx.compose.runtime.rememberUpdatedState(onAddPoint)
+    val currentOnDeletePoint by androidx.compose.runtime.rememberUpdatedState(onDeletePoint)
+    val currentPoints by androidx.compose.runtime.rememberUpdatedState(points)
 
     DisposableEffect(Unit) {
         Configuration.getInstance().userAgentValue = context.packageName
@@ -272,20 +351,15 @@ private fun MapContent(
                                 val projection = this.projection
                                 
                                 // Find closest marker within touch range
-                                // Note: We need to iterate through actual marker overlays
                                 overlays.filterIsInstance<Marker>().forEach { marker ->
                                     val markerScreenPoint = projection.toPixels(marker.position, null)
                                     val dx = event.x - markerScreenPoint.x
                                     val dy = event.y - markerScreenPoint.y
                                     val distance = Math.sqrt((dx * dx + dy * dy).toDouble())
                                     
-                                    if (distance < 100) { // 100 pixels touch radius (enlarged from 50)
-                                        // Extract the point ID from marker title
-                                        val title = marker.title
-                                        if (title != null && title.contains("#")) {
-                                            val idStr = title.substringAfter("#")
-                                            touchedMarkerId = idStr.toLongOrNull()
-                                        }
+                                    if (distance < 100) { // 100 pixels touch radius
+                                        // Get the point ID from marker's relatedObject
+                                        touchedMarkerId = marker.relatedObject as? Long
                                     }
                                 }
                                 false
@@ -300,10 +374,11 @@ private fun MapContent(
                                         // Touch on marker
                                         if (duration >= longPressThreshold) {
                                             // Long press on marker - delete it
-                                            onDeletePoint(touchedMarkerId!!)
-                                        } else {
-                                            // Short click on marker - reserved for future edit
-                                            // TODO: Add edit dialog here
+                                            currentOnDeletePoint(touchedMarkerId!!)
+                                         } else {
+                                            // Short click on marker - show info card
+                                            val point = currentPoints.find { it.id == touchedMarkerId }
+                                            point?.let { currentOnMarkerClick(it) }
                                         }
                                         true // Consume the event to prevent map interaction
                                     } else if (duration >= longPressThreshold) {
@@ -313,9 +388,11 @@ private fun MapContent(
                                             event.x.toInt(),
                                             event.y.toInt()
                                         ) as GeoPoint
-                                        onAddPoint(geoPoint.latitude, geoPoint.longitude)
+                                        currentOnAddPoint(geoPoint.latitude, geoPoint.longitude)
                                         true
                                     } else {
+                                        // Short click on map (not on marker) - close info card
+                                        currentOnMapClick()
                                         false
                                     }
                                 } else {
@@ -353,8 +430,12 @@ private fun MapContent(
                     // Create marker
                     val marker = Marker(map).apply {
                         position = GeoPoint(mapPoint.latitude, mapPoint.longitude)
-                        title = mapPoint.name ?: "Point #${mapPoint.id}"
+                        title = if (mapPoint.name.isNotEmpty()) mapPoint.name else "Point #${mapPoint.id}"
                         setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
+                        // Disable default info window since we have custom Compose card
+                        infoWindow = null
+                        // Store the point ID in the marker's related object for our touch handler
+                        relatedObject = mapPoint.id
                     }
                     
                     map.overlays.add(marker)
