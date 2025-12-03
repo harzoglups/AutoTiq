@@ -22,23 +22,6 @@ android {
         }
     }
 
-    signingConfigs {
-        // Create a debug signing config for release builds (no keystore management needed)
-        create("release") {
-            // Use debug keystore if it exists, otherwise Android will create it automatically
-            val debugKeystorePath = "${System.getProperty("user.home")}/.android/debug.keystore"
-            val debugKeystoreFile = file(debugKeystorePath)
-            
-            if (debugKeystoreFile.exists()) {
-                storeFile = debugKeystoreFile
-            }
-            // If keystore doesn't exist, Gradle will create it automatically with these credentials
-            storePassword = "android"
-            keyAlias = "androiddebugkey"
-            keyPassword = "android"
-        }
-    }
-
     buildTypes {
         release {
             // Enable all optimizations
@@ -51,8 +34,8 @@ android {
                 "proguard-rules.pro"
             )
             
-            // Sign with debug key (installable, no keystore management needed)
-            signingConfig = signingConfigs.getByName("release")
+            // Use default debug signing (automatically handled by Gradle)
+            // No need to specify signingConfig - debug signing is used by default
         }
     }
     compileOptions {
