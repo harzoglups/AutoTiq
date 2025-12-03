@@ -1,9 +1,5 @@
 package com.fairlaunch.ui.map
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -11,37 +7,30 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.TimePicker
+import androidx.compose.material3.TimePickerState
+import androidx.compose.material3.rememberTimePickerState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Dialog
 import com.fairlaunch.R
 import com.fairlaunch.domain.model.MapPoint
-import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.map
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun EditMarkerDialog(
     point: MapPoint,
@@ -49,10 +38,13 @@ fun EditMarkerDialog(
     onSave: (MapPoint) -> Unit
 ) {
     var name by remember { mutableStateOf(point.name) }
-    var startHour by remember { mutableIntStateOf(point.startHour) }
-    var startMinute by remember { mutableIntStateOf(point.startMinute) }
-    var endHour by remember { mutableIntStateOf(point.endHour) }
-    var endMinute by remember { mutableIntStateOf(point.endMinute) }
+    var showStartTimePicker by remember { mutableStateOf(false) }
+    var showEndTimePicker by remember { mutableStateOf(false) }
+    
+    var startHour by remember { mutableStateOf(point.startHour) }
+    var startMinute by remember { mutableStateOf(point.startMinute) }
+    var endHour by remember { mutableStateOf(point.endHour) }
+    var endMinute by remember { mutableStateOf(point.endMinute) }
     
     AlertDialog(
         onDismissRequest = onDismiss,
@@ -80,29 +72,35 @@ fun EditMarkerDialog(
                     modifier = Modifier.fillMaxWidth(),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Text(stringResource(R.string.start_time), modifier = Modifier.width(50.dp))
-                    TimePicker(
-                        hour = startHour,
-                        minute = startMinute,
-                        onHourChange = { startHour = it },
-                        onMinuteChange = { startMinute = it }
+                    Text(
+                        stringResource(R.string.start_time), 
+                        modifier = Modifier.width(80.dp)
                     )
+                    OutlinedButton(
+                        onClick = { showStartTimePicker = true },
+                        modifier = Modifier.weight(1f)
+                    ) {
+                        Text(String.format("%02d:%02d", startHour, startMinute))
+                    }
                 }
                 
-                Spacer(modifier = Modifier.height(16.dp))
+                Spacer(modifier = Modifier.height(8.dp))
                 
                 // End time
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Text(stringResource(R.string.end_time), modifier = Modifier.width(50.dp))
-                    TimePicker(
-                        hour = endHour,
-                        minute = endMinute,
-                        onHourChange = { endHour = it },
-                        onMinuteChange = { endMinute = it }
+                    Text(
+                        stringResource(R.string.end_time), 
+                        modifier = Modifier.width(80.dp)
                     )
+                    OutlinedButton(
+                        onClick = { showEndTimePicker = true },
+                        modifier = Modifier.weight(1f)
+                    ) {
+                        Text(String.format("%02d:%02d", endHour, endMinute))
+                    }
                 }
                 
                 Spacer(modifier = Modifier.height(8.dp))
@@ -138,108 +136,87 @@ fun EditMarkerDialog(
             }
         }
     )
-}
-
-@Composable
-fun TimePicker(
-    hour: Int,
-    minute: Int,
-    onHourChange: (Int) -> Unit,
-    onMinuteChange: (Int) -> Unit
-) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(120.dp),
-        horizontalArrangement = Arrangement.Center,
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        // Hour picker
-        NumberPicker(
-            value = hour,
-            range = 0..23,
-            onValueChange = onHourChange,
-            modifier = Modifier.width(60.dp)
+    
+    // Start time picker dialog
+    if (showStartTimePicker) {
+        TimePickerDialog(
+            title = stringResource(R.string.start_time),
+            onDismiss = { showStartTimePicker = false },
+            onConfirm = { hour, minute ->
+                startHour = hour
+                startMinute = minute
+                showStartTimePicker = false
+            },
+            initialHour = startHour,
+            initialMinute = startMinute
         )
-        
-        Text(
-            text = ":",
-            fontSize = 24.sp,
-            fontWeight = FontWeight.Bold,
-            modifier = Modifier.padding(horizontal = 8.dp)
-        )
-        
-        // Minute picker
-        NumberPicker(
-            value = minute,
-            range = 0..59,
-            onValueChange = onMinuteChange,
-            modifier = Modifier.width(60.dp)
+    }
+    
+    // End time picker dialog
+    if (showEndTimePicker) {
+        TimePickerDialog(
+            title = stringResource(R.string.end_time),
+            onDismiss = { showEndTimePicker = false },
+            onConfirm = { hour, minute ->
+                endHour = hour
+                endMinute = minute
+                showEndTimePicker = false
+            },
+            initialHour = endHour,
+            initialMinute = endMinute
         )
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun NumberPicker(
-    value: Int,
-    range: IntRange,
-    onValueChange: (Int) -> Unit,
-    modifier: Modifier = Modifier
+fun TimePickerDialog(
+    title: String,
+    onDismiss: () -> Unit,
+    onConfirm: (Int, Int) -> Unit,
+    initialHour: Int,
+    initialMinute: Int
 ) {
-    val listState = rememberLazyListState(initialFirstVisibleItemIndex = value)
+    val timePickerState = rememberTimePickerState(
+        initialHour = initialHour,
+        initialMinute = initialMinute,
+        is24Hour = true
+    )
     
-    // Update value when scroll position changes
-    LaunchedEffect(listState) {
-        snapshotFlow { listState.firstVisibleItemIndex }
-            .distinctUntilChanged()
-            .collect { index ->
-                if (index in range) {
-                    onValueChange(index)
-                }
-            }
-    }
-    
-    Box(
-        modifier = modifier.height(120.dp),
-        contentAlignment = Alignment.Center
-    ) {
-        // Selection indicator
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(40.dp)
-                .background(
-                    MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.3f),
-                    RoundedCornerShape(8.dp)
-                )
-        )
-        
-        LazyColumn(
-            state = listState,
-            modifier = Modifier.fillMaxWidth(),
-            horizontalAlignment = Alignment.CenterHorizontally
+    Dialog(onDismissRequest = onDismiss) {
+        androidx.compose.material3.Surface(
+            shape = MaterialTheme.shapes.extraLarge,
+            tonalElevation = 6.dp
         ) {
-            items(range.count()) { index ->
-                val itemValue = range.first + index
-                val isSelected = itemValue == value
-                
+            Column(
+                modifier = Modifier.padding(24.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
                 Text(
-                    text = String.format("%02d", itemValue),
-                    fontSize = if (isSelected) 24.sp else 18.sp,
-                    fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal,
-                    color = if (isSelected) 
-                        MaterialTheme.colorScheme.primary 
-                    else 
-                        MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
-                    textAlign = TextAlign.Center,
-                    modifier = Modifier
-                        .height(40.dp)
-                        .fillMaxWidth()
-                        .padding(vertical = 8.dp)
-                        .clickable { 
-                            onValueChange(itemValue)
-                        }
+                    text = title,
+                    style = MaterialTheme.typography.labelLarge,
+                    modifier = Modifier.padding(bottom = 20.dp)
                 )
+                
+                TimePicker(state = timePickerState)
+                
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 24.dp),
+                    horizontalArrangement = androidx.compose.foundation.layout.Arrangement.End
+                ) {
+                    TextButton(onClick = onDismiss) {
+                        Text(stringResource(R.string.cancel))
+                    }
+                    TextButton(
+                        onClick = {
+                            onConfirm(timePickerState.hour, timePickerState.minute)
+                        }
+                    ) {
+                        Text(stringResource(R.string.ok))
+                    }
+                }
             }
         }
     }

@@ -32,6 +32,7 @@
     <string name="time_window_info">O Fairtiq só será iniciado ao entrar na zona dentro desta janela de tempo</string>
     <string name="save">Salvar</string>
     <string name="cancel">Cancelar</string>
+    <string name="ok">OK</string>
     
     <!-- Map layer types -->
     <string name="map_layer_street">Mapa de ruas</string>
