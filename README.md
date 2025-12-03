@@ -172,15 +172,40 @@ See [AGENTS.md](AGENTS.md) for detailed development guidelines.
 
 This project uses **fully automated semantic versioning** based on conventional commits.
 
-### Automatic Releases 🤖
+### How It Works 🤖
 
-**Every push to `main`** automatically:
-1. Analyzes commits since last release
-2. Determines version bump type (major/minor/patch)
-3. Builds the APK
-4. Creates a GitHub release with the new version
+1. **Write commits** using conventional commit format
+2. **When ready for a release**:
+   - **Option A**: Go to Actions → "Auto Release" → Click "Run workflow" 
+   - **Option B**: Push a tag: `git push origin v1.0.0`
+3. The workflow automatically:
+   - Analyzes all commits since last release
+   - Determines the correct version bump (major/minor/patch)
+   - Builds the APK
+   - Creates the GitHub release
 
-**No manual action needed!** Just merge to `main` and the release happens automatically.
+**You control WHEN to release, the workflow decides WHAT version.**
+
+### Creating a Release
+
+#### Method 1: Manual Trigger (Recommended)
+
+1. Go to **Actions** → **Auto Release**
+2. Click **"Run workflow"**
+3. Select branch: `main`
+4. Click **"Run workflow"**
+
+The workflow analyzes your commits and creates the appropriate version automatically!
+
+#### Method 2: Push a Tag
+
+```bash
+# The tag value doesn't matter - it will be ignored
+git tag v0.0.0
+git push origin v0.0.0
+```
+
+The "Build and Release on Tag" workflow will trigger and create the correct version.
 
 ### Version Bump Rules
 
@@ -193,27 +218,7 @@ The version is determined by analyzing your commit messages:
 | `feat!:` or `BREAKING CHANGE:` | **MAJOR** (X.0.0) | `feat!: redesign entire API` |
 | `docs:`, `refactor:`, `chore:` | **PATCH** (0.0.X) | `docs: update README` |
 
-### Conventional Commit Format
-
-**Always use this format** for commits:
-
-```bash
-<type>(<scope>): <description>
-
-# Examples:
-feat(map): add new marker clustering feature
-fix(location): resolve background tracking issue
-docs(readme): update installation instructions
-refactor(ui): simplify settings screen
-chore(deps): update dependencies
-
-# Breaking changes (major version bump):
-feat(api)!: redesign location API
-# or
-feat(api): redesign location API
-
-BREAKING CHANGE: The location API has been completely redesigned
-```
+**Priority**: MAJOR > MINOR > PATCH. If you have both `feat:` and `fix:` commits, you'll get a MINOR bump.
 
 ### Manual Release (Optional)
 
