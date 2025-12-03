@@ -168,6 +168,54 @@ FairLaunch/
 
 See [AGENTS.md](AGENTS.md) for detailed development guidelines.
 
+## Releases
+
+This project uses automated releases with semantic versioning based on conventional commits.
+
+### Creating a Release (Method 1: GitHub UI)
+
+1. Go to GitHub Actions tab
+2. Select "Create Release" workflow
+3. Click "Run workflow"
+4. Choose version bump type (major/minor/patch)
+5. The workflow will:
+   - Calculate the next version automatically
+   - Generate release notes from commits
+   - Build and attach the APK
+   - Create a GitHub release with the tag
+
+### Creating a Release (Method 2: Local Script)
+
+```bash
+# Make sure you're on main branch with a clean working directory
+git checkout main
+git pull origin main
+
+# Create a release tag (major/minor/patch)
+./create-release.sh minor
+
+# Push the tag to trigger the release
+git push origin v1.0.0  # Replace with your tag
+```
+
+The tag push will automatically trigger the GitHub Actions workflow to build and create the release.
+
+### Conventional Commit Format
+
+Use these prefixes for commits to get organized release notes:
+
+- `feat:` - New features (appears under ✨ Features)
+- `fix:` - Bug fixes (appears under 🐛 Bug Fixes)
+- `docs:` - Documentation (appears under 📚 Documentation)
+- `refactor:` - Code refactoring (appears under ♻️ Refactoring)
+- `chore:` - Maintenance tasks (appears under 🔧 Chores)
+
+Example:
+```bash
+git commit -m "feat(map): add new marker clustering feature"
+git commit -m "fix(location): resolve background tracking issue"
+```
+
 ## License
 
-Personal project - All rights reserved
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
