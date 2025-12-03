@@ -56,13 +56,8 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             FairLaunchTheme {
-                Surface(
-                    modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colorScheme.background
-                ) {
-                    val navController = rememberNavController()
-                    AppNavigation(navController = navController)
-                }
+                val navController = rememberNavController()
+                AppNavigation(navController = navController)
             }
         }
     }
