@@ -16,8 +16,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Layers
-import androidx.compose.material.icons.filled.LocationOff
-import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenu
@@ -29,7 +27,6 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SmallFloatingActionButton
-import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
@@ -103,28 +100,6 @@ fun MapScreen(
             TopAppBar(
                 title = { Text("FairLaunch") },
                 actions = {
-                    when (val state = uiState) {
-                        is MapUiState.Success -> {
-                            // Location tracking toggle
-                            Row(
-                                verticalAlignment = Alignment.CenterVertically,
-                                modifier = Modifier.padding(end = 8.dp)
-                            ) {
-                                Icon(
-                                    imageVector = if (state.settings.isLocationTrackingEnabled)
-                                        Icons.Default.LocationOn
-                                    else
-                                        Icons.Default.LocationOff,
-                                    contentDescription = "Location tracking"
-                                )
-                                Switch(
-                                    checked = state.settings.isLocationTrackingEnabled,
-                                    onCheckedChange = { viewModel.toggleLocationTracking(it) }
-                                )
-                            }
-                        }
-                        else -> {}
-                    }
                     IconButton(onClick = onNavigateToSettings) {
                         Icon(Icons.Default.Settings, contentDescription = "Settings")
                     }
