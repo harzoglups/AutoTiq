@@ -1,0 +1,113 @@
+name: Build and Release on Tag
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+
+jobs:
+  build-and-release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+          cache: 'gradle'
+          
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+        
+      - name: Get previous tag
+        id: previous_tag
+        run: |
+          CURRENT_TAG=${GITHUB_REF#refs/tags/}
+          PREVIOUS_TAG=$(git describe --tags --abbrev=0 ${CURRENT_TAG}^ 2>/dev/null || echo "")
+          echo "previous_tag=$PREVIOUS_TAG" >> $GITHUB_OUTPUT
+          echo "current_tag=$CURRENT_TAG" >> $GITHUB_OUTPUT
+          echo "Current tag: $CURRENT_TAG"
+          echo "Previous tag: $PREVIOUS_TAG"
+          
+      - name: Generate release notes from commits
+        id: release_notes
+        run: |
+          CURRENT_TAG="${{ steps.previous_tag.outputs.current_tag }}"
+          PREVIOUS_TAG="${{ steps.previous_tag.outputs.previous_tag }}"
+          
+          # Get commits between tags
+          if [ -z "$PREVIOUS_TAG" ]; then
+            COMMITS=$(git log --pretty=format:"- %s" --no-merges)
+          else
+            COMMITS=$(git log ${PREVIOUS_TAG}..${CURRENT_TAG} --pretty=format:"- %s" --no-merges)
+          fi
+          
+          # Categorize commits
+          FEATURES=$(echo "$COMMITS" | grep "^- feat" || true)
+          FIXES=$(echo "$COMMITS" | grep "^- fix" || true)
+          DOCS=$(echo "$COMMITS" | grep "^- docs" || true)
+          REFACTOR=$(echo "$COMMITS" | grep "^- refactor" || true)
+          CHORE=$(echo "$COMMITS" | grep "^- chore" || true)
+          OTHER=$(echo "$COMMITS" | grep -v "^- feat\|^- fix\|^- docs\|^- refactor\|^- chore" || true)
+          
+          # Build release notes
+          NOTES="## What's Changed\n\n"
+          
+          if [ -n "$FEATURES" ]; then
+            NOTES="${NOTES}### ✨ Features\n${FEATURES}\n\n"
+          fi
+          
+          if [ -n "$FIXES" ]; then
+            NOTES="${NOTES}### 🐛 Bug Fixes\n${FIXES}\n\n"
+          fi
+          
+          if [ -n "$REFACTOR" ]; then
+            NOTES="${NOTES}### ♻️ Refactoring\n${REFACTOR}\n\n"
+          fi
+          
+          if [ -n "$DOCS" ]; then
+            NOTES="${NOTES}### 📚 Documentation\n${DOCS}\n\n"
+          fi
+          
+          if [ -n "$CHORE" ]; then
+            NOTES="${NOTES}### 🔧 Chores\n${CHORE}\n\n"
+          fi
+          
+          if [ -n "$OTHER" ]; then
+            NOTES="${NOTES}### Other Changes\n${OTHER}\n\n"
+          fi
+          
+          echo "$NOTES" > release_notes.md
+          
+      - name: Build Release APK
+        run: ./gradlew assembleRelease || ./gradlew assembleDebug
+        
+      - name: Prepare APK
+        run: |
+          # Try release first, fallback to debug if no signing configured
+          if [ -f "app/build/outputs/apk/release/app-release.apk" ]; then
+            cp app/build/outputs/apk/release/app-release.apk FairLaunch-${{ steps.previous_tag.outputs.current_tag }}.apk
+          else
+            cp app/build/outputs/apk/debug/app-debug.apk FairLaunch-${{ steps.previous_tag.outputs.current_tag }}.apk
+          fi
+          
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: ${{ steps.previous_tag.outputs.current_tag }}
+          name: Release ${{ steps.previous_tag.outputs.current_tag }}
+          body_path: release_notes.md
+          draft: false
+          prerelease: false
+          files: |
+            FairLaunch-${{ steps.previous_tag.outputs.current_tag }}.apk
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
