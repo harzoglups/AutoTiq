@@ -4,7 +4,8 @@ data class AppSettings(
     val checkIntervalSeconds: Int = 300, // 5 minutes = 300 seconds
     val proximityDistanceMeters: Int = 200,
     val isLocationTrackingEnabled: Boolean = false,
-    val mapLayerType: MapLayerType = MapLayerType.STREET
+    val mapLayerType: MapLayerType = MapLayerType.STREET,
+    val activeWeekdays: Set<Int> = setOf(1, 2, 3, 4, 5, 6, 7) // 1=Monday, 7=Sunday (all days by default)
 )
 
 enum class MapLayerType {

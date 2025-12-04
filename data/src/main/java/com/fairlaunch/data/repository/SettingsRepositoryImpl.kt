@@ -26,6 +26,7 @@ class SettingsRepositoryImpl @Inject constructor(
         val PROXIMITY_DISTANCE = intPreferencesKey("proximity_distance_meters")
         val LOCATION_TRACKING_ENABLED = booleanPreferencesKey("location_tracking_enabled")
         val MAP_LAYER_TYPE = stringPreferencesKey("map_layer_type")
+        val ACTIVE_WEEKDAYS = stringPreferencesKey("active_weekdays")
     }
 
     override fun getSettings(): Flow<AppSettings> {
@@ -37,11 +38,19 @@ class SettingsRepositoryImpl @Inject constructor(
                 MapLayerType.STREET
             }
             
+            val weekdaysString = preferences[PreferencesKeys.ACTIVE_WEEKDAYS] ?: "1,2,3,4,5,6,7"
+            val activeWeekdays = try {
+                weekdaysString.split(",").mapNotNull { it.toIntOrNull() }.toSet()
+            } catch (e: Exception) {
+                setOf(1, 2, 3, 4, 5, 6, 7)
+            }
+            
             AppSettings(
                 checkIntervalSeconds = preferences[PreferencesKeys.CHECK_INTERVAL] ?: 300,
                 proximityDistanceMeters = preferences[PreferencesKeys.PROXIMITY_DISTANCE] ?: 200,
                 isLocationTrackingEnabled = preferences[PreferencesKeys.LOCATION_TRACKING_ENABLED] ?: false,
-                mapLayerType = layerType
+                mapLayerType = layerType,
+                activeWeekdays = activeWeekdays
             )
         }
     }
@@ -67,6 +76,12 @@ class SettingsRepositoryImpl @Inject constructor(
     override suspend fun updateMapLayerType(layerType: MapLayerType) {
         context.dataStore.edit { preferences ->
             preferences[PreferencesKeys.MAP_LAYER_TYPE] = layerType.name
+        }
+    }
+    
+    override suspend fun updateActiveWeekdays(weekdays: Set<Int>) {
+        context.dataStore.edit { preferences ->
+            preferences[PreferencesKeys.ACTIVE_WEEKDAYS] = weekdays.sorted().joinToString(",")
         }
     }
 }

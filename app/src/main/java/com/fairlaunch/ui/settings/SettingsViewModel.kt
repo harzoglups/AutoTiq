@@ -131,4 +131,10 @@ class SettingsViewModel @Inject constructor(
             }
         }
     }
+    
+    fun updateActiveWeekdays(weekdays: Set<Int>) {
+        viewModelScope.launch {
+            updateSettingsUseCase.updateActiveWeekdays(weekdays)
+        }
+    }
 }

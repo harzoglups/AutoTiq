@@ -21,4 +21,8 @@ class UpdateSettingsUseCase(
     suspend fun updateMapLayerType(layerType: MapLayerType) {
         repository.updateMapLayerType(layerType)
     }
+    
+    suspend fun updateActiveWeekdays(weekdays: Set<Int>) {
+        repository.updateActiveWeekdays(weekdays)
+    }
 }

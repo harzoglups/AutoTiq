@@ -10,4 +10,5 @@ interface SettingsRepository {
     suspend fun updateProximityDistance(meters: Int)
     suspend fun updateLocationTrackingEnabled(enabled: Boolean)
     suspend fun updateMapLayerType(layerType: MapLayerType)
+    suspend fun updateActiveWeekdays(weekdays: Set<Int>)
 }

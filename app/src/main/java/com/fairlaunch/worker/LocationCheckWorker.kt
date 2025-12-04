@@ -71,6 +71,20 @@ class LocationCheckWorker @AssistedInject constructor(
                 return androidx.work.ListenableWorker.Result.success()
             }
             
+            // Check if today is an active weekday
+            val calendar = java.util.Calendar.getInstance()
+            val currentDayOfWeek = calendar.get(java.util.Calendar.DAY_OF_WEEK)
+            // Convert Calendar day (1=Sunday, 2=Monday, ..., 7=Saturday) to ISO day (1=Monday, ..., 7=Sunday)
+            val isoDayOfWeek = if (currentDayOfWeek == java.util.Calendar.SUNDAY) 7 else currentDayOfWeek - 1
+            
+            if (!settings.activeWeekdays.contains(isoDayOfWeek)) {
+                Log.d(TAG, "Today (ISO day $isoDayOfWeek) is not an active day, skipping check. Active days: ${settings.activeWeekdays}")
+                rescheduleIfNeeded(settings.checkIntervalSeconds)
+                return androidx.work.ListenableWorker.Result.success()
+            }
+            
+            Log.d(TAG, "Today (ISO day $isoDayOfWeek) is an active day, proceeding with location check")
+            
             // Get current location with fresh request
             val location = getCurrentLocation()
 
@@ -91,7 +105,6 @@ class LocationCheckWorker @AssistedInject constructor(
 
             if (pointsToTrigger.isNotEmpty()) {
                 // Get current hour and minute
-                val calendar = java.util.Calendar.getInstance()
                 val currentHour = calendar.get(java.util.Calendar.HOUR_OF_DAY)
                 val currentMinute = calendar.get(java.util.Calendar.MINUTE)
                 
