@@ -58,3 +58,6 @@ Thumbs.db
 
 # Test files
 release_notes_test.md
+
+# PlantUML jar (downloaded binary, can be regenerated)
+plantuml.jar
