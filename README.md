@@ -195,14 +195,46 @@ FairLaunch follows Clean Architecture principles with 3 distinct layers:
 
 ### Architecture Diagrams
 
-Detailed PlantUML diagrams are available in the `docs/` folder:
+**Architecture Overview**
 
-- **[Architecture Overview](docs/architecture-overview.puml)** - Complete system architecture with all layers
-- **[Domain Model](docs/domain-model.puml)** - Domain entities, use cases, and repository interfaces
-- **[Data Layer](docs/data-layer.puml)** - Database entities, DAOs, repositories, and mappers
-- **[UI Layer](docs/ui-layer.puml)** - Screens, ViewModels, navigation, and background workers
-- **[Proximity Check Sequence](docs/sequence-proximity-check.puml)** - Background location monitoring flow
-- **[User Journey](docs/sequence-user-journey.puml)** - End-to-end user experience flow
+![Architecture Overview](docs/FairLaunch-Architecture-Overview.png)
+
+<details>
+<summary><b>Domain Model</b> (Click to expand)</summary>
+
+![Domain Model](docs/FairLaunch-Domain-Model.png)
+
+</details>
+
+<details>
+<summary><b>Data Layer</b> (Click to expand)</summary>
+
+![Data Layer](docs/FairLaunch-Data-Layer.png)
+
+</details>
+
+<details>
+<summary><b>UI Layer</b> (Click to expand)</summary>
+
+![UI Layer](docs/FairLaunch-UI-Layer.png)
+
+</details>
+
+<details>
+<summary><b>Proximity Check Sequence</b> (Click to expand)</summary>
+
+![Proximity Check Sequence](docs/FairLaunch-Sequence-Proximity-Check.png)
+
+</details>
+
+<details>
+<summary><b>User Journey</b> (Click to expand)</summary>
+
+![User Journey](docs/FairLaunch-Sequence-User-Journey.png)
+
+</details>
+
+> 💡 **Note**: PlantUML source files are available in the [`docs/`](docs/) folder. Use `./generate-diagrams.sh` to regenerate PNG images after modifying `.puml` files.
 
 ### Domain Layer (Pure Kotlin)
 - `model/` - Entities: MapPoint, AppSettings, ProximityState

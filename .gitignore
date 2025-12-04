@@ -55,3 +55,6 @@ Thumbs.db
 
 # Environment variables
 .env
+
+# Test files
+release_notes_test.md
