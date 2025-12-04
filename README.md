@@ -6,6 +6,8 @@ Android application to automate Fairtiq app launch based on geolocation.
 
 - **Interactive OpenStreetMap**: Full-screen immersive map with zoom, pan, rotation
 - **Modern UI**: Edge-to-edge design with floating action buttons (Google Maps style)
+- **Location Search**: Search for cities, addresses, and places with autocomplete (Photon geocoding)
+- **GPS Centering**: Quick button to center map on current location
 - **Map Layer Selection**: Switch between Street and Topographic views via floating button (top-right)
 - **Points of Interest Management**:
   - Long press on map to create a point
@@ -25,6 +27,7 @@ Android application to automate Fairtiq app launch based on geolocation.
   - Position check frequency (seconds or minutes)
   - Proximity distance (meters)
   - Enable/disable tracking
+  - Weekday selection: choose which days GPS monitoring is active (battery saving)
 - **Anti-spam**: Only triggers once per zone entry (requires leaving and returning)
 
 ## Architecture
@@ -54,6 +57,7 @@ Clean Architecture with 3 layers:
 - **UI**: Jetpack Compose + Material3
 - **Architecture**: Clean Architecture (Domain/Data/App)
 - **Map**: OpenStreetMap (osmdroid)
+- **Geocoding**: Photon API (Komoot) for location search
 - **Location**: Google Play Services Location
 - **Background Tasks**: WorkManager
 - **DI**: Hilt
@@ -92,32 +96,45 @@ cd FairLaunch
    - The app requests notification permissions (Android 13+) - **required for alerts**
    - Accept BACKGROUND_LOCATION in settings to enable background tracking
 
-2. **Create Points**:
+2. **Search for Locations**:
+   - Use the search bar at the top of the map
+   - Type at least 3 characters (e.g., "Paris", "train station", "address")
+   - Select a result from the autocomplete dropdown
+   - A red pin marker shows the searched location
+   - Tap anywhere on the map to remove the search marker
+
+3. **Navigate the Map**:
+   - Tap the GPS button (bottom-right) to center on your current location
+   - Pinch to zoom, drag to pan, rotate with two fingers
+   - Tap the layers button (top-right) to switch between Street/Topographic views
+
+4. **Create Points**:
    - Long press (500ms) on the map to create a point
    - Points appear as markers with proximity circles
    - Edit dialog opens automatically: set name and active time window (HH:MM precision)
 
-3. **View/Edit Points**:
+5. **View/Edit Points**:
    - Short tap on a marker to view its details card
    - Tap "Edit" in the card to modify name or time window
    - Use scroll pickers to select hours and minutes precisely
 
-4. **Delete Points**:
+6. **Delete Points**:
    - Long press (500ms) on a marker to delete it
    - Markers have a large touch zone for easy interaction
 
-5. **Configure Tracking**:
+7. **Configure Tracking**:
    - Tap the floating settings button (bottom-right)
    - Configure check frequency (default: 300 seconds = 5 minutes)
    - Configure proximity distance (default: 200 meters)
+   - Select active weekdays (uncheck days when you don't take the train)
    - Enable tracking via the switch
 
-6. **Change Map View**:
+8. **Change Map View**:
    - Tap the floating layers button (top-right corner of the map)
    - Select desired map type: Street or Topographic
    - Selection is saved automatically
 
-7. **Automatic Operation**:
+9. **Automatic Operation**:
    - The app checks your position in the background
    - Red circles on the map show proximity zones
    - When you enter a zone (at configured distance) **within the point's active time window**:

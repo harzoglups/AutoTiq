@@ -71,16 +71,25 @@ export JAVA_HOME="/Applications/Android Studio.app/Contents/jbr/Contents/Home"
 - **Database**: Table `proximity_states` with `point_id` and `is_inside`
 
 ### 6. Map and Location
-- **Auto-centering**: `locationOverlay.runOnFirstFix` + `controller.animateTo()`
-- **Follow mode**: `enableFollowLocation()` enabled
+- **Auto-centering**: `locationOverlay.runOnFirstFix` + `controller.animateTo()` (only on first GPS fix)
+- **Follow mode**: Disabled - user has full manual control of map navigation
 - **Initial zoom**: 15 (closer)
 - **Proximity circles**: Red semi-transparent circles displayed on map for each point
 - **Map layers**: User can switch between Street and Topographic views via floating button (top-right)
 - **Layer persistence**: Selected layer saved in DataStore preferences
 - **UI Style**: Full-screen edge-to-edge map with floating action buttons (Google Maps style)
   - Settings button: bottom-right floating button
-  - Layer selection: top-right floating button
+  - GPS centering button: bottom-right floating button (above settings)
+  - Layer selection: top-right floating button (below search bar)
   - No top app bar for immersive experience
+- **Location search**: 
+  - Search bar at top center (90% width)
+  - Photon geocoding API (better partial/fuzzy search than Nominatim)
+  - Prioritizes results near visible map area using viewbox biasing
+  - 300ms debounce, minimum 3 characters
+  - Keeps previous results when search returns empty
+  - Red pin marker on searched locations (distinct from blue user markers)
+  - Search marker disappears on map click or new search
 - **Marker interaction**: Custom touch handling at map level distinguishes short/long press
   - Long press on map (500ms) → Add marker (opens edit dialog automatically)
   - Long press on marker (500ms) → Delete marker
@@ -120,6 +129,7 @@ check_interval_seconds: Int = 300    // Changed from minutes to seconds
 proximity_distance_meters: Int = 200
 location_tracking_enabled: Boolean = false
 map_layer_type: String = "STREET"   // STREET, TOPO
+active_weekdays: String = "1,2,3,4,5,6,7"  // CSV: 1=Monday, 7=Sunday
 ```
 
 ### Room Database
@@ -210,6 +220,10 @@ map_layer_type: String = "STREET"   // STREET, TOPO
 - [x] Vibration and app launch with screen locked
 - [x] Map layer selection (Street, Topographic) with floating button
 - [x] Full-screen immersive UI with floating action buttons
+- [x] GPS centering button to quickly return to current location
+- [x] Weekday selection in settings (choose active monitoring days)
+- [x] Location search with Photon geocoding API
+- [x] Search result markers with distinct red pin appearance
 
 ### Technical Tests ✅
 - [x] Gradle build
