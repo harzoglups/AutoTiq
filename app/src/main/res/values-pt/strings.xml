@@ -73,6 +73,8 @@
     <string name="version">Versão %1$s</string>
     <string name="how_it_works">Como funciona</string>
     <string name="how_it_works_content">• Pressione longamente no mapa para adicionar um ponto (o diálogo de edição abre automaticamente)\n• Toque brevemente em um marcador para ver seus detalhes\n• Pressione longamente em um marcador para excluí-lo\n• Configure as propriedades do ponto: nome e janela de tempo ativa (hora:minuto)\n• Ative o rastreamento em segundo plano para monitorar sua localização\n• Quando você entra na zona de um ponto durante sua janela de tempo ativa:\n  - Fairtiq inicia automaticamente\n  - O telefone vibra (padrão de 3 rajadas)\n  - A tela acende se estiver bloqueada\n• Você deve sair da zona e entrar novamente para acionar novamente (anti-spam)</string>
+    <string name="map_data">Map Data</string>
+    <string name="map_data_osm_attribution">© OpenStreetMap contributors</string>
     
     <!-- Notifications -->
     <string name="notification_channel_name">Alertas de proximidade</string>

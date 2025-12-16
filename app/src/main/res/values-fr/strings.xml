@@ -76,6 +76,8 @@
     <string name="version">Version %1$s</string>
     <string name="how_it_works">Comment ça marche</string>
     <string name="how_it_works_content">• Appui long sur la carte pour ajouter un point (le dialogue de modification s\'ouvre automatiquement)\n• Appui court sur un marqueur pour voir ses détails\n• Appui long sur un marqueur pour le supprimer\n• Configurer les propriétés du point: nom et fenêtre horaire active (heure:minute)\n• Activer le suivi en arrière-plan pour surveiller votre position\n• Lorsque vous entrez dans la zone d\'un point pendant sa fenêtre horaire active:\n  - Fairtiq se lance automatiquement\n  - Le téléphone vibre (motif 3 salves)\n  - L\'écran s\'allume s\'il est verrouillé\n• Vous devez sortir de la zone et y entrer à nouveau pour déclencher à nouveau (anti-spam)</string>
+    <string name="map_data">Map Data</string>
+    <string name="map_data_osm_attribution">© OpenStreetMap contributors</string>
     
     <!-- Notifications -->
     <string name="notification_channel_name">Alertes de proximité</string>

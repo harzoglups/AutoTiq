@@ -73,6 +73,10 @@ AutoTiq est 100% gratuit, sans publicité, sans collecte de données, et open so
 
 "Fairtiq" est une marque déposée de Fairtiq AG. AutoTiq est une application indépendante, non affiliée, non sponsorisée et non approuvée par Fairtiq AG.
 
+🗺️ DONNÉES CARTOGRAPHIQUES
+
+Tuiles de carte © Contributeurs OpenStreetMap. Données disponibles sous licence Open Database License (ODbL).
+
 🔗 Plus d'informations : https://github.com/harzoglups/FairLaunch
 ```
 
@@ -150,6 +154,10 @@ AutoTiq is 100% free, ad-free, no data collection, and open source.
 ⚖️ LEGAL NOTICE
 
 "Fairtiq" is a registered trademark of Fairtiq AG. AutoTiq is an independent application, not affiliated with, sponsored by, or endorsed by Fairtiq AG.
+
+🗺️ MAP DATA
+
+Map tiles © OpenStreetMap contributors. Data available under the Open Database License (ODbL).
 
 🔗 More information: https://github.com/harzoglups/FairLaunch
 ```
@@ -229,6 +237,10 @@ AutoTiq ist 100% kostenlos, werbefrei, ohne Datensammlung und Open Source.
 
 "Fairtiq" ist eine eingetragene Marke von Fairtiq AG. AutoTiq ist eine unabhängige Anwendung, die weder mit Fairtiq AG verbunden ist, noch von ihr gesponsert oder gebilligt wird.
 
+🗺️ KARTENDATEN
+
+Kartenkacheln © OpenStreetMap-Mitwirkende. Daten verfügbar unter der Open Database License (ODbL).
+
 🔗 Weitere Informationen: https://github.com/harzoglups/FairLaunch
 ```
 
@@ -306,6 +318,10 @@ AutoTiq è 100% gratuito, senza pubblicità, senza raccolta dati e open source.
 ⚖️ NOTE LEGALI
 
 "Fairtiq" è un marchio registrato di Fairtiq AG. AutoTiq è un'applicazione indipendente, non affiliata, non sponsorizzata e non approvata da Fairtiq AG.
+
+🗺️ DATI CARTOGRAFICI
+
+Tile della mappa © Contributori OpenStreetMap. Dati disponibili sotto licenza Open Database License (ODbL).
 
 🔗 Maggiori informazioni: https://github.com/harzoglups/FairLaunch
 ```
@@ -385,6 +401,10 @@ AutoTiq je 100% zdarma, bez reklam, bez sběru dat a open source.
 
 "Fairtiq" je registrovaná ochranná známka společnosti Fairtiq AG. AutoTiq je nezávislá aplikace, která není spojená, sponzorovaná ani schválená společností Fairtiq AG.
 
+🗺️ MAPOVÁ DATA
+
+Mapové dlaždice © Přispěvatelé OpenStreetMap. Data dostupná pod licencí Open Database License (ODbL).
+
 🔗 Více informací: https://github.com/harzoglups/FairLaunch
 ```
 
@@ -463,6 +483,10 @@ AutoTiq är 100% gratis, reklamfri, ingen datainsamling och öppen källkod.
 
 "Fairtiq" är ett registrerat varumärke som tillhör Fairtiq AG. AutoTiq är en oberoende applikation som inte är affilierad med, sponsrad av eller godkänd av Fairtiq AG.
 
+🗺️ KARTDATA
+
+Kartplattor © OpenStreetMap-bidragsgivare. Data tillgänglig under Open Database License (ODbL).
+
 🔗 Mer information: https://github.com/harzoglups/FairLaunch
 ```
 
@@ -540,6 +564,10 @@ AutoTiq er 100% gratis, reklamefri, ingen datainnsamling, og åpen kildekode.
 ⚖️ JURIDISK MERKNAD
 
 "Fairtiq" er et registrert varemerke som tilhører Fairtiq AG. AutoTiq er en uavhengig applikasjon som ikke er tilknyttet, sponset av eller godkjent av Fairtiq AG.
+
+🗺️ KARTDATA
+
+Kartfliser © OpenStreetMap-bidragsytere. Data tilgjengelig under Open Database License (ODbL).
 
 🔗 Mer informasjon: https://github.com/harzoglups/FairLaunch
 ```

@@ -76,6 +76,8 @@
     <string name="version">Version %1$s</string>
     <string name="how_it_works">Hur det fungerar</string>
     <string name="how_it_works_content">• Långtryck på kartan för att lägga till en punkt (redigeringsdialogen öppnas automatiskt)\n• Kort tryck på en markör för att visa dess detaljer\n• Långtryck på en markör för att ta bort den\n• Konfigurera punktegenskaper: namn och aktivt tidsfönster (timme:minut)\n• Aktivera bakgrundsspårning för att övervaka din plats\n• När du kommer in i en punkts zon under dess aktiva tidsfönster:\n  - Fairtiq startas automatiskt\n  - Telefonen vibrerar (3-vibrationsmönster)\n  - Skärmen vaknar om den är låst\n• Du måste lämna zonen och återvända för att utlösa igen (anti-spam)</string>
+    <string name="map_data">Map Data</string>
+    <string name="map_data_osm_attribution">© OpenStreetMap contributors</string>
     
     <!-- Notifications -->
     <string name="notification_channel_name">Närhetslarm</string>

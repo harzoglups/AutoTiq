@@ -73,6 +73,8 @@
     <string name="version">Versione %1$s</string>
     <string name="how_it_works">Come funziona</string>
     <string name="how_it_works_content">• Premi a lungo sulla mappa per aggiungere un punto (il dialogo di modifica si apre automaticamente)\n• Tocca brevemente un marcatore per vederne i dettagli\n• Premi a lungo su un marcatore per eliminarlo\n• Configura le proprietà del punto: nome e finestra temporale attiva (ora:minuto)\n• Abilita il tracciamento in background per monitorare la tua posizione\n• Quando entri nella zona di un punto durante la sua finestra temporale attiva:\n  - Fairtiq si avvia automaticamente\n  - Il telefono vibra (pattern a 3 impulsi)\n  - Lo schermo si accende se bloccato\n• Devi uscire dalla zona e rientrare per attivare di nuovo (anti-spam)</string>
+    <string name="map_data">Map Data</string>
+    <string name="map_data_osm_attribution">© OpenStreetMap contributors</string>
     
     <!-- Notifications -->
     <string name="notification_channel_name">Avvisi di prossimità</string>

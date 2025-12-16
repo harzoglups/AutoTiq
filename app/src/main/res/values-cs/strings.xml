@@ -76,6 +76,8 @@
     <string name="version">Verze %1$s</string>
     <string name="how_it_works">Jak to funguje</string>
     <string name="how_it_works_content">• Dlouhý stisk na mapu pro přidání bodu (dialog úprav se otevře automaticky)\n• Krátký stisk na značku pro zobrazení detailů\n• Dlouhý stisk na značku pro její smazání\n• Konfigurace vlastností bodu: název a aktivní časové okno (hodina:minuta)\n• Povolte sledování na pozadí pro monitorování vaší polohy\n• Když vstoupíte do zóny bodu během jeho aktivního časového okna:\n  - Fairtiq se spustí automaticky\n  - Telefon vibruje (3 vibrace)\n  - Obrazovka se probudí, pokud je zamčená\n• Musíte opustit zónu a znovu vstoupit pro opětovné spuštění (anti-spam)</string>
+    <string name="map_data">Map Data</string>
+    <string name="map_data_osm_attribution">© OpenStreetMap contributors</string>
     
     <!-- Notifications -->
     <string name="notification_channel_name">Upozornění na blízkost</string>

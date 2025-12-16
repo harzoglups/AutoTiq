@@ -76,6 +76,8 @@
     <string name="version">Version %1$s</string>
     <string name="how_it_works">How it works</string>
     <string name="how_it_works_content">• Long press on the map to add a point (edit dialog opens automatically)\n• Short tap on a marker to view its details\n• Long press on a marker to delete it\n• Configure point properties: name and active time window (hour:minute)\n• Enable background tracking to monitor your location\n• When you enter a point\'s zone during its active time window:\n  - Fairtiq launches automatically\n  - The phone vibrates (3-burst pattern)\n  - The screen wakes up if locked\n• You must exit the zone and re-enter to trigger again (anti-spam)</string>
+    <string name="map_data">Map Data</string>
+    <string name="map_data_osm_attribution">© OpenStreetMap contributors</string>
     
     <!-- Notifications -->
     <string name="notification_channel_name">Proximity alerts</string>
