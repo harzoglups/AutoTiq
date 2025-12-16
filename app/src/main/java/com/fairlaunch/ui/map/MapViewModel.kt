@@ -79,6 +79,14 @@ class MapViewModel @Inject constructor(
     fun clearLastAddedPointId() {
         _lastAddedPointId.value = null
     }
+    
+    // Store map position to restore when returning from other screens
+    private val _savedMapPosition = MutableStateFlow<SavedMapPosition?>(null)
+    val savedMapPosition: StateFlow<SavedMapPosition?> = _savedMapPosition.asStateFlow()
+    
+    fun saveMapPosition(latitude: Double, longitude: Double, zoom: Double) {
+        _savedMapPosition.value = SavedMapPosition(latitude, longitude, zoom)
+    }
 
     fun deletePoint(id: Long) {
         viewModelScope.launch {
@@ -273,6 +281,12 @@ data class Viewbox(
     val maxLat: Double,
     val minLon: Double,
     val maxLon: Double
+)
+
+data class SavedMapPosition(
+    val latitude: Double,
+    val longitude: Double,
+    val zoom: Double
 )
 
 sealed interface MapUiState {

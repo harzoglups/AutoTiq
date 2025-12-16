@@ -80,6 +80,7 @@ fun MapScreen(
     val view = LocalView.current
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val lastAddedPointId by viewModel.lastAddedPointId.collectAsStateWithLifecycle()
+    val savedMapPosition by viewModel.savedMapPosition.collectAsStateWithLifecycle()
     var showLayerMenu by remember { mutableStateOf(false) }
     var editingPoint by remember { mutableStateOf<MapPoint?>(null) }
     var selectedPoint by remember { mutableStateOf<MapPoint?>(null) } // For showing info bubble
@@ -142,6 +143,7 @@ fun MapScreen(
                     proximityDistanceMeters = state.settings.proximityDistanceMeters,
                     mapLayerType = state.settings.mapLayerType,
                     hasLocationPermission = hasLocationPermission,
+                    savedMapPosition = savedMapPosition,
                     onRequestPermission = {
                         permissionLauncher.launch(
                             arrayOf(
@@ -182,6 +184,9 @@ fun MapScreen(
                     },
                     onLocationOverlayReady = { overlay -> locationOverlay = overlay },
                     onMapViewReady = { view -> mapView = view },
+                    onSaveMapPosition = { lat, lon, zoom -> 
+                        viewModel.saveMapPosition(lat, lon, zoom)
+                    },
                     searchMarker = searchMarker,
                     modifier = Modifier.fillMaxSize()
                 )
@@ -450,6 +455,7 @@ private fun MapContent(
     proximityDistanceMeters: Int,
     mapLayerType: MapLayerType,
     hasLocationPermission: Boolean,
+    savedMapPosition: SavedMapPosition?,
     onRequestPermission: () -> Unit,
     onAddPoint: (Double, Double) -> Unit,
     onDeletePoint: (Long) -> Unit,
@@ -457,6 +463,7 @@ private fun MapContent(
     onMapClick: () -> Unit,
     onLocationOverlayReady: (MyLocationNewOverlay) -> Unit,
     onMapViewReady: (MapView) -> Unit,
+    onSaveMapPosition: (Double, Double, Double) -> Unit,
     searchMarker: Marker? = null,
     modifier: Modifier = Modifier
 ) {
@@ -473,6 +480,13 @@ private fun MapContent(
     DisposableEffect(Unit) {
         Configuration.getInstance().userAgentValue = context.packageName
         onDispose {
+            // Save current map position before cleanup
+            mapView?.let { map ->
+                val center = map.mapCenter
+                val zoom = map.zoomLevelDouble
+                onSaveMapPosition(center.latitude, center.longitude, zoom)
+            }
+            
             // Cleanup map resources to prevent memory leaks
             mapView?.let { map ->
                 // Stop location overlay to prevent GPS from running in background
@@ -541,9 +555,16 @@ private fun MapContent(
                     isTilesScaledToDpi = true
                     setUseDataConnection(true)
                     
-                    // Set default position (e.g., Zurich, Switzerland)
-                    controller.setZoom(13.0)
-                    controller.setCenter(GeoPoint(47.3769, 8.5417))
+                    // Restore saved position or set default position (e.g., Zurich, Switzerland)
+                    if (savedMapPosition != null) {
+                        // Restore previous map position
+                        controller.setZoom(savedMapPosition.zoom)
+                        controller.setCenter(GeoPoint(savedMapPosition.latitude, savedMapPosition.longitude))
+                    } else {
+                        // First time: set default position
+                        controller.setZoom(13.0)
+                        controller.setCenter(GeoPoint(47.3769, 8.5417))
+                    }
 
                     // Enable location overlay
                     val locationOverlay = MyLocationNewOverlay(GpsMyLocationProvider(ctx), this)
@@ -554,11 +575,13 @@ private fun MapContent(
                     // Notify that location overlay is ready
                     onLocationOverlayReady(locationOverlay)
                     
-                    // Center on user location when available (only once on first fix)
-                    locationOverlay.runOnFirstFix {
-                        post {
-                            controller.animateTo(locationOverlay.myLocation)
-                            controller.setZoom(15.0)
+                    // Center on user location only on first launch (when no saved position)
+                    if (savedMapPosition == null) {
+                        locationOverlay.runOnFirstFix {
+                            post {
+                                controller.animateTo(locationOverlay.myLocation)
+                                controller.setZoom(15.0)
+                            }
                         }
                     }
 
