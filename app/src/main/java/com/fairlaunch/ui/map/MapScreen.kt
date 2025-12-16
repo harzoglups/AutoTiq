@@ -169,6 +169,12 @@ fun MapScreen(
                         selectedPoint = null // Close info card when clicking on map
                         // Remove search marker when clicking on map
                         searchMarker?.let { marker ->
+                            // Recycle bitmap to free memory
+                            marker.icon?.let { drawable ->
+                                if (drawable is android.graphics.drawable.BitmapDrawable) {
+                                    drawable.bitmap?.recycle()
+                                }
+                            }
                             mapView?.overlays?.remove(marker)
                             mapView?.invalidate()
                             searchMarker = null
@@ -217,8 +223,13 @@ fun MapScreen(
                     isSearching = isSearching,
                     onResultClick = { result ->
                         mapView?.let { map ->
-                            // Remove previous search marker if exists
+                            // Remove previous search marker if exists and recycle bitmap
                             searchMarker?.let { marker ->
+                                marker.icon?.let { drawable ->
+                                    if (drawable is android.graphics.drawable.BitmapDrawable) {
+                                        drawable.bitmap?.recycle()
+                                    }
+                                }
                                 map.overlays.remove(marker)
                             }
                             
@@ -462,7 +473,35 @@ private fun MapContent(
     DisposableEffect(Unit) {
         Configuration.getInstance().userAgentValue = context.packageName
         onDispose {
-            mapView?.onDetach()
+            // Cleanup map resources to prevent memory leaks
+            mapView?.let { map ->
+                // Stop location overlay to prevent GPS from running in background
+                map.overlays.filterIsInstance<MyLocationNewOverlay>().forEach { overlay ->
+                    overlay.disableMyLocation()
+                    overlay.disableFollowLocation()
+                }
+                
+                // Recycle marker bitmaps to free memory
+                map.overlays.filterIsInstance<Marker>().forEach { marker ->
+                    marker.icon?.let { drawable ->
+                        if (drawable is android.graphics.drawable.BitmapDrawable) {
+                            drawable.bitmap?.recycle()
+                        }
+                    }
+                }
+                
+                // Clear all overlays
+                map.overlays.clear()
+                
+                // CRITICAL: Force OSMDroid to clear tile cache from RAM
+                // This is essential to free Graphics memory when leaving map screen
+                map.tileProvider?.clearTileCache()
+                map.invalidate()
+                
+                // Detach map view
+                map.onDetach()
+            }
+            mapView = null
         }
     }
 
@@ -496,6 +535,11 @@ private fun MapContent(
                     
                     setTileSource(mapLayerType.toTileSource())
                     setMultiTouchControls(true)
+                    
+                    // Optimize memory usage
+                    // Limit how many tiles are kept in memory (default is way too high)
+                    isTilesScaledToDpi = true
+                    setUseDataConnection(true)
                     
                     // Set default position (e.g., Zurich, Switzerland)
                     controller.setZoom(13.0)
@@ -597,14 +641,26 @@ private fun MapContent(
                     map.setTileSource(mapLayerType.toTileSource())
                 }
                 
-                // Remove old markers and circles (but keep search marker)
-                map.overlays.removeAll { overlay ->
+                // Remove old markers and circles (but keep search marker and location overlay)
+                val overlaysToRemove = map.overlays.filter { overlay ->
                     when {
+                        overlay is MyLocationNewOverlay -> false // Keep location overlay
                         overlay is Marker && overlay.relatedObject == "SEARCH_MARKER" -> false // Keep search marker
                         overlay is Marker || overlay is Polygon -> true // Remove user markers and circles
                         else -> false
                     }
                 }
+                
+                // Recycle bitmaps from removed markers to free memory
+                overlaysToRemove.filterIsInstance<Marker>().forEach { marker ->
+                    marker.icon?.let { drawable ->
+                        if (drawable is android.graphics.drawable.BitmapDrawable) {
+                            drawable.bitmap?.recycle()
+                        }
+                    }
+                }
+                
+                map.overlays.removeAll(overlaysToRemove.toSet())
                 
                 // Add circles and markers for each point
                 points.forEach { mapPoint ->
