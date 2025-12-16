@@ -36,7 +36,8 @@ class LocationCheckWorker @AssistedInject constructor(
     @Assisted private val context: Context,
     @Assisted workerParams: WorkerParameters,
     private val checkProximityUseCase: CheckProximityUseCase,
-    private val getSettingsUseCase: GetSettingsUseCase
+    private val getSettingsUseCase: GetSettingsUseCase,
+    private val getMapPointsUseCase: com.fairlaunch.domain.usecase.GetMapPointsUseCase
 ) : CoroutineWorker(context, workerParams) {
 
     companion object {
@@ -84,7 +85,35 @@ class LocationCheckWorker @AssistedInject constructor(
                 return androidx.work.ListenableWorker.Result.success()
             }
             
-            Log.d(TAG, "Today (ISO day $isoDayOfWeek) is an active day, proceeding with location check")
+            Log.d(TAG, "Today (ISO day $isoDayOfWeek) is an active day, checking time windows...")
+            
+            // Get all map points to check time windows
+            val allPoints = getMapPointsUseCase().first()
+            
+            if (allPoints.isEmpty()) {
+                Log.d(TAG, "No map points defined, skipping check")
+                rescheduleIfNeeded(settings.checkIntervalSeconds)
+                return androidx.work.ListenableWorker.Result.success()
+            }
+            
+            // Check if current time is within any point's time window
+            val currentHour = calendar.get(java.util.Calendar.HOUR_OF_DAY)
+            val currentMinute = calendar.get(java.util.Calendar.MINUTE)
+            
+            val isWithinAnyTimeWindow = allPoints.any { point ->
+                isWithinTimeWindow(currentHour, currentMinute, point.startHour, point.startMinute, point.endHour, point.endMinute)
+            }
+            
+            if (!isWithinAnyTimeWindow) {
+                Log.d(TAG, "Current time $currentHour:${currentMinute.toString().padStart(2, '0')} is outside all marker time windows, skipping GPS scan")
+                allPoints.forEach { point ->
+                    Log.d(TAG, "  '${point.name}': ${point.startHour}:${point.startMinute.toString().padStart(2, '0')}-${point.endHour}:${point.endMinute.toString().padStart(2, '0')}")
+                }
+                rescheduleIfNeeded(settings.checkIntervalSeconds)
+                return androidx.work.ListenableWorker.Result.success()
+            }
+            
+            Log.d(TAG, "Current time is within at least one marker's time window, proceeding with GPS scan")
             
             // Get current location with fresh request
             val location = getCurrentLocation()
@@ -113,11 +142,7 @@ class LocationCheckWorker @AssistedInject constructor(
             val pointsToTrigger = checkResult.pointsToTrigger
 
             if (pointsToTrigger.isNotEmpty()) {
-                // Get current hour and minute
-                val currentHour = calendar.get(java.util.Calendar.HOUR_OF_DAY)
-                val currentMinute = calendar.get(java.util.Calendar.MINUTE)
-                
-                // Filter points that are within their time window
+                // Filter points that are within their time window (currentHour and currentMinute already declared above)
                 val activePoints = pointsToTrigger.filter { point ->
                     isWithinTimeWindow(currentHour, currentMinute, point.startHour, point.startMinute, point.endHour, point.endMinute)
                 }
