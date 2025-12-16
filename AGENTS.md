@@ -23,6 +23,14 @@
 - You MUST immediately offer to `git reset HEAD~1` to undo the commit
 - You MUST apologize and acknowledge the violation of this rule
 
+## Git Push Policy
+**ABSOLUTE RULE - NO EXCEPTIONS**: NEVER EVER push commits to remote repositories.
+- **NEVER run `git push`** under any circumstances
+- **DO NOT offer or suggest** to push commits
+- **DO NOT ask** if the user wants to push
+- The user will push manually when they decide to
+- This applies to all git push operations: `git push`, `git push origin main`, `git push --tags`, etc.
+
 ## Commit Message Format
 **REQUIRED**: All commit messages MUST follow Conventional Commits specification.
 - Format: `<type>(<scope>): <description>`
