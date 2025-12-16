@@ -727,24 +727,47 @@ private fun MapContent(
                     circle.outlinePaint.strokeWidth = 2f
                     map.overlays.add(circle)
                     
-                    // Create marker with custom blue pin icon
+                    // Create marker with custom blue pin icon and label
                     val marker = Marker(map).apply {
                         position = GeoPoint(mapPoint.latitude, mapPoint.longitude)
-                        title = if (mapPoint.name.isNotEmpty()) mapPoint.name else context.getString(R.string.point_number, mapPoint.id)
+                        val markerName = if (mapPoint.name.isNotEmpty()) mapPoint.name else context.getString(R.string.point_number, mapPoint.id)
+                        title = markerName
                         setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
                         // Disable default info window since we have custom Compose card
                         infoWindow = null
                         // Store the point ID in the marker's related object for our touch handler
                         relatedObject = mapPoint.id
                         
-                        // Create a blue pin-style marker icon
-                        val size = 80
-                        val bitmap = android.graphics.Bitmap.createBitmap(size, size, android.graphics.Bitmap.Config.ARGB_8888)
+                        // Measure text dimensions first
+                        val textPaint = android.graphics.Paint().apply {
+                            color = android.graphics.Color.BLUE
+                            textSize = 32f
+                            isAntiAlias = true
+                            typeface = android.graphics.Typeface.DEFAULT_BOLD
+                        }
+                        val textBounds = android.graphics.Rect()
+                        textPaint.getTextBounds(markerName, 0, markerName.length, textBounds)
+                        val textWidth = textBounds.width()
+                        val textHeight = textBounds.height()
+                        
+                        // Create bitmap with space for both pin and text
+                        val pinSize = 80
+                        val totalWidth = maxOf(pinSize, textWidth)
+                        val totalHeight = pinSize + textHeight + 10 // 10px gap between text and pin
+                        val bitmap = android.graphics.Bitmap.createBitmap(totalWidth, totalHeight, android.graphics.Bitmap.Config.ARGB_8888)
                         val canvas = android.graphics.Canvas(bitmap)
                         
-                        // Draw a pin shape (circle on top, triangle pointing down)
-                        val paint = android.graphics.Paint().apply {
-                            color = android.graphics.Color.BLUE // Blue for user markers
+                        // Draw text (blue, no background)
+                        val textX = totalWidth / 2f - textBounds.width() / 2f
+                        val textY = textBounds.height().toFloat()
+                        canvas.drawText(markerName, textX, textY, textPaint)
+                        
+                        // Draw pin below text
+                        val pinOffsetX = (totalWidth - pinSize) / 2f
+                        val pinOffsetY = textHeight + 10f
+                        
+                        val pinPaint = android.graphics.Paint().apply {
+                            color = android.graphics.Color.BLUE
                             style = android.graphics.Paint.Style.FILL
                             isAntiAlias = true
                         }
@@ -756,23 +779,26 @@ private fun MapContent(
                         }
                         
                         // Draw circle (top part of pin)
-                        val circleRadius = size / 4f
-                        val circleCenterX = size / 2f
-                        val circleCenterY = circleRadius + 5
-                        canvas.drawCircle(circleCenterX, circleCenterY, circleRadius, paint)
+                        val circleRadius = pinSize / 4f
+                        val circleCenterX = pinOffsetX + pinSize / 2f
+                        val circleCenterY = pinOffsetY + circleRadius + 5
+                        canvas.drawCircle(circleCenterX, circleCenterY, circleRadius, pinPaint)
                         canvas.drawCircle(circleCenterX, circleCenterY, circleRadius, strokePaint)
                         
                         // Draw triangle pointing down (bottom part of pin)
                         val path = android.graphics.Path().apply {
                             moveTo(circleCenterX - circleRadius / 2, circleCenterY + circleRadius)
-                            lineTo(circleCenterX, size - 5f)
+                            lineTo(circleCenterX, pinOffsetY + pinSize - 5f)
                             lineTo(circleCenterX + circleRadius / 2, circleCenterY + circleRadius)
                             close()
                         }
-                        canvas.drawPath(path, paint)
+                        canvas.drawPath(path, pinPaint)
                         canvas.drawPath(path, strokePaint)
                         
                         icon = android.graphics.drawable.BitmapDrawable(context.resources, bitmap)
+                        
+                        // Set anchor point to bottom center (tip of the pin)
+                        setAnchor(0.5f, 1.0f)
                     }
                     
                     map.overlays.add(marker)
