@@ -747,8 +747,8 @@ private fun MapContent(
                         }
                         val textBounds = android.graphics.Rect()
                         textPaint.getTextBounds(markerName, 0, markerName.length, textBounds)
-                        val textWidth = textBounds.width()
-                        val textHeight = textBounds.height()
+                        val textWidth = textBounds.width() + 16 // Add padding
+                        val textHeight = textBounds.height() + 8
                         
                         // Create bitmap with space for both pin and text
                         val pinSize = 80
@@ -757,9 +757,33 @@ private fun MapContent(
                         val bitmap = android.graphics.Bitmap.createBitmap(totalWidth, totalHeight, android.graphics.Bitmap.Config.ARGB_8888)
                         val canvas = android.graphics.Canvas(bitmap)
                         
-                        // Draw text (blue, no background)
+                        // Draw text background (rounded rectangle with white fill)
+                        val bgPaint = android.graphics.Paint().apply {
+                            color = android.graphics.Color.WHITE
+                            style = android.graphics.Paint.Style.FILL
+                            isAntiAlias = true
+                        }
+                        val bgRect = android.graphics.RectF(
+                            (totalWidth - textWidth) / 2f,
+                            0f,
+                            (totalWidth + textWidth) / 2f,
+                            textHeight.toFloat()
+                        )
+                        canvas.drawRoundRect(bgRect, 8f, 8f, bgPaint)
+                        
+                        // Draw text border (blue)
+                        val borderPaint = android.graphics.Paint().apply {
+                            color = android.graphics.Color.BLUE
+                            style = android.graphics.Paint.Style.STROKE
+                            strokeWidth = 2f
+                            isAntiAlias = true
+                        }
+                        canvas.drawRoundRect(bgRect, 8f, 8f, borderPaint)
+                        
+                        // Draw text (blue) - centered in the background rectangle
                         val textX = totalWidth / 2f - textBounds.width() / 2f
-                        val textY = textBounds.height().toFloat()
+                        // Use baseline for proper vertical centering (account for descenders)
+                        val textY = textHeight / 2f - textBounds.exactCenterY()
                         canvas.drawText(markerName, textX, textY, textPaint)
                         
                         // Draw pin below text
