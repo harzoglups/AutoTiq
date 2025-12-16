@@ -128,22 +128,22 @@ jobs:
       - name: Build Release APK
         run: ./gradlew assembleRelease
         
-       - name: Prepare APK
-         run: |
-           # Use release APK (signed with debug key)
-           cp app/build/outputs/apk/release/app-release.apk AutoTiq-${{ steps.previous_tag.outputs.current_tag }}.apk
-           echo "APK prepared: AutoTiq-${{ steps.previous_tag.outputs.current_tag }}.apk"
-           ls -lh AutoTiq-*.apk
+      - name: Prepare APK
+        run: |
+          # Use release APK (signed with debug key)
+          cp app/build/outputs/apk/release/app-release.apk AutoTiq-${{ steps.previous_tag.outputs.current_tag }}.apk
+          echo "APK prepared: AutoTiq-${{ steps.previous_tag.outputs.current_tag }}.apk"
+          ls -lh AutoTiq-*.apk
           
-       - name: Create GitHub Release
-         uses: softprops/action-gh-release@v1
-         with:
-           tag_name: ${{ steps.previous_tag.outputs.current_tag }}
-           name: Release ${{ steps.previous_tag.outputs.current_tag }}
-           body_path: release_notes.md
-           draft: false
-           prerelease: false
-           files: |
-             AutoTiq-${{ steps.previous_tag.outputs.current_tag }}.apk
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: ${{ steps.previous_tag.outputs.current_tag }}
+          name: Release ${{ steps.previous_tag.outputs.current_tag }}
+          body_path: release_notes.md
+          draft: false
+          prerelease: false
+          files: |
+            AutoTiq-${{ steps.previous_tag.outputs.current_tag }}.apk
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

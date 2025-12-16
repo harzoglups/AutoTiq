@@ -204,24 +204,24 @@ jobs:
         if: steps.analyze_commits.outputs.should_release == 'true'
         run: ./gradlew assembleRelease
         
-       - name: Prepare APK for Release
-         if: steps.analyze_commits.outputs.should_release == 'true'
-         run: |
-           cp app/build/outputs/apk/release/app-release.apk AutoTiq-${{ steps.next_version.outputs.new_version }}.apk
-           echo "✅ APK prepared: AutoTiq-${{ steps.next_version.outputs.new_version }}.apk"
-           ls -lh AutoTiq-*.apk
+      - name: Prepare APK for Release
+        if: steps.analyze_commits.outputs.should_release == 'true'
+        run: |
+          cp app/build/outputs/apk/release/app-release.apk AutoTiq-${{ steps.next_version.outputs.new_version }}.apk
+          echo "✅ APK prepared: AutoTiq-${{ steps.next_version.outputs.new_version }}.apk"
+          ls -lh AutoTiq-*.apk
           
-       - name: Create Release
-         if: steps.analyze_commits.outputs.should_release == 'true'
-         uses: softprops/action-gh-release@v1
-         with:
-           tag_name: ${{ steps.next_version.outputs.new_version }}
-           name: Release ${{ steps.next_version.outputs.new_version }}
-           body_path: release_notes.md
-           draft: false
-           prerelease: false
-           files: |
-             AutoTiq-${{ steps.next_version.outputs.new_version }}.apk
+      - name: Create Release
+        if: steps.analyze_commits.outputs.should_release == 'true'
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: ${{ steps.next_version.outputs.new_version }}
+          name: Release ${{ steps.next_version.outputs.new_version }}
+          body_path: release_notes.md
+          draft: false
+          prerelease: false
+          files: |
+            AutoTiq-${{ steps.next_version.outputs.new_version }}.apk
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           
