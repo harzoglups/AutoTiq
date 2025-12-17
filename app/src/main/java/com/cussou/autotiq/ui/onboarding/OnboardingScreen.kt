@@ -40,11 +40,15 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.cussou.autotiq.R
+import com.cussou.autotiq.ui.settings.SettingsViewModel
+import kotlinx.coroutines.launch
 
 @Composable
 fun OnboardingScreen(
-    onComplete: () -> Unit
+    onComplete: () -> Unit,
+    settingsViewModel: SettingsViewModel = hiltViewModel()
 ) {
     val context = LocalContext.current
     var currentStep by remember { mutableStateOf(OnboardingStep.WELCOME) }
@@ -168,7 +172,10 @@ fun OnboardingScreen(
                 )
             }
             OnboardingStep.COMPLETE -> {
-                CompleteStep(onFinish = onComplete)
+                CompleteStep(
+                    onFinish = onComplete,
+                    settingsViewModel = settingsViewModel
+                )
             }
         }
     }
@@ -245,7 +252,15 @@ private fun NotificationPermissionStep(
 }
 
 @Composable
-private fun CompleteStep(onFinish: () -> Unit) {
+private fun CompleteStep(
+    onFinish: () -> Unit,
+    settingsViewModel: SettingsViewModel
+) {
+    // Enable background tracking when reaching this step
+    LaunchedEffect(Unit) {
+        settingsViewModel.updateLocationTracking(true)
+    }
+    
     Column(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
