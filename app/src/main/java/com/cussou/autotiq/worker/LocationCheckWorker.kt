@@ -228,7 +228,6 @@ class LocationCheckWorker @AssistedInject constructor(
     
     private fun isLocationRecent(location: Location): Boolean {
         val ageMs = System.currentTimeMillis() - location.time
-        val ageSeconds = ageMs / 1000
         // Consider location recent if less than 2 minutes old
         // This is reasonable for train station detection
         return ageMs < 120000
@@ -371,6 +370,11 @@ class LocationCheckWorker @AssistedInject constructor(
                     amplitudes.toIntArray(),
                     -1 // Don't repeat
                 )
+                
+                // Note: vibrate(VibrationEffect, AudioAttributes) is deprecated in Android 13+
+                // but it's the only way to vibrate from background on Android 12
+                // The new API requires VibratorManager which is more complex
+                @Suppress("DEPRECATION")
                 vibrator.vibrate(effect, audioAttributes)
                 Log.d(TAG, "vibrate(effect, audioAttributes) called successfully with USAGE_ALARM")
             } else {

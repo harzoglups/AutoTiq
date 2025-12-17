@@ -42,7 +42,7 @@ class LocationWorkScheduler(private val context: Context) {
 
             WorkManager.getInstance(context).enqueueUniquePeriodicWork(
                 LocationCheckWorker.WORK_NAME,
-                ExistingPeriodicWorkPolicy.REPLACE,
+                ExistingPeriodicWorkPolicy.UPDATE,
                 workRequest
             )
         }

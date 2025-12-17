@@ -27,7 +27,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
@@ -86,7 +86,7 @@ fun SettingsScreen(
                 title = { Text(stringResource(R.string.settings)) },
                 navigationIcon = {
                     IconButton(onClick = onNavigateBack) {
-                        Icon(Icons.Default.ArrowBack, contentDescription = stringResource(R.string.back))
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = stringResource(R.string.back))
                     }
                 }
             )
@@ -395,15 +395,18 @@ fun SettingsScreen(
                                 }
                                 
                                 if (vibrator != null && vibrator.hasVibrator()) {
-                                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                                         val audioAttributes = AudioAttributes.Builder()
-                                            .setUsage(AudioAttributes.USAGE_ALARM)
+                                            .setUsage(AudioAttributes.USAGE_NOTIFICATION)
                                             .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
                                             .build()
                                         
                                         val pattern = longArrayOf(0, 500, 200, 500, 200, 500, 200, 500, 200, 500)
                                         val amplitudes = intArrayOf(0, 255, 0, 255, 0, 255, 0, 255, 0, 255)
                                         val effect = VibrationEffect.createWaveform(pattern, amplitudes, -1)
+                                        
+                                        // Suppress deprecation warning - needed for background vibration
+                                        @Suppress("DEPRECATION")
                                         vibrator.vibrate(effect, audioAttributes)
                                     } else {
                                         @Suppress("DEPRECATION")
