@@ -395,23 +395,19 @@ fun SettingsScreen(
                                 }
                                 
                                 if (vibrator != null && vibrator.hasVibrator()) {
-                                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                                        val audioAttributes = AudioAttributes.Builder()
-                                            .setUsage(AudioAttributes.USAGE_NOTIFICATION)
-                                            .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
-                                            .build()
-                                        
-                                        val pattern = longArrayOf(0, 500, 200, 500, 200, 500, 200, 500, 200, 500)
-                                        val amplitudes = intArrayOf(0, 255, 0, 255, 0, 255, 0, 255, 0, 255)
-                                        val effect = VibrationEffect.createWaveform(pattern, amplitudes, -1)
-                                        
-                                        // Suppress deprecation warning - needed for background vibration
-                                        @Suppress("DEPRECATION")
-                                        vibrator.vibrate(effect, audioAttributes)
-                                    } else {
-                                        @Suppress("DEPRECATION")
-                                        vibrator.vibrate(longArrayOf(0, 500, 200, 500, 200, 500, 200, 500, 200, 500), -1)
-                                    }
+                                    // minSdk 26+ guarantees VibrationEffect availability
+                                    val audioAttributes = AudioAttributes.Builder()
+                                        .setUsage(AudioAttributes.USAGE_NOTIFICATION)
+                                        .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
+                                        .build()
+                                    
+                                    val pattern = longArrayOf(0, 500, 200, 500, 200, 500, 200, 500, 200, 500)
+                                    val amplitudes = intArrayOf(0, 255, 0, 255, 0, 255, 0, 255, 0, 255)
+                                    val effect = VibrationEffect.createWaveform(pattern, amplitudes, -1)
+                                    
+                                    // Suppress deprecation warning - needed for background vibration
+                                    @Suppress("DEPRECATION")
+                                    vibrator.vibrate(effect, audioAttributes)
                                 }
                             } catch (e: Exception) {
                                 android.util.Log.e("SettingsScreen", "Error testing vibration", e)

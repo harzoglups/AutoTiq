@@ -358,30 +358,25 @@ class LocationCheckWorker @AssistedInject constructor(
             
             Log.d(TAG, "Pattern: ${pattern.toLongArray().contentToString()}, Amplitudes: ${amplitudes.toIntArray().contentToString()}")
             
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                // Create AudioAttributes for ALARM usage - this allows vibration from background
-                val audioAttributes = AudioAttributes.Builder()
-                    .setUsage(AudioAttributes.USAGE_ALARM)
-                    .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
-                    .build()
-                
-                val effect = VibrationEffect.createWaveform(
-                    pattern.toLongArray(),
-                    amplitudes.toIntArray(),
-                    -1 // Don't repeat
-                )
-                
-                // Note: vibrate(VibrationEffect, AudioAttributes) is deprecated in Android 13+
-                // but it's the only way to vibrate from background on Android 12
-                // The new API requires VibratorManager which is more complex
-                @Suppress("DEPRECATION")
-                vibrator.vibrate(effect, audioAttributes)
-                Log.d(TAG, "vibrate(effect, audioAttributes) called successfully with USAGE_ALARM")
-            } else {
-                @Suppress("DEPRECATION")
-                vibrator.vibrate(pattern.toLongArray(), -1)
-                Log.d(TAG, "vibrate(pattern) called successfully")
-            }
+            // minSdk 26+ guarantees VibrationEffect availability
+            // Create AudioAttributes for ALARM usage - this allows vibration from background
+            val audioAttributes = AudioAttributes.Builder()
+                .setUsage(AudioAttributes.USAGE_ALARM)
+                .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
+                .build()
+            
+            val effect = VibrationEffect.createWaveform(
+                pattern.toLongArray(),
+                amplitudes.toIntArray(),
+                -1 // Don't repeat
+            )
+            
+            // Note: vibrate(VibrationEffect, AudioAttributes) is deprecated in Android 13+
+            // but it's the only way to vibrate from background on Android 12
+            // The new API requires VibratorManager which is more complex
+            @Suppress("DEPRECATION")
+            vibrator.vibrate(effect, audioAttributes)
+            Log.d(TAG, "vibrate(effect, audioAttributes) called successfully with USAGE_ALARM")
             
             Log.d(TAG, "Direct vibration triggered ($vibrationCount times)")
         } catch (e: Exception) {
@@ -390,19 +385,18 @@ class LocationCheckWorker @AssistedInject constructor(
     }
     
     private fun createNotificationChannel() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val channel = NotificationChannel(
-                NOTIFICATION_CHANNEL_ID,
-                context.getString(R.string.notification_channel_name),
-                NotificationManager.IMPORTANCE_HIGH
-            ).apply {
-                description = context.getString(R.string.notification_channel_desc)
-                // Don't set vibration here - we do it manually
-                enableVibration(false)
-            }
-            
-            val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-            notificationManager.createNotificationChannel(channel)
+        // minSdk 26+ requires NotificationChannel
+        val channel = NotificationChannel(
+            NOTIFICATION_CHANNEL_ID,
+            context.getString(R.string.notification_channel_name),
+            NotificationManager.IMPORTANCE_HIGH
+        ).apply {
+            description = context.getString(R.string.notification_channel_desc)
+            // Don't set vibration here - we do it manually
+            enableVibration(false)
         }
+        
+        val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        notificationManager.createNotificationChannel(channel)
     }
 }

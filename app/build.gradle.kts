@@ -12,8 +12,8 @@ android {
 
     defaultConfig {
         applicationId = "com.cussou.autotiq"
-        minSdk = 24
-        targetSdk = 35
+        minSdk = 26  // Aligned with Fairtiq app (Android 8.0 Oreo)
+        targetSdk = 36  // Aligned with Fairtiq app
         versionCode = 1
         versionName = "1.0.0"
 
