@@ -2,7 +2,7 @@ package com.cussou.autotiq.di
 
 import android.content.Context
 import androidx.room.Room
-import com.cussou.autotiq.data.local.FairLaunchDatabase
+import com.cussou.autotiq.data.local.AutoTiqDatabase
 import com.cussou.autotiq.data.local.MIGRATION_1_2
 import com.cussou.autotiq.data.local.MIGRATION_2_3
 import com.cussou.autotiq.data.local.dao.MapPointDao
@@ -20,11 +20,11 @@ object DatabaseModule {
 
     @Provides
     @Singleton
-    fun provideDatabase(@ApplicationContext context: Context): FairLaunchDatabase {
+    fun provideDatabase(@ApplicationContext context: Context): AutoTiqDatabase {
         return Room.databaseBuilder(
             context,
-            FairLaunchDatabase::class.java,
-            "fairlaunch_database"
+            AutoTiqDatabase::class.java,
+            "autotiq_database"
         )
             .addMigrations(MIGRATION_1_2, MIGRATION_2_3)
             .build()
@@ -32,13 +32,13 @@ object DatabaseModule {
 
     @Provides
     @Singleton
-    fun provideMapPointDao(database: FairLaunchDatabase): MapPointDao {
+    fun provideMapPointDao(database: AutoTiqDatabase): MapPointDao {
         return database.mapPointDao()
     }
 
     @Provides
     @Singleton
-    fun provideProximityStateDao(database: FairLaunchDatabase): ProximityStateDao {
+    fun provideProximityStateDao(database: AutoTiqDatabase): ProximityStateDao {
         return database.proximityStateDao()
     }
 }

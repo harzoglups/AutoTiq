@@ -66,6 +66,9 @@
     <string name="check_interval_desc">Frecuencia de verificación de tu ubicación</string>
     <string name="proximity_distance">Distancia de proximidad (metros)</string>
     <string name="proximity_distance_desc">Distancia para activar el lanzamiento de Fairtiq</string>
+    <string name="vibration_count">Número de vibraciones</string>
+    <string name="vibration_count_desc">Número de veces que vibra al entrar en una zona</string>
+    <string name="vibrations">Vibraciones</string>
     <string name="seconds">Segundos</string>
     <string name="meters">Metros</string>
     <string name="info">Info</string>

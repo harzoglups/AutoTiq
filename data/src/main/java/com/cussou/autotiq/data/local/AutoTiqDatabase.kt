@@ -14,7 +14,7 @@ import com.cussou.autotiq.data.local.entity.ProximityStateEntity
     version = 3,
     exportSchema = false
 )
-abstract class FairLaunchDatabase : RoomDatabase() {
+abstract class AutoTiqDatabase : RoomDatabase() {
     abstract fun mapPointDao(): MapPointDao
     abstract fun proximityStateDao(): ProximityStateDao
 }

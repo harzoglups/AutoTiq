@@ -75,7 +75,7 @@ fun SplashScreen(
     ) {
         Image(
             painter = painterResource(id = R.drawable.ic_launcher_foreground),
-            contentDescription = "FairLaunch Logo",
+            contentDescription = "AutoTiq Logo",
             modifier = Modifier
                 .size(200.dp)
                 .scale(scale)

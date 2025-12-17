@@ -29,7 +29,7 @@ private val LightColorScheme = lightColorScheme(
 )
 
 @Composable
-fun FairLaunchTheme(
+fun AutoTiqTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
     dynamicColor: Boolean = true,
     content: @Composable () -> Unit

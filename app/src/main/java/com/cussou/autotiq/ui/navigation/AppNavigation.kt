@@ -15,7 +15,7 @@ import com.cussou.autotiq.ui.onboarding.OnboardingScreen
 import com.cussou.autotiq.ui.settings.SettingsScreen
 import com.cussou.autotiq.ui.splash.SplashScreen
 
-private const val PREFS_NAME = "fairlaunch_prefs"
+private const val PREFS_NAME = "autotiq_prefs"
 private const val KEY_ONBOARDING_COMPLETED = "onboarding_completed"
 
 @Composable

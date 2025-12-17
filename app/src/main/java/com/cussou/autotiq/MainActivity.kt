@@ -6,7 +6,7 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.navigation.compose.rememberNavController
 import com.cussou.autotiq.ui.navigation.AppNavigation
-import com.cussou.autotiq.ui.theme.FairLaunchTheme
+import com.cussou.autotiq.ui.theme.AutoTiqTheme
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -17,7 +17,7 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
 
         setContent {
-            FairLaunchTheme {
+            AutoTiqTheme {
                 val navController = rememberNavController()
                 AppNavigation(navController = navController)
             }

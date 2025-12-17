@@ -1,8 +1,8 @@
 # Add project specific ProGuard rules here.
 
 # Keep data classes and models
--keep class com.fairlaunch.domain.model.** { *; }
--keep class com.fairlaunch.data.local.entity.** { *; }
+-keep class com.cussou.autotiq.domain.model.** { *; }
+-keep class com.cussou.autotiq.data.local.entity.** { *; }
 
 # Keep Hilt generated classes
 -keep class dagger.hilt.** { *; }

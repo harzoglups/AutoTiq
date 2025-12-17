@@ -77,7 +77,7 @@ AutoTiq est 100% gratuit, sans publicité, sans collecte de données, et open so
 
 Tuiles de carte © Contributeurs OpenStreetMap. Données disponibles sous licence Open Database License (ODbL).
 
-🔗 Plus d'informations : https://github.com/harzoglups/FairLaunch
+🔗 Plus d'informations : https://github.com/harzoglups/AutoTiq
 ```
 
 ---
@@ -159,7 +159,7 @@ AutoTiq is 100% free, ad-free, no data collection, and open source.
 
 Map tiles © OpenStreetMap contributors. Data available under the Open Database License (ODbL).
 
-🔗 More information: https://github.com/harzoglups/FairLaunch
+🔗 More information: https://github.com/harzoglups/AutoTiq
 ```
 
 ---
@@ -241,7 +241,7 @@ AutoTiq ist 100% kostenlos, werbefrei, ohne Datensammlung und Open Source.
 
 Kartenkacheln © OpenStreetMap-Mitwirkende. Daten verfügbar unter der Open Database License (ODbL).
 
-🔗 Weitere Informationen: https://github.com/harzoglups/FairLaunch
+🔗 Weitere Informationen: https://github.com/harzoglups/AutoTiq
 ```
 
 ---
@@ -323,7 +323,7 @@ AutoTiq è 100% gratuito, senza pubblicità, senza raccolta dati e open source.
 
 Tile della mappa © Contributori OpenStreetMap. Dati disponibili sotto licenza Open Database License (ODbL).
 
-🔗 Maggiori informazioni: https://github.com/harzoglups/FairLaunch
+🔗 Maggiori informazioni: https://github.com/harzoglups/AutoTiq
 ```
 
 ---
@@ -405,7 +405,7 @@ AutoTiq je 100% zdarma, bez reklam, bez sběru dat a open source.
 
 Mapové dlaždice © Přispěvatelé OpenStreetMap. Data dostupná pod licencí Open Database License (ODbL).
 
-🔗 Více informací: https://github.com/harzoglups/FairLaunch
+🔗 Více informací: https://github.com/harzoglups/AutoTiq
 ```
 
 ---
@@ -487,7 +487,7 @@ AutoTiq är 100% gratis, reklamfri, ingen datainsamling och öppen källkod.
 
 Kartplattor © OpenStreetMap-bidragsgivare. Data tillgänglig under Open Database License (ODbL).
 
-🔗 Mer information: https://github.com/harzoglups/FairLaunch
+🔗 Mer information: https://github.com/harzoglups/AutoTiq
 ```
 
 ---
@@ -569,7 +569,7 @@ AutoTiq er 100% gratis, reklamefri, ingen datainnsamling, og åpen kildekode.
 
 Kartfliser © OpenStreetMap-bidragsytere. Data tilgjengelig under Open Database License (ODbL).
 
-🔗 Mer informasjon: https://github.com/harzoglups/FairLaunch
+🔗 Mer informasjon: https://github.com/harzoglups/AutoTiq
 ```
 
 ---
