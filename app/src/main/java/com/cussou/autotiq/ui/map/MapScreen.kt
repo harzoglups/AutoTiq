@@ -615,10 +615,41 @@ private fun MapContent(
                     
                     // Center on user location only on first launch (when no saved position)
                     if (savedMapPosition == null) {
-                        locationOverlay.runOnFirstFix {
-                            post {
-                                controller.animateTo(locationOverlay.myLocation)
-                                controller.setZoom(15.0)
+                        // Try to get last known location from FusedLocationClient for instant centering
+                        try {
+                            val fusedLocationClient = com.google.android.gms.location.LocationServices.getFusedLocationProviderClient(ctx)
+                            fusedLocationClient.lastLocation.addOnSuccessListener { location ->
+                                if (location != null) {
+                                    // Use cached location immediately for fast startup
+                                    post {
+                                        controller.animateTo(GeoPoint(location.latitude, location.longitude))
+                                        controller.setZoom(15.0)
+                                    }
+                                } else {
+                                    // No cached location, wait for GPS fix (slower fallback)
+                                    locationOverlay.runOnFirstFix {
+                                        post {
+                                            controller.animateTo(locationOverlay.myLocation)
+                                            controller.setZoom(15.0)
+                                        }
+                                    }
+                                }
+                            }.addOnFailureListener {
+                                // Fallback to waiting for GPS fix
+                                locationOverlay.runOnFirstFix {
+                                    post {
+                                        controller.animateTo(locationOverlay.myLocation)
+                                        controller.setZoom(15.0)
+                                    }
+                                }
+                            }
+                        } catch (e: Exception) {
+                            // Fallback to waiting for GPS fix
+                            locationOverlay.runOnFirstFix {
+                                post {
+                                    controller.animateTo(locationOverlay.myLocation)
+                                    controller.setZoom(15.0)
+                                }
                             }
                         }
                     }
