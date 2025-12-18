@@ -1,9 +1,13 @@
 #!/bin/bash
 
 # Script to create a new release tag based on conventional commits
-# Usage: ./create-release.sh [major|minor|patch]
+# Usage: ./scripts/build/create-release.sh [major|minor|patch]
 
 set -e
+
+# Get script directory and project root
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+PROJECT_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
 
 # Get the bump type (default to minor)
 BUMP_TYPE=${1:-minor}
@@ -59,7 +63,7 @@ echo "New version: $NEW_VERSION"
 
 # Update version in build.gradle.kts
 echo "Updating version in app/build.gradle.kts..."
-./update-version.sh "$NEW_VERSION"
+"$SCRIPT_DIR/update-version.sh" "$NEW_VERSION"
 
 # Get commits since last tag for preview
 echo -e "\n📝 Commits since $LATEST_TAG:"

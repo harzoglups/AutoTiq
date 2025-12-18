@@ -5,7 +5,8 @@
 set -e  # Exit on error
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-PRIVACY_POLICY_FILE="$SCRIPT_DIR/docs/privacy-policy.html"
+PROJECT_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
+PRIVACY_POLICY_FILE="$PROJECT_ROOT/docs/privacy-policy.html"
 VPS_USER="sylvain"
 VPS_HOST="cussou.com"
 VPS_PATH="~/services/privacy-policies/www/autotiq/"
@@ -20,7 +21,7 @@ if [ ! -f "$PRIVACY_POLICY_FILE" ]; then
 fi
 
 # Extract version from build.gradle.kts
-VERSION=$(grep "versionName" app/build.gradle.kts | sed 's/.*versionName = "\(.*\)"/\1/')
+VERSION=$(grep "versionName" "$PROJECT_ROOT/app/build.gradle.kts" | sed 's/.*versionName = "\(.*\)"/\1/')
 if [ -z "$VERSION" ]; then
     echo "⚠️  Warning: Could not extract version from build.gradle.kts"
     VERSION="unknown"

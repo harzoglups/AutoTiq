@@ -117,42 +117,56 @@ Clean Architecture with 3 layers: **domain** (pure Kotlin), **data** (Android), 
 - Check devices: `~/Library/Android/sdk/platform-tools/adb devices`
 - Launch app: `~/Library/Android/sdk/platform-tools/adb shell am start -n com.autotiq/.MainActivity`
 
+## Scripts Organization
+
+All automation scripts are organized in the `scripts/` directory by usage category.
+See `scripts/README.md` for detailed documentation.
+
+**Directory Structure:**
+```
+scripts/
+├── build/          # Build and release scripts
+├── deploy/         # Deployment scripts
+├── dev/            # Development and debugging tools
+└── docs/           # Documentation generation
+```
+
+**Common Scripts:**
+- Build release: `./scripts/buil./scripts/build/build-play-store.sh`
+- Create release: `./scripts/buil./scripts/build/create-release.sh [patch|minor|major]`
+- Deploy privacy policy: `./scripts/deplo./scripts/deploy/deploy-privacy-policy.sh`
+- Monitor memory: `./scripts/de./scripts/dev/monitor-memory.sh`
+- Generate diagrams: `./scripts/doc./scripts/docs/generate-diagrams.sh`
+
+**Note**: All scripts must be run from the project root directory.
+
 ## Privacy Policy Deployment
 **IMPORTANT**: The privacy policy must be updated and deployed for each new release.
 
-**Location**:
-- Source file: `docs/privacy-policy.html`
-- Deployed URL: `https://privacy.cussou.com/autotiq/`
-- VPS path: `sylvain@cussou.com:~/services/privacy-policies/www/autotiq/index.html`
+**Quick Deployment:**
+```bash
+./scripts/deplo./scripts/deploy/deploy-privacy-policy.sh
+```
 
-**Deployment Process**:
-1. Update version in `app/build.gradle.kts` (versionName and versionCode)
-2. Generate new AAB/APK for release
-3. Run deployment script: `./deploy-privacy-policy.sh`
-   - Script automatically extracts version from build.gradle.kts
-   - Updates date to current date
-   - Updates version number in HTML
-   - Deploys to VPS via scp
-   - Verifies deployment with curl test
+**What it does:**
+- Extracts version from `app/build.gradle.kts`
+- Updates date to current date in HTML
+- Updates version number in HTML
+- Deploys to VPS via scp
+- Verifies HTTPS access
 
 **Manual Deployment** (if script fails):
 ```bash
-# Update date and version in docs/privacy-policy.html manually
-# Then deploy:
 scp docs/privacy-policy.html sylvain@cussou.com:~/services/privacy-policies/www/autotiq/index.html
-
-# Verify:
 curl -I https://privacy.cussou.com/autotiq/
 ```
 
-**Infrastructure**:
-- VPS runs Docker container `privacy-cussou` (nginx:alpine)
-- Container mounts `~/services/privacy-policies/www/` as webroot
-- nginx-proxy handles HTTPS/SSL (Let's Encrypt automatic)
-- No container restart needed (volume mounted read-only)
+**Location:**
+- Source: `docs/privacy-policy.html`
+- Live URL: `https://privacy.cussou.com/autotiq/`
+- VPS: Docker container `privacy-cussou` (nginx:alpine)
 
-**When to Deploy**:
+**When to Deploy:**
 - ✅ Before submitting new version to Play Console
 - ✅ When privacy policy content changes
-- ✅ When app version changes (to keep version number in sync)
-- ❌ Not needed for minor code changes that don't affect privacy/permissions
+- ✅ When app version changes

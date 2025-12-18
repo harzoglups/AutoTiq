@@ -236,7 +236,7 @@ AutoTiq follows Clean Architecture principles with 3 distinct layers:
 
 </details>
 
-> 💡 **Note**: PlantUML source files are available in the [`docs/`](docs/) folder. Use `./generate-diagrams.sh` to regenerate PNG images after modifying `.puml` files.
+> 💡 **Note**: PlantUML source files are available in the [`docs/`](docs/) folder. Use `./scripts/docs/generate-diagrams.sh` to regenerate PNG images after modifying `.puml` files.
 
 ### Domain Layer (Pure Kotlin)
 - `model/` - Entities: MapPoint, AppSettings, ProximityState

@@ -52,13 +52,13 @@ The script automates the entire AAB build process:
 
 ```bash
 # Standard build (auto-detects version from git)
-./build-play-store.sh
+./scripts/build/build-play-store.sh
 
 # Dry-run mode (shows what would happen without building)
-./build-play-store.sh --dry-run
+./scripts/build/build-play-store.sh --dry-run
 
 # Force specific version (overrides auto-detection)
-./build-play-store.sh --version 1.0.0
+./scripts/build/build-play-store.sh --version 1.0.0
 ```
 
 ---
@@ -184,7 +184,7 @@ When ready to publish:
 
 ```bash
 # Build AAB (auto-updates version, commits changes)
-./build-play-store.sh
+./scripts/build/build-play-store.sh
 
 # Review changes
 git log -1
@@ -220,7 +220,7 @@ This triggers GitHub workflow to create a GitHub Release with APK.
 ## Version Coherence Strategy
 
 ### Play Store (AAB)
-- Built locally with `./build-play-store.sh`
+- Built locally with `./scripts/build/build-play-store.sh`
 - Version calculated from git commits
 - Signed with production keystore
 - Uploaded manually to Play Console

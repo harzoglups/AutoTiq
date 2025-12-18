@@ -10,19 +10,19 @@ This directory contains tools to monitor and analyze memory usage of the AutoTiq
 
 **Usage:**
 ```bash
-./monitor-memory.sh [interval_seconds]
+./scripts/dev/monitor-memory.sh [interval_seconds]
 ```
 
 **Examples:**
 ```bash
 # Monitor every 5 seconds (default)
-./monitor-memory.sh
+./scripts/dev/monitor-memory.sh
 
 # Monitor every 10 seconds
-./monitor-memory.sh 10
+./scripts/dev/monitor-memory.sh 10
 
 # Monitor every 2 seconds (intensive)
-./monitor-memory.sh 2
+./scripts/dev/monitor-memory.sh 2
 ```
 
 **Output:**
@@ -48,7 +48,7 @@ This directory contains tools to monitor and analyze memory usage of the AutoTiq
 
 **Usage:**
 ```bash
-./memory-snapshot.sh
+./scripts/dev/memory-snapshot.sh
 ```
 
 **Output:**
@@ -73,7 +73,7 @@ This directory contains tools to monitor and analyze memory usage of the AutoTiq
 
 **Usage:**
 ```bash
-./test-memory-optimizations.sh
+./scripts/dev/test-memory-optimizations.sh
 ```
 
 **Tests performed:**
@@ -141,7 +141,7 @@ If you experience an ANR (Application Not Responding):
 
 2. **Take a memory snapshot immediately:**
    ```bash
-   ./memory-snapshot.sh
+   ./scripts/dev/memory-snapshot.sh
    ```
 
 3. **Check for memory pressure:**
@@ -205,14 +205,14 @@ If you experience an ANR (Application Not Responding):
 
 1. **Run overnight test:**
    ```bash
-   nohup ./monitor-memory.sh 60 > monitor.log 2>&1 &
+   nohup ./scripts/dev/monitor-memory.sh 60 > monitor.log 2>&1 &
    ```
 
 2. **Compare snapshots:**
    ```bash
-   ./memory-snapshot.sh  # Before test
+   ./scripts/dev/memory-snapshot.sh  # Before test
    # ... use the app for 2 hours ...
-   ./memory-snapshot.sh  # After test
+   ./scripts/dev/memory-snapshot.sh  # After test
    # Compare the two meminfo files
    ```
 
@@ -225,7 +225,7 @@ If you experience an ANR (Application Not Responding):
 4. **Monitor specific operations:**
    ```bash
    # Start monitoring
-   ./monitor-memory.sh 5
+   ./scripts/dev/monitor-memory.sh 5
    # Then perform specific actions:
    # - Add 10 markers
    # - Navigate map for 5 minutes

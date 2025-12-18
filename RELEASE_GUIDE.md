@@ -55,7 +55,7 @@ The release system now **automatically updates** the `versionName` and `versionC
 
 2. **Create the release**:
    ```bash
-   ./create-release.sh minor
+   ./scripts/build/create-release.sh minor
    ```
    
    This will:
@@ -118,7 +118,7 @@ git merge dev
 git push origin main
 
 # Create release (will update version, commit, and create tag)
-./create-release.sh minor
+./scripts/build/create-release.sh minor
 git push origin main
 git push origin v1.0.0
 ```
