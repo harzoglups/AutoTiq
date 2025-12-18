@@ -69,6 +69,7 @@ fun SettingsScreen(
 ) {
     val settings by viewModel.settings.collectAsStateWithLifecycle()
     val permissionStatus by viewModel.permissionStatus.collectAsStateWithLifecycle()
+    val importExportEvent by viewModel.importExportEvent.collectAsStateWithLifecycle()
     val context = LocalContext.current
     
     var showBackgroundLocationDialog by remember { mutableStateOf(false) }
@@ -78,6 +79,20 @@ fun SettingsScreen(
         ActivityResultContracts.RequestPermission()
     ) { isGranted ->
         viewModel.onBackgroundLocationPermissionResult(isGranted)
+    }
+    
+    // Launcher for exporting zones
+    val exportLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.CreateDocument("application/json")
+    ) { uri ->
+        uri?.let { viewModel.performExport(it) }
+    }
+    
+    // Launcher for importing zones
+    val importLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.OpenDocument()
+    ) { uri ->
+        uri?.let { viewModel.performImport(it) }
     }
 
     Scaffold(
@@ -423,6 +438,64 @@ fun SettingsScreen(
             Spacer(modifier = Modifier.height(24.dp))
 
             Text(
+                text = stringResource(R.string.backup_restore),
+                style = MaterialTheme.typography.headlineSmall,
+                modifier = Modifier.padding(bottom = 16.dp)
+            )
+
+            SettingCard {
+                Column {
+                    Text(
+                        text = stringResource(R.string.export_zones),
+                        style = MaterialTheme.typography.titleMedium,
+                        modifier = Modifier.padding(bottom = 8.dp)
+                    )
+                    Text(
+                        text = "Export all zones to a JSON file for backup",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        modifier = Modifier.padding(bottom = 12.dp)
+                    )
+                    OutlinedButton(
+                        onClick = { 
+                            exportLauncher.launch("autotiq_zones_${System.currentTimeMillis()}.json")
+                        },
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Text(stringResource(R.string.export_zones))
+                    }
+                }
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            SettingCard {
+                Column {
+                    Text(
+                        text = stringResource(R.string.import_zones),
+                        style = MaterialTheme.typography.titleMedium,
+                        modifier = Modifier.padding(bottom = 8.dp)
+                    )
+                    Text(
+                        text = "Import zones from a JSON file",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        modifier = Modifier.padding(bottom = 12.dp)
+                    )
+                    OutlinedButton(
+                        onClick = { 
+                            importLauncher.launch(arrayOf("application/json"))
+                        },
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Text(stringResource(R.string.import_zones))
+                    }
+                }
+            }
+
+            Spacer(modifier = Modifier.height(24.dp))
+
+            Text(
                 text = stringResource(R.string.info),
                 style = MaterialTheme.typography.headlineSmall,
                 modifier = Modifier.padding(bottom = 16.dp)
@@ -479,6 +552,29 @@ fun SettingsScreen(
                         }
                     )
                 }
+            }
+        }
+    }
+    
+    // Handle import/export events
+    importExportEvent?.let { event ->
+        when (event) {
+            is ImportExportEvent.ShowToast -> {
+                // Show toast message
+                android.widget.Toast.makeText(
+                    context,
+                    if (event.args.isEmpty()) {
+                        stringResource(event.messageResId)
+                    } else {
+                        stringResource(event.messageResId, *event.args)
+                    },
+                    android.widget.Toast.LENGTH_LONG
+                ).show()
+                viewModel.clearEvent()
+            }
+            is ImportExportEvent.ShowImportDialog -> {
+                // Not implemented yet - will be added in next iteration
+                viewModel.clearEvent()
             }
         }
     }

@@ -15,12 +15,12 @@ This document lists potential improvements and new features to consider before m
 ## 🎨 Ergonomics / UX
 
 ### 1. Visual Feedback for Long Press
-**Status**: Not implemented  
-**Description**: Currently, there's no visual indication that a long press is being detected.  
-**Suggestion**: 
-- Add subtle animation (scale up) when long press starts
+**Status**: ✅ Implemented (v1.0.7)  
+**Description**: Visual and haptic feedback when long press is detected.  
+**Implementation**: 
+- Ripple animation with expanding circle at touch point
 - Short vibration feedback at beginning of long press
-- Visual countdown indicator showing time until action triggers
+- Confirmation dialog now required before creating marker
 
 **Priority**: Medium  
 **Effort**: Low
@@ -41,12 +41,14 @@ This document lists potential improvements and new features to consider before m
 ---
 
 ### 3. Empty State Message
-**Status**: Not implemented  
-**Description**: When map has no points, users don't know how to get started.  
-**Suggestion**:
-- Show centered overlay message: "Long press on map to add your first point"
-- Include small illustration or icon
-- Dismiss after first point is added
+**Status**: ✅ Implemented (v1.0.7)  
+**Description**: Helpful message displayed when no zones exist.  
+**Implementation**:
+- Card shown at bottom of map: "No zones yet"
+- Instructions: "Long press on the map to add your first zone, or use the search"
+- Orange title for visibility
+- Automatically hidden when zones exist or search result is shown
+- Implemented in all 9 supported languages
 
 **Priority**: High  
 **Effort**: Low
@@ -54,12 +56,15 @@ This document lists potential improvements and new features to consider before m
 ---
 
 ### 4. Search Result Preview
-**Status**: Basic marker shown  
-**Description**: Search results show temporary red marker but no name label.  
-**Suggestion**:
-- Display location name on the search marker
-- Show info card automatically when search result is selected
-- Add "Create point here" button in search result info card
+**Status**: ✅ Implemented (v1.0.7)  
+**Description**: Search results show enhanced preview with info card.  
+**Implementation**:
+- Large red pin marker for search results (more visible than zone markers)
+- Info card automatically shown with location name
+- "Create zone here" button in info card
+- Red marker persists when closing info card (allows exploration)
+- Red marker removed when creating zone or clicking on map
+- Implemented in all 9 supported languages
 
 **Priority**: Low  
 **Effort**: Medium
@@ -68,22 +73,25 @@ This document lists potential improvements and new features to consider before m
 
 ## 🚀 Features
 
-### 5. Export/Import Points
-**Status**: Not implemented  
-**Description**: No way to backup or transfer points between devices.  
-**Suggestion**:
-- Export all points to JSON/CSV file
-- Import points from file
-- Share configuration with other users
-- Could use Android's sharing system or cloud backup
+### 5. Export/Import Zones
+**Status**: ✅ Implemented (v1.0.8)  
+**Description**: Backup and restore zones for device migration or backup.  
+**Implementation**:
+- "Backup & Restore" section in Settings screen
+- Export all zones to JSON file via Storage Access Framework
+- Import zones from JSON file (always merges with existing zones)
+- JSON format: `{version: 1, exportDate: ISO-8601, zones: [{name, latitude, longitude, startHour, startMinute, endHour, endMinute}]}`
+- Full validation of imported data (coordinates range, time values)
+- Success/error messages in all 9 supported languages
+- **Note**: No cloud sync or user-to-user sharing (local backup only)
 
 **Priority**: Medium  
 **Effort**: Medium
 
-**Implementation Notes**:
-- Add "Export points" and "Import points" buttons in Settings
-- Use Android Storage Access Framework for file selection
-- JSON format: `[{id, name, lat, lon, radius, startHour, startMinute, endHour, endMinute}]`
+**Known Limitations**:
+- Always merges imported zones with existing ones (no "replace all" option yet)
+- No dialog to choose between merge/replace strategies
+- Can be added later if needed
 
 ---
 
@@ -355,15 +363,17 @@ fun isFairtiqInstalled(context: Context): Boolean {
 ## 🌍 Localization
 
 ### 21. Additional Languages
-**Status**: EN, FR, DE supported  
-**Description**: Only 3 languages currently supported.  
-**Suggestion**:
-- Add IT (Italian) - Fairtiq operates in Italy
-- Add PT (Portuguese)
-- Add ES (Spanish)
+**Status**: ✅ Implemented (v1.0.7)  
+**Description**: Extended language support for broader user base.  
+**Implementation**:
+- 9 languages now supported: EN, FR, DE, CS, ES, IT, NB, PT, SV
+- All UI strings translated including recent features
+- Consistent "zone" terminology across all languages
+- Italian, Spanish, Portuguese added (Fairtiq coverage)
+- Czech, Norwegian, Swedish added (Nordic coverage)
 
 **Priority**: Low  
-**Effort**: Low (strings already extracted)
+**Effort**: Low
 
 ---
 
