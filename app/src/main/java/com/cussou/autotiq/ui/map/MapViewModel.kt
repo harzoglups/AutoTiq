@@ -73,6 +73,44 @@ class MapViewModel @Inject constructor(
         }
     }
     
+    fun addPointWithDetails(
+        latitude: Double,
+        longitude: Double,
+        name: String,
+        startHour: Int,
+        startMinute: Int,
+        endHour: Int,
+        endMinute: Int
+    ) {
+        viewModelScope.launch {
+            when (val result = addMapPointUseCase(latitude, longitude)) {
+                is Result.Success -> {
+                    // Point added, now update it with the details
+                    val pointId = result.data
+                    val currentState = _uiState.value
+                    if (currentState is MapUiState.Success) {
+                        val newPoint = currentState.points.find { it.id == pointId }
+                        newPoint?.let { point ->
+                            updateMapPointUseCase(
+                                point.copy(
+                                    name = name,
+                                    startHour = startHour,
+                                    startMinute = startMinute,
+                                    endHour = endHour,
+                                    endMinute = endMinute
+                                )
+                            )
+                        }
+                    }
+                }
+                is Result.Error -> {
+                    // Handle error if needed
+                }
+                Result.Loading -> {}
+            }
+        }
+    }
+    
     private val _lastAddedPointId = MutableStateFlow<Long?>(null)
     val lastAddedPointId: StateFlow<Long?> = _lastAddedPointId.asStateFlow()
     

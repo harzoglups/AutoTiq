@@ -14,9 +14,11 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
@@ -88,6 +90,7 @@ fun MapScreen(
     var editingPoint by remember { mutableStateOf<MapPoint?>(null) }
     var selectedPoint by remember { mutableStateOf<MapPoint?>(null) } // For showing info bubble
     var pointToDelete by remember { mutableStateOf<MapPoint?>(null) } // For delete confirmation dialog
+    var pendingNewPoint by remember { mutableStateOf<Pair<Double, Double>?>(null) } // For new point creation (lat, lon)
     
     // Force dark status bar icons (black) on map screen
     SideEffect {
@@ -96,17 +99,7 @@ fun MapScreen(
         WindowCompat.getInsetsController(window, view).isAppearanceLightNavigationBars = true
     }
     
-    // When a new point is added, automatically open edit dialog
-    androidx.compose.runtime.LaunchedEffect(lastAddedPointId) {
-        if (lastAddedPointId != null && uiState is MapUiState.Success) {
-            val newPoint = (uiState as MapUiState.Success).points.find { it.id == lastAddedPointId }
-            if (newPoint != null) {
-                editingPoint = newPoint
-                selectedPoint = null // Close info card if open
-                viewModel.clearLastAddedPointId()
-            }
-        }
-    }
+
     
     var hasLocationPermission by remember {
         mutableStateOf(
@@ -157,7 +150,10 @@ fun MapScreen(
                             )
                         )
                     },
-                    onAddPoint = { lat, lon -> viewModel.addPoint(lat, lon) },
+                    onAddPoint = { lat, lon -> 
+                        // Store coordinates and show dialog instead of creating immediately
+                        pendingNewPoint = Pair(lat, lon)
+                    },
                     onRequestDeletePoint = { point -> 
                         // Show confirmation dialog
                         pointToDelete = point
@@ -463,6 +459,23 @@ fun MapScreen(
                 pointToDelete = null
             },
             onDismiss = { pointToDelete = null }
+        )
+    }
+    
+    // Show dialog for creating a new point
+    pendingNewPoint?.let { (lat, lon) ->
+        NewMarkerDialog(
+            latitude = lat,
+            longitude = lon,
+            onDismiss = { 
+                // User cancelled - don't create the point
+                pendingNewPoint = null
+            },
+            onSave = { name, startHour, startMinute, endHour, endMinute ->
+                // Create the point with user's values
+                viewModel.addPointWithDetails(lat, lon, name, startHour, startMinute, endHour, endMinute)
+                pendingNewPoint = null
+            }
         )
     }
 }
@@ -1131,5 +1144,136 @@ private class LongPressOverlay(
         strokePaint.alpha = outerAlpha
         canvas.drawCircle(point.x.toFloat(), point.y.toFloat(), outerRadius + 20f, strokePaint)
         strokePaint.alpha = 255 // Reset alpha
+    }
+}
+
+@OptIn(androidx.compose.material3.ExperimentalMaterial3Api::class)
+@Composable
+private fun NewMarkerDialog(
+    latitude: Double,
+    longitude: Double,
+    onDismiss: () -> Unit,
+    onSave: (name: String, startHour: Int, startMinute: Int, endHour: Int, endMinute: Int) -> Unit
+) {
+    var name by remember { mutableStateOf("") }
+    var showStartTimePicker by remember { mutableStateOf(false) }
+    var showEndTimePicker by remember { mutableStateOf(false) }
+    
+    var startHour by remember { mutableStateOf(0) }
+    var startMinute by remember { mutableStateOf(0) }
+    var endHour by remember { mutableStateOf(23) }
+    var endMinute by remember { mutableStateOf(59) }
+    
+    androidx.compose.material3.AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text(stringResource(R.string.edit_marker)) },
+        text = {
+            Column(modifier = Modifier.fillMaxWidth()) {
+                androidx.compose.material3.OutlinedTextField(
+                    value = name,
+                    onValueChange = { name = it },
+                    label = { Text(stringResource(R.string.marker_name)) },
+                    modifier = Modifier.fillMaxWidth(),
+                    singleLine = true
+                )
+                
+                androidx.compose.foundation.layout.Spacer(modifier = Modifier.height(16.dp))
+                
+                Text(
+                    stringResource(R.string.active_time_window),
+                    style = MaterialTheme.typography.labelLarge,
+                    modifier = Modifier.padding(bottom = 8.dp)
+                )
+                
+                // Start time
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        stringResource(R.string.start_time), 
+                        modifier = Modifier.width(80.dp)
+                    )
+                    androidx.compose.material3.OutlinedButton(
+                        onClick = { showStartTimePicker = true },
+                        modifier = Modifier.weight(1f)
+                    ) {
+                        Text(String.format("%02d:%02d", startHour, startMinute))
+                    }
+                }
+                
+                androidx.compose.foundation.layout.Spacer(modifier = Modifier.height(8.dp))
+                
+                // End time
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        stringResource(R.string.end_time), 
+                        modifier = Modifier.width(80.dp)
+                    )
+                    androidx.compose.material3.OutlinedButton(
+                        onClick = { showEndTimePicker = true },
+                        modifier = Modifier.weight(1f)
+                    ) {
+                        Text(String.format("%02d:%02d", endHour, endMinute))
+                    }
+                }
+                
+                androidx.compose.foundation.layout.Spacer(modifier = Modifier.height(8.dp))
+                
+                Text(
+                    stringResource(R.string.time_window_info),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.padding(top = 8.dp)
+                )
+            }
+        },
+        confirmButton = {
+            androidx.compose.material3.TextButton(
+                onClick = {
+                    onSave(name.trim(), startHour, startMinute, endHour, endMinute)
+                }
+            ) {
+                Text(stringResource(R.string.save))
+            }
+        },
+        dismissButton = {
+            androidx.compose.material3.TextButton(onClick = onDismiss) {
+                Text(stringResource(R.string.cancel))
+            }
+        }
+    )
+    
+    // Start time picker dialog
+    if (showStartTimePicker) {
+        TimePickerDialog(
+            title = stringResource(R.string.start_time),
+            onDismiss = { showStartTimePicker = false },
+            onConfirm = { hour, minute ->
+                startHour = hour
+                startMinute = minute
+                showStartTimePicker = false
+            },
+            initialHour = startHour,
+            initialMinute = startMinute
+        )
+    }
+    
+    // End time picker dialog
+    if (showEndTimePicker) {
+        TimePickerDialog(
+            title = stringResource(R.string.end_time),
+            onDismiss = { showEndTimePicker = false },
+            onConfirm = { hour, minute ->
+                endHour = hour
+                endMinute = minute
+                showEndTimePicker = false
+            },
+            initialHour = endHour,
+            initialMinute = endMinute
+        )
     }
 }
