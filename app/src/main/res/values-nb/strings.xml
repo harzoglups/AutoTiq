@@ -94,6 +94,9 @@
     <string name="battery_mah_per_day">~%1$s mAh per dag (%2$d aktive dager)</string>
     <string name="battery_percent_per_day">~%1$s%% batteri per dag</string>
     <string name="battery_note">Merk: Faktisk forbruk kan variere basert på enhet, GPS-forhold og tidsvinduer konfigurert for hver sone.</string>
+    <string name="testing">Testing</string>
+    <string name="test_mode">Testmodus</string>
+    <string name="test_mode_desc">Utløs alltid varsler i en sone (ignorer forrige tilstand)</string>
     <string name="backup_restore">Sikkerhetskopi og gjenoppretting</string>
     <string name="export_zones">Eksporter soner</string>
     <string name="import_zones">Importer soner</string>
@@ -120,6 +123,7 @@
     <string name="notification_channel_desc">Varsler når du går inn i en transportsone</string>
     <string name="notification_transport_zone_detected">Transportsone oppdaget</string>
     <string name="notification_launching_fairtiq">Starter Fairtiq…</string>
+    <string name="notification_tap_to_launch_fairtiq">Trykk for å starte Fairtiq</string>
     
     <!-- Onboarding -->
     <string name="welcome_to_autotiq">Velkommen til AutoTiq!</string>

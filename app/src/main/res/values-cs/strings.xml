@@ -94,6 +94,9 @@
     <string name="battery_mah_per_day">~%1$s mAh denně (%2$d aktivních dnů)</string>
     <string name="battery_percent_per_day">~%1$s%% baterie denně</string>
     <string name="battery_note">Poznámka: Skutečná spotřeba se může lišit v závislosti na zařízení, podmínkách GPS a časových oknech nakonfigurovaných pro každou zónu.</string>
+    <string name="testing">Testování</string>
+    <string name="test_mode">Testovací režim</string>
+    <string name="test_mode_desc">Vždy spustit oznámení v zóně (ignorovat předchozí stav)</string>
     <string name="backup_restore">Zálohování &amp; Obnovení</string>
     <string name="export_zones">Exportovat zóny</string>
     <string name="import_zones">Importovat zóny</string>
@@ -120,6 +123,7 @@
     <string name="notification_channel_desc">Oznámení při vstupu do dopravní zóny</string>
     <string name="notification_transport_zone_detected">Detekována dopravní zóna</string>
     <string name="notification_launching_fairtiq">Spouštění Fairtiq…</string>
+    <string name="notification_tap_to_launch_fairtiq">Klepnutím spusťte Fairtiq</string>
     
     <!-- Onboarding -->
     <string name="welcome_to_autotiq">Vítejte v AutoTiq!</string>

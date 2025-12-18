@@ -14,4 +14,5 @@ interface SettingsRepository {
     suspend fun updateActiveWeekdays(weekdays: Set<Int>)
     suspend fun updateVibrationCount(count: Int)
     suspend fun updateThemeMode(themeMode: ThemeMode)
+    suspend fun updateTestModeEnabled(enabled: Boolean)
 }

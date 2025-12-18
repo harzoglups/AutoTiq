@@ -94,6 +94,9 @@
     <string name="battery_mah_per_day">~%1$s mAh per dag (%2$d aktiva dagar)</string>
     <string name="battery_percent_per_day">~%1$s%% batteri per dag</string>
     <string name="battery_note">Obs: Faktisk förbrukning kan variera beroende på enhet, GPS-förhållanden och tidsfönster konfigurerade för varje zon.</string>
+    <string name="testing">Testning</string>
+    <string name="test_mode">Testläge</string>
+    <string name="test_mode_desc">Trigga alltid aviseringar i en zon (ignorera tidigare tillstånd)</string>
     <string name="backup_restore">Säkerhetskopiering &amp; återställning</string>
     <string name="export_zones">Exportera zoner</string>
     <string name="import_zones">Importera zoner</string>
@@ -120,6 +123,7 @@
     <string name="notification_channel_desc">Meddelanden när du kommer in i en transportzon</string>
     <string name="notification_transport_zone_detected">Transportzon detekterad</string>
     <string name="notification_launching_fairtiq">Startar Fairtiq…</string>
+    <string name="notification_tap_to_launch_fairtiq">Tryck för att starta Fairtiq</string>
     
     <!-- Onboarding -->
     <string name="welcome_to_autotiq">Välkommen till AutoTiq!</string>

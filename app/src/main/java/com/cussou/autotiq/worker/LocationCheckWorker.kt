@@ -134,12 +134,18 @@ class LocationCheckWorker @AssistedInject constructor(
             )
             
             // Log detailed information about all points
-            Log.d(TAG, "Proximity check for ${checkResult.allPointsDetails.size} points (threshold: ${settings.proximityDistanceMeters}m):")
+            Log.d(TAG, "Proximity check for ${checkResult.allPointsDetails.size} points (threshold: ${settings.proximityDistanceMeters}m, testMode: ${settings.testModeEnabled}):")
             checkResult.allPointsDetails.forEach { detail ->
                 Log.d(TAG, "  '${detail.point.name}': distance=${detail.distance.toInt()}m, isInside=${detail.isInside}, wasInside=${detail.wasInside}, triggered=${detail.triggered}")
             }
             
-            val pointsToTrigger = checkResult.pointsToTrigger
+            // In test mode, trigger for ALL points currently inside (ignore wasInside state)
+            val pointsToTrigger = if (settings.testModeEnabled) {
+                Log.d(TAG, "TEST MODE: Triggering for all points currently inside, ignoring previous state")
+                checkResult.allPointsDetails.filter { it.isInside }.map { it.point }
+            } else {
+                checkResult.pointsToTrigger
+            }
 
             if (pointsToTrigger.isNotEmpty()) {
                 // Filter points that are within their time window (currentHour and currentMinute already declared above)
@@ -148,7 +154,8 @@ class LocationCheckWorker @AssistedInject constructor(
                 }
                 
                 if (activePoints.isNotEmpty()) {
-                    Log.d(TAG, "Entered proximity zone for ${activePoints.size} point(s) within time window (current time: $currentHour:${currentMinute.toString().padStart(2, '0')})")
+                    val modeLabel = if (settings.testModeEnabled) "[TEST MODE] " else ""
+                    Log.d(TAG, "${modeLabel}Entered proximity zone for ${activePoints.size} point(s) within time window (current time: $currentHour:${currentMinute.toString().padStart(2, '0')})")
                     activePoints.forEach { point ->
                         Log.d(TAG, "  Point '${point.name}' (${point.startHour}:${point.startMinute.toString().padStart(2, '0')}-${point.endHour}:${point.endMinute.toString().padStart(2, '0')})")
                     }
@@ -261,11 +268,30 @@ class LocationCheckWorker @AssistedInject constructor(
             currentTimeInMinutes >= startTimeInMinutes || currentTimeInMinutes <= endTimeInMinutes
         }
     }
+    
+    private fun isAppInForeground(): Boolean {
+        return try {
+            val activityManager = context.getSystemService(Context.ACTIVITY_SERVICE) as android.app.ActivityManager
+            val runningProcesses = activityManager.runningAppProcesses ?: return false
+            
+            runningProcesses.any { processInfo ->
+                processInfo.processName == context.packageName && 
+                processInfo.importance == android.app.ActivityManager.RunningAppProcessInfo.IMPORTANCE_FOREGROUND
+            }
+        } catch (e: Exception) {
+            Log.e(TAG, "Error checking if app is in foreground", e)
+            false
+        }
+    }
 
     private fun launchFairtiqAndVibrate(vibrationCount: Int) {
         try {
             // Vibrate directly FIRST (before notification to ensure it works)
             vibratePhone(vibrationCount)
+            
+            // Check if our app is in foreground
+            val isAppInForeground = isAppInForeground()
+            Log.d(TAG, "App in foreground: $isAppInForeground")
             
             // Create notification channel
             createNotificationChannel()
@@ -279,6 +305,16 @@ class LocationCheckWorker @AssistedInject constructor(
             
             fairtiqIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP)
             
+            // If app is in foreground, try direct launch (will work!)
+            if (isAppInForeground) {
+                try {
+                    context.startActivity(fairtiqIntent)
+                    Log.d(TAG, "Direct Fairtiq launch attempted (app was in foreground)")
+                } catch (e: Exception) {
+                    Log.e(TAG, "Direct launch failed even though app in foreground", e)
+                }
+            }
+            
             // Create PendingIntent for full-screen intent
             val pendingIntent = PendingIntent.getActivity(
                 context,
@@ -287,25 +323,42 @@ class LocationCheckWorker @AssistedInject constructor(
                 PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
             )
             
-            // Build notification with full-screen intent (no vibration here, done separately)
             val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-            val notification = NotificationCompat.Builder(context, NOTIFICATION_CHANNEL_ID)
+            
+            // Check if we have permission to use full-screen intents (Android 14+)
+            val canUseFullScreenIntent = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+                notificationManager.canUseFullScreenIntent()
+            } else {
+                true // Automatically granted on Android 13 and below
+            }
+            
+            Log.d(TAG, "Full-screen intent permission: $canUseFullScreenIntent")
+            
+            // Build notification with full-screen intent (no vibration here, done separately)
+            val notificationBuilder = NotificationCompat.Builder(context, NOTIFICATION_CHANNEL_ID)
                 .setSmallIcon(android.R.drawable.ic_dialog_info) // Use system icon for now
                 .setContentTitle(context.getString(R.string.notification_transport_zone_detected))
-                .setContentText(context.getString(R.string.notification_launching_fairtiq))
+                .setContentText(context.getString(R.string.notification_tap_to_launch_fairtiq))
                 .setPriority(NotificationCompat.PRIORITY_MAX)
                 .setCategory(NotificationCompat.CATEGORY_ALARM)
                 .setAutoCancel(true)
                 .setContentIntent(pendingIntent)
-                .setFullScreenIntent(pendingIntent, true) // This launches Fairtiq even with screen off
-                .build()
+                // Make notification "heads-up" style (pops down from top even when screen is on)
+                .setDefaults(NotificationCompat.DEFAULT_SOUND)
+                .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
+                .setOngoing(false) // Allow user to dismiss
             
+            // Only use full-screen intent if we have permission
+            if (canUseFullScreenIntent) {
+                notificationBuilder.setFullScreenIntent(pendingIntent, true)
+                Log.d(TAG, "Full-screen intent added to notification (will auto-launch Fairtiq when screen is locked)")
+            } else {
+                Log.w(TAG, "Cannot use full-screen intent, user needs to grant permission in system settings")
+            }
+            
+            val notification = notificationBuilder.build()
             notificationManager.notify(NOTIFICATION_ID, notification)
-            Log.d(TAG, "Notification sent with full-screen intent")
-            
-            // Also try direct launch as fallback (works if screen is on)
-            context.startActivity(fairtiqIntent)
-            Log.d(TAG, "Direct launch attempted")
+            Log.d(TAG, "Notification sent (user must tap it to launch Fairtiq when screen is unlocked)")
         } catch (e: Exception) {
             Log.e(TAG, "Error launching Fairtiq or vibrating", e)
         }

@@ -30,6 +30,7 @@ class SettingsRepositoryImpl @Inject constructor(
         val ACTIVE_WEEKDAYS = stringPreferencesKey("active_weekdays")
         val VIBRATION_COUNT = intPreferencesKey("vibration_count")
         val THEME_MODE = stringPreferencesKey("theme_mode")
+        val TEST_MODE_ENABLED = booleanPreferencesKey("test_mode_enabled")
     }
 
     override fun getSettings(): Flow<AppSettings> {
@@ -62,7 +63,8 @@ class SettingsRepositoryImpl @Inject constructor(
                 mapLayerType = layerType,
                 activeWeekdays = activeWeekdays,
                 vibrationCount = preferences[PreferencesKeys.VIBRATION_COUNT] ?: 3,
-                themeMode = themeMode
+                themeMode = themeMode,
+                testModeEnabled = preferences[PreferencesKeys.TEST_MODE_ENABLED] ?: false
             )
         }
     }
@@ -106,6 +108,12 @@ class SettingsRepositoryImpl @Inject constructor(
     override suspend fun updateThemeMode(themeMode: ThemeMode) {
         context.dataStore.edit { preferences ->
             preferences[PreferencesKeys.THEME_MODE] = themeMode.name
+        }
+    }
+    
+    override suspend fun updateTestModeEnabled(enabled: Boolean) {
+        context.dataStore.edit { preferences ->
+            preferences[PreferencesKeys.TEST_MODE_ENABLED] = enabled
         }
     }
 }

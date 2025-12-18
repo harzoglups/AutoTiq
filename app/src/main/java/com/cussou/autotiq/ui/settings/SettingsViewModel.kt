@@ -188,6 +188,12 @@ class SettingsViewModel @Inject constructor(
         }
     }
     
+    fun updateTestMode(enabled: Boolean) {
+        viewModelScope.launch {
+            updateSettingsUseCase.updateTestMode(enabled)
+        }
+    }
+    
     fun clearEvent() {
         _importExportEvent.value = null
     }

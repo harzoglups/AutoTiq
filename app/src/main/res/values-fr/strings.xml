@@ -97,6 +97,9 @@
     <string name="battery_mah_per_day">~%1$s mAh par jour (%2$d jours actifs)</string>
     <string name="battery_percent_per_day">~%1$s%% de batterie par jour</string>
     <string name="battery_note">Note : La consommation réelle peut varier selon l\'appareil, les conditions GPS et les fenêtres horaires configurées pour chaque zone.</string>
+    <string name="testing">Tests</string>
+    <string name="test_mode">Mode Test</string>
+    <string name="test_mode_desc">Toujours déclencher les notifications (ignorer état précédent)</string>
     <string name="backup_restore">Sauvegarde &amp; Restauration</string>
     <string name="export_zones">Exporter les zones</string>
     <string name="import_zones">Importer les zones</string>
@@ -123,6 +126,7 @@
     <string name="notification_channel_desc">Notifications lors de l\'entrée dans une zone de transport</string>
     <string name="notification_transport_zone_detected">Zone de transport détectée</string>
     <string name="notification_launching_fairtiq">Ouverture de Fairtiq…</string>
+    <string name="notification_tap_to_launch_fairtiq">Appuyez pour lancer Fairtiq</string>
     
     <!-- Onboarding -->
     <string name="welcome_to_autotiq">Bienvenue sur AutoTiq !</string>

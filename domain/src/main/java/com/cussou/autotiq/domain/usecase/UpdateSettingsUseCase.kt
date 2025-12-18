@@ -34,4 +34,8 @@ class UpdateSettingsUseCase(
     suspend fun updateThemeMode(themeMode: ThemeMode) {
         repository.updateThemeMode(themeMode)
     }
+    
+    suspend fun updateTestMode(enabled: Boolean) {
+        repository.updateTestModeEnabled(enabled)
+    }
 }
