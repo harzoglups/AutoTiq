@@ -25,7 +25,12 @@ AutoTiq détecte automatiquement quand l'utilisateur approche de ses gares et st
 • Détection automatique par GPS des zones de transport
 • Notification + vibration lors de l'entrée dans une zone
 • Lancement automatique de l'app Fairtiq
-• Personnalisation des zones (gares, arrêts de bus/tram, etc.)
+• Personnalisation du thème (Clair, Sombre ou Système)
+• Zoom intelligent qui s'adapte automatiquement à la taille de vos zones
+• Sauvegarde et restauration avec détection intelligente des doublons
+• Estimation de la consommation batterie affichée dans les paramètres
+• Vérification automatique de l'installation de Fairtiq
+• Création de zones simplifiée avec pré-remplissage automatique des noms
 • Configuration des horaires actifs par zone (ex: 7h-9h et 17h-19h)
 • Choix des jours d'activation (ex: lundi-vendredi uniquement)
 • Fonctionne en arrière-plan, même écran éteint
@@ -107,7 +112,12 @@ AutoTiq automatically detects when users approach their usual train stations and
 • Automatic GPS detection of transport zones
 • Notification + vibration when entering a zone
 • Automatic launch of the Fairtiq app
-• Customizable zones (train stations, bus/tram stops, etc.)
+• Theme customization (Light, Dark, or System)
+• Smart zoom that automatically adapts to your zone size
+• Backup and restore with intelligent duplicate detection
+• Battery consumption estimation displayed in settings
+• Automatic Fairtiq installation check
+• Simplified zone creation with automatic name pre-filling
 • Active time windows per zone (e.g., 7am-9am and 5pm-7pm)
 • Choose active days (e.g., Monday-Friday only)
 • Works in background, even with screen off
@@ -189,7 +199,12 @@ AutoTiq erkennt automatisch, wenn Sie sich Ihren üblichen Bahnhöfen und Haltes
 • Automatische GPS-Erkennung von Transportzonen
 • Benachrichtigung + Vibration beim Betreten einer Zone
 • Automatischer Start der Fairtiq-App
-• Anpassbare Zonen (Bahnhöfe, Bus-/Straßenbahnhaltestellen usw.)
+• Theme-Anpassung (Hell, Dunkel oder System)
+• Intelligenter Zoom, der sich automatisch an Ihre Zonengröße anpasst
+• Sicherung und Wiederherstellung mit intelligenter Duplikaterkennung
+• Batterieverbrauchsschätzung in den Einstellungen angezeigt
+• Automatische Fairtiq-Installationsprüfung
+• Vereinfachte Zonenerstellung mit automatischem Namensausfüllen
 • Aktive Zeitfenster pro Zone (z.B. 7-9 Uhr und 17-19 Uhr)
 • Wahl der aktiven Tage (z.B. nur Montag-Freitag)
 • Funktioniert im Hintergrund, auch bei ausgeschaltetem Bildschirm
@@ -271,7 +286,12 @@ AutoTiq rileva automaticamente quando ti avvicini alle tue stazioni e fermate ab
 • Rilevamento GPS automatico delle zone di trasporto
 • Notifica + vibrazione quando entri in una zona
 • Avvio automatico dell'app Fairtiq
-• Zone personalizzabili (stazioni ferroviarie, fermate bus/tram, ecc.)
+• Personalizzazione del tema (Chiaro, Scuro o Sistema)
+• Zoom intelligente che si adatta automaticamente alla dimensione della zona
+• Backup e ripristino con rilevamento intelligente dei duplicati
+• Stima del consumo della batteria visualizzata nelle impostazioni
+• Verifica automatica dell'installazione di Fairtiq
+• Creazione semplificata delle zone con pre-compilazione automatica dei nomi
 • Finestre temporali attive per zona (es. 7-9 e 17-19)
 • Scelta dei giorni attivi (es. solo lunedì-venerdì)
 • Funziona in background, anche con schermo spento
@@ -353,7 +373,12 @@ AutoTiq automaticky detekuje, když se blížíte k běžným nádražím a zast
 • Automatická GPS detekce dopravních zón
 • Notifikace + vibrace při vstupu do zóny
 • Automatické spuštění aplikace Fairtiq
-• Přizpůsobitelné zóny (nádraží, autobusové/tramvajové zastávky atd.)
+• Přizpůsobení motivu (Světlý, Tmavý nebo Systémový)
+• Inteligentní přiblížení, které se automaticky přizpůsobí velikosti zóny
+• Zálohování a obnovení s inteligentní detekcí duplikátů
+• Odhad spotřeby baterie zobrazený v nastavení
+• Automatická kontrola instalace Fairtiq
+• Zjednodušené vytváření zón s automatickým předvyplněním názvů
 • Aktivní časová okna pro každou zónu (např. 7-9h a 17-19h)
 • Výběr aktivních dnů (např. pouze pondělí-pátek)
 • Funguje na pozadí, i při vypnuté obrazovce
@@ -435,7 +460,12 @@ AutoTiq upptäcker automatiskt när du närmar dig dina vanliga tåg- och hållp
 • Automatisk GPS-detektering av transportzoner
 • Notis + vibration när du kommer in i en zon
 • Automatisk start av Fairtiq-appen
-• Anpassningsbara zoner (tågstationer, buss-/spårvagnshållplatser, etc.)
+• Temaanpassning (Ljust, Mörkt eller System)
+• Smart zoom som automatiskt anpassar sig till din zonstorlek
+• Säkerhetskopiering och återställning med intelligent dubblettdetektering
+• Uppskattning av batteriförbrukning visas i inställningar
+• Automatisk kontroll av Fairtiq-installation
+• Förenklad zonskapande med automatisk namnförfyllning
 • Aktiva tidsfönster per zon (t.ex. 7-9 och 17-19)
 • Välj aktiva dagar (t.ex. endast måndag-fredag)
 • Fungerar i bakgrunden, även med avstängd skärm
@@ -517,7 +547,12 @@ AutoTiq oppdager automatisk når du nærmer deg dine vanlige tog- og holdeplasse
 • Automatisk GPS-deteksjon av transportsoner
 • Varsel + vibrasjon når du kommer inn i en sone
 • Automatisk start av Fairtiq-appen
-• Tilpassbare soner (togstasjoner, buss-/trikkholdeplasser, etc.)
+• Tematilpasning (Lys, Mørk eller System)
+• Smart zoom som automatisk tilpasser seg sonestørrelsen din
+• Sikkerhetskopiering og gjenoppretting med intelligent duplikatdeteksjon
+• Estimat for batteriforbruk vist i innstillinger
+• Automatisk kontroll av Fairtiq-installasjon
+• Forenklet soneoppretting med automatisk navneutfylling
 • Aktive tidsvinduer per sone (f.eks. 7-9 og 17-19)
 • Velg aktive dager (f.eks. kun mandag-fredag)
 • Fungerer i bakgrunnen, selv med avslått skjerm
@@ -570,6 +605,180 @@ AutoTiq er 100% gratis, reklamefri, ingen datainnsamling, og åpen kildekode.
 Kartfliser © OpenStreetMap-bidragsytere. Data tilgjengelig under Open Database License (ODbL).
 
 🔗 Mer informasjon: https://github.com/harzoglups/AutoTiq
+```
+
+---
+
+## ESPAÑOL (SPANISH)
+
+### Título
+```
+AutoTiq
+```
+
+### Descripción corta (80 caracteres máx)
+```
+¡No vuelvas a pagar multas por olvidar lanzar Fairtiq!
+```
+
+### Descripción completa
+```
+🚆 AutoTiq - ¡No vuelvas a pagar multas por olvidar lanzar Fairtiq!
+
+AutoTiq detecta automáticamente cuando te acercas a tus estaciones y paradas habituales, y te recuerda lanzar la app Fairtiq para validar tu viaje. ¡No más multas por check-ins olvidados!
+
+📍 Disponible en 9 países: Suiza, Liechtenstein, Alemania, Francia, Austria, Italia, República Checa, Suecia, Noruega
+
+✨ CARACTERÍSTICAS PRINCIPALES
+
+• Detección GPS automática de zonas de transporte
+• Notificación + vibración al entrar en una zona
+• Lanzamiento automático de la app Fairtiq
+• Personalización del tema (Claro, Oscuro o Sistema)
+• Zoom inteligente que se adapta automáticamente al tamaño de tu zona
+• Respaldo y restauración con detección inteligente de duplicados
+• Estimación del consumo de batería mostrada en ajustes
+• Verificación automática de la instalación de Fairtiq
+• Creación simplificada de zonas con autocompletado de nombres
+• Ventanas horarias activas por zona (ej: 7-9h y 17-19h)
+• Elige días activos (ej: solo lunes-viernes)
+• Funciona en segundo plano, incluso con pantalla apagada
+• Distancia de detección ajustable (50m a 500m)
+• No se requiere conexión a Internet para la detección
+
+🎯 CÓMO FUNCIONA
+
+1. Marca tus estaciones/paradas habituales en el mapa
+2. Configura los horarios de uso para cada zona
+3. Activa la detección automática
+4. AutoTiq monitorea tu posición en segundo plano
+5. Al acercarte a una zona activa, la app vibra y lanza Fairtiq
+
+🔒 PRIVACIDAD Y SEGURIDAD
+
+• Todos los datos permanecen en el teléfono (sin servidor remoto)
+• La ubicación se usa solo para detección de proximidad
+• Control preciso de cuándo y dónde la app está activa
+• Código fuente disponible (open source)
+
+⚠️ INFORMACIÓN IMPORTANTE
+
+• AutoTiq NO es una aplicación oficial de Fairtiq
+• AutoTiq NO reemplaza a Fairtiq - los usuarios deben seguir validando su viaje manualmente en Fairtiq
+• La app Fairtiq debe estar instalada en el teléfono
+• AutoTiq es simplemente un recordatorio automático para no olvidar lanzar Fairtiq
+
+📱 REQUISITOS
+
+• Android 8.0 o superior
+• App Fairtiq instalada
+• Permiso de ubicación en segundo plano
+• Batería: optimización desactivada para AutoTiq (recomendado)
+
+💡 CASO DE USO TÍPICO
+
+Para un tren tomado cada mañana a las 8:15: marca la estación, configura la ventana horaria 8:00-8:30, y AutoTiq recordará automáticamente lanzar Fairtiq al llegar a la estación.
+
+🆓 GRATIS Y SIN PUBLICIDAD
+
+AutoTiq es 100% gratis, sin publicidad, sin recopilación de datos y open source.
+
+⚖️ AVISO LEGAL
+
+"Fairtiq" es una marca registrada de Fairtiq AG. AutoTiq es una aplicación independiente, no afiliada, no patrocinada ni respaldada por Fairtiq AG.
+
+🗺️ DATOS DEL MAPA
+
+Tiles de mapa © Colaboradores de OpenStreetMap. Datos disponibles bajo la licencia Open Database License (ODbL).
+
+🔗 Más información: https://github.com/harzoglups/AutoTiq
+```
+
+---
+
+## PORTUGUÊS (PORTUGUESE)
+
+### Título
+```
+AutoTiq
+```
+
+### Descrição curta (80 caracteres máx)
+```
+Nunca mais pague multas por esquecer de lançar o Fairtiq!
+```
+
+### Descrição completa
+```
+🚆 AutoTiq - Nunca mais pague multas por esquecer de lançar o Fairtiq!
+
+AutoTiq detecta automaticamente quando você se aproxima de suas estações e paradas habituais, e lembra você de lançar o app Fairtiq para validar sua viagem. Chega de multas por check-ins esquecidos!
+
+📍 Disponível em 9 países: Suíça, Liechtenstein, Alemanha, França, Áustria, Itália, República Tcheca, Suécia, Noruega
+
+✨ RECURSOS PRINCIPAIS
+
+• Detecção GPS automática de zonas de transporte
+• Notificação + vibração ao entrar em uma zona
+• Lançamento automático do app Fairtiq
+• Personalização do tema (Claro, Escuro ou Sistema)
+• Zoom inteligente que se adapta automaticamente ao tamanho da sua zona
+• Backup e restauração com detecção inteligente de duplicados
+• Estimativa de consumo de bateria exibida nas configurações
+• Verificação automática da instalação do Fairtiq
+• Criação simplificada de zonas com preenchimento automático de nomes
+• Janelas de horário ativas por zona (ex: 7h-9h e 17h-19h)
+• Escolha dias ativos (ex: apenas segunda-sexta)
+• Funciona em segundo plano, mesmo com tela desligada
+• Distância de detecção ajustável (50m a 500m)
+• Nenhuma conexão com Internet necessária para detecção
+
+🎯 COMO FUNCIONA
+
+1. Marque suas estações/paradas habituais no mapa
+2. Configure os horários de uso para cada zona
+3. Ative a detecção automática
+4. AutoTiq monitora sua posição em segundo plano
+5. Ao se aproximar de uma zona ativa, o app vibra e lança o Fairtiq
+
+🔒 PRIVACIDADE E SEGURANÇA
+
+• Todos os dados permanecem no telefone (sem servidor remoto)
+• A localização é usada apenas para detecção de proximidade
+• Controle preciso de quando e onde o app está ativo
+• Código-fonte disponível (open source)
+
+⚠️ INFORMAÇÕES IMPORTANTES
+
+• AutoTiq NÃO é um aplicativo oficial do Fairtiq
+• AutoTiq NÃO substitui o Fairtiq - os usuários ainda devem validar sua viagem manualmente no Fairtiq
+• O app Fairtiq deve estar instalado no telefone
+• AutoTiq é simplesmente um lembrete automático para não esquecer de lançar o Fairtiq
+
+📱 REQUISITOS
+
+• Android 8.0 ou superior
+• App Fairtiq instalado
+• Permissão de localização em segundo plano
+• Bateria: otimização desativada para AutoTiq (recomendado)
+
+💡 CASO DE USO TÍPICO
+
+Para um trem tomado todas as manhãs às 8h15: marque a estação, configure a janela de horário 8h00-8h30, e AutoTiq lembrará automaticamente de lançar o Fairtiq ao chegar na estação.
+
+🆓 GRÁTIS E SEM PUBLICIDADE
+
+AutoTiq é 100% gratuito, sem publicidade, sem coleta de dados e open source.
+
+⚖️ AVISO LEGAL
+
+"Fairtiq" é uma marca registrada da Fairtiq AG. AutoTiq é um aplicativo independente, não afiliado, não patrocinado e não endossado pela Fairtiq AG.
+
+🗺️ DADOS DO MAPA
+
+Tiles do mapa © Colaboradores do OpenStreetMap. Dados disponíveis sob a licença Open Database License (ODbL).
+
+🔗 Mais informações: https://github.com/harzoglups/AutoTiq
 ```
 
 ---
