@@ -52,6 +52,7 @@ class SettingsViewModel @Inject constructor(
 
     companion object {
         private const val TAG = "SettingsViewModel"
+        private const val FAIRTIQ_PACKAGE = "com.fairtiq.android"
     }
 
     val settings: StateFlow<AppSettings> = getSettingsUseCase()
@@ -66,11 +67,27 @@ class SettingsViewModel @Inject constructor(
     
     private val _importExportEvent = MutableStateFlow<ImportExportEvent?>(null)
     val importExportEvent: StateFlow<ImportExportEvent?> = _importExportEvent.asStateFlow()
+    
+    private val _isFairtiqInstalled = MutableStateFlow(checkFairtiqInstalled())
+    val isFairtiqInstalled: StateFlow<Boolean> = _isFairtiqInstalled.asStateFlow()
 
     init {
         Log.d(TAG, "SettingsViewModel initialized")
         Log.d(TAG, "Android SDK: ${Build.VERSION.SDK_INT}")
         Log.d(TAG, "Initial permission status: ${_permissionStatus.value}")
+        Log.d(TAG, "Fairtiq installed: ${_isFairtiqInstalled.value}")
+    }
+    
+    private fun checkFairtiqInstalled(): Boolean {
+        return try {
+            @Suppress("DEPRECATION")
+            application.packageManager.getPackageInfo(FAIRTIQ_PACKAGE, 0)
+            Log.d(TAG, "Fairtiq app is installed")
+            true
+        } catch (e: PackageManager.NameNotFoundException) {
+            Log.w(TAG, "Fairtiq app is NOT installed")
+            false
+        }
     }
 
     private fun checkPermissionStatus(): PermissionStatus {

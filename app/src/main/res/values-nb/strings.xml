@@ -78,6 +78,9 @@
     <string name="seconds">Sekunder</string>
     <string name="meters">Meter</string>
     <string name="info">Info</string>
+    <string name="fairtiq_not_installed">Fairtiq ikke installert</string>
+    <string name="fairtiq_not_installed_message">AutoTiq krever at Fairtiq-appen er installert for å fungere. Vennligst installer Fairtiq fra Play Store.</string>
+    <string name="install_fairtiq">Installer Fairtiq</string>
     <string name="battery_consumption">Batteriforbruk</string>
     <string name="estimated_battery_usage">Estimert batteribruk</string>
     <string name="battery_based_on_settings">Basert på dine nåværende innstillinger:</string>

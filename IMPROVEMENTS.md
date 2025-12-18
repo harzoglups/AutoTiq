@@ -215,28 +215,24 @@ This document lists potential improvements and new features to consider before m
 ## 🔒 Security / Reliability
 
 ### 12. Fairtiq Installation Check
-**Status**: Not implemented  
-**Description**: No validation that Fairtiq is installed.  
-**Suggestion**:
-- Check if Fairtiq is installed on app startup
-- Show warning banner in Settings if not found
-- Provide link to Play Store to install Fairtiq
-- Test in Settings to verify package can be launched
+**Status**: ✅ Implemented (v1.0.9)  
+**Description**: Validation that Fairtiq is installed.  
+**Implementation**:
+- ✅ Check if Fairtiq is installed on Settings screen load
+- ✅ Show prominent warning card at top of Settings if not found
+- ✅ Provide "Install Fairtiq" button linking to Play Store
+- ✅ Fallback to browser if Play Store app not available
+- ✅ Full i18n support for all 9 languages
 
 **Priority**: High  
 **Effort**: Low
 
-**Implementation Notes**:
-```kotlin
-fun isFairtiqInstalled(context: Context): Boolean {
-    return try {
-        context.packageManager.getPackageInfo("com.fairtiq.android", 0)
-        true
-    } catch (e: PackageManager.NameNotFoundException) {
-        false
-    }
-}
-```
+**Implementation Details**:
+- ViewModel exposes `isFairtiqInstalled` StateFlow
+- Uses PackageManager.getPackageInfo() to check installation
+- Warning card displays with error color at top of Settings
+- Button tries `market://` URI first, falls back to `https://play.google.com`
+- Non-intrusive: only shows warning, doesn't block app usage
 
 ---
 

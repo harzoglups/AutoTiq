@@ -70,6 +70,7 @@ fun SettingsScreen(
     val settings by viewModel.settings.collectAsStateWithLifecycle()
     val permissionStatus by viewModel.permissionStatus.collectAsStateWithLifecycle()
     val importExportEvent by viewModel.importExportEvent.collectAsStateWithLifecycle()
+    val isFairtiqInstalled by viewModel.isFairtiqInstalled.collectAsStateWithLifecycle()
     val context = LocalContext.current
     
     var showBackgroundLocationDialog by remember { mutableStateOf(false) }
@@ -114,6 +115,51 @@ fun SettingsScreen(
                 .padding(16.dp)
                 .verticalScroll(rememberScrollState())
         ) {
+            // Fairtiq installation warning
+            if (!isFairtiqInstalled) {
+                SettingCard {
+                    Column {
+                        Text(
+                            text = stringResource(R.string.fairtiq_not_installed),
+                            style = MaterialTheme.typography.titleMedium,
+                            color = MaterialTheme.colorScheme.error,
+                            modifier = Modifier.padding(bottom = 8.dp)
+                        )
+                        Text(
+                            text = stringResource(R.string.fairtiq_not_installed_message),
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            modifier = Modifier.padding(bottom = 12.dp)
+                        )
+                        Button(
+                            onClick = {
+                                try {
+                                    // Try to open Play Store app
+                                    val playStoreIntent = Intent(
+                                        Intent.ACTION_VIEW,
+                                        Uri.parse("market://details?id=com.fairtiq.android")
+                                    )
+                                    playStoreIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                                    context.startActivity(playStoreIntent)
+                                } catch (e: Exception) {
+                                    // If Play Store app not found, open in browser
+                                    val browserIntent = Intent(
+                                        Intent.ACTION_VIEW,
+                                        Uri.parse("https://play.google.com/store/apps/details?id=com.fairtiq.android")
+                                    )
+                                    browserIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                                    context.startActivity(browserIntent)
+                                }
+                            },
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            Text(stringResource(R.string.install_fairtiq))
+                        }
+                    }
+                }
+                Spacer(modifier = Modifier.height(16.dp))
+            }
+            
             Text(
                 text = stringResource(R.string.location_tracking),
                 style = MaterialTheme.typography.headlineSmall,

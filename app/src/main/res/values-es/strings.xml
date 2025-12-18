@@ -78,6 +78,9 @@
     <string name="seconds">Segundos</string>
     <string name="meters">Metros</string>
     <string name="info">Info</string>
+    <string name="fairtiq_not_installed">Fairtiq no instalado</string>
+    <string name="fairtiq_not_installed_message">AutoTiq requiere la aplicación Fairtiq para funcionar. Por favor, instala Fairtiq desde Play Store.</string>
+    <string name="install_fairtiq">Instalar Fairtiq</string>
     <string name="battery_consumption">Consumo de batería</string>
     <string name="estimated_battery_usage">Uso estimado de batería</string>
     <string name="battery_based_on_settings">Según tu configuración actual:</string>

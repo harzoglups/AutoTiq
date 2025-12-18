@@ -78,6 +78,9 @@
     <string name="seconds">Sekundy</string>
     <string name="meters">Metry</string>
     <string name="info">Info</string>
+    <string name="fairtiq_not_installed">Fairtiq není nainstalován</string>
+    <string name="fairtiq_not_installed_message">AutoTiq vyžaduje aplikaci Fairtiq, aby fungoval. Prosím nainstalujte Fairtiq z Play Store.</string>
+    <string name="install_fairtiq">Instalovat Fairtiq</string>
     <string name="battery_consumption">Spotřeba baterie</string>
     <string name="estimated_battery_usage">Odhadovaná spotřeba baterie</string>
     <string name="battery_based_on_settings">Podle vašeho aktuálního nastavení:</string>
