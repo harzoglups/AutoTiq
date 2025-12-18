@@ -179,6 +179,12 @@ class SettingsViewModel @Inject constructor(
         }
     }
     
+    fun updateThemeMode(themeMode: com.cussou.autotiq.domain.model.ThemeMode) {
+        viewModelScope.launch {
+            updateSettingsUseCase.updateThemeMode(themeMode)
+        }
+    }
+    
     fun clearEvent() {
         _importExportEvent.value = null
     }

@@ -48,6 +48,11 @@
     
     <!-- Settings screen -->
     <string name="back">Indietro</string>
+    <string name="appearance">Aspetto</string>
+    <string name="theme">Tema</string>
+    <string name="theme_system">Predefinito del sistema</string>
+    <string name="theme_light">Chiaro</string>
+    <string name="theme_dark">Scuro</string>
     <string name="location_tracking">Tracciamento posizione</string>
     <string name="enable_background_tracking">Abilita tracciamento in background</string>
     <string name="enable_background_tracking_desc">Monitora la tua posizione in background</string>

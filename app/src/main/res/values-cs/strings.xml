@@ -48,6 +48,11 @@
     
     <!-- Settings screen -->
     <string name="back">Zpět</string>
+    <string name="appearance">Vzhled</string>
+    <string name="theme">Motiv</string>
+    <string name="theme_system">Výchozí systém</string>
+    <string name="theme_light">Světlý</string>
+    <string name="theme_dark">Tmavý</string>
     <string name="location_tracking">Sledování polohy</string>
     <string name="enable_background_tracking">Povolit sledování na pozadí</string>
     <string name="enable_background_tracking_desc">Sledovat vaši polohu na pozadí</string>

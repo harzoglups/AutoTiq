@@ -51,6 +51,11 @@
     
     <!-- Settings screen -->
     <string name="back">Back</string>
+    <string name="appearance">Appearance</string>
+    <string name="theme">Theme</string>
+    <string name="theme_system">System Default</string>
+    <string name="theme_light">Light</string>
+    <string name="theme_dark">Dark</string>
     <string name="location_tracking">Location Tracking</string>
     <string name="enable_background_tracking">Enable Background Tracking</string>
     <string name="enable_background_tracking_desc">Monitor your location in the background</string>

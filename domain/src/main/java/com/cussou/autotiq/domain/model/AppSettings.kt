@@ -6,10 +6,17 @@ data class AppSettings(
     val isLocationTrackingEnabled: Boolean = false,
     val mapLayerType: MapLayerType = MapLayerType.STREET,
     val activeWeekdays: Set<Int> = setOf(1, 2, 3, 4, 5, 6, 7), // 1=Monday, 7=Sunday (all days by default)
-    val vibrationCount: Int = 3 // Number of vibrations when entering a zone (default: 3)
+    val vibrationCount: Int = 3, // Number of vibrations when entering a zone (default: 3)
+    val themeMode: ThemeMode = ThemeMode.SYSTEM // Theme preference (default: follow system)
 )
 
 enum class MapLayerType {
     STREET,
     TOPO
+}
+
+enum class ThemeMode {
+    SYSTEM,  // Follow system theme
+    LIGHT,   // Always light theme
+    DARK     // Always dark theme
 }

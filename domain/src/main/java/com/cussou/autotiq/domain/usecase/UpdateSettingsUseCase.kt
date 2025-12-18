@@ -1,6 +1,7 @@
 package com.cussou.autotiq.domain.usecase
 
 import com.cussou.autotiq.domain.model.MapLayerType
+import com.cussou.autotiq.domain.model.ThemeMode
 import com.cussou.autotiq.domain.repository.SettingsRepository
 
 class UpdateSettingsUseCase(
@@ -28,5 +29,9 @@ class UpdateSettingsUseCase(
     
     suspend fun updateVibrationCount(count: Int) {
         repository.updateVibrationCount(count)
+    }
+    
+    suspend fun updateThemeMode(themeMode: ThemeMode) {
+        repository.updateThemeMode(themeMode)
     }
 }

@@ -48,6 +48,11 @@
     
     <!-- Settings screen -->
     <string name="back">Voltar</string>
+    <string name="appearance">Aparência</string>
+    <string name="theme">Tema</string>
+    <string name="theme_system">Padrão do sistema</string>
+    <string name="theme_light">Claro</string>
+    <string name="theme_dark">Escuro</string>
     <string name="location_tracking">Rastreamento de localização</string>
     <string name="enable_background_tracking">Ativar rastreamento em segundo plano</string>
     <string name="enable_background_tracking_desc">Monitorar sua localização em segundo plano</string>

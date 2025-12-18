@@ -10,6 +10,7 @@ import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import com.cussou.autotiq.domain.model.AppSettings
 import com.cussou.autotiq.domain.model.MapLayerType
+import com.cussou.autotiq.domain.model.ThemeMode
 import com.cussou.autotiq.domain.repository.SettingsRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
@@ -28,6 +29,7 @@ class SettingsRepositoryImpl @Inject constructor(
         val MAP_LAYER_TYPE = stringPreferencesKey("map_layer_type")
         val ACTIVE_WEEKDAYS = stringPreferencesKey("active_weekdays")
         val VIBRATION_COUNT = intPreferencesKey("vibration_count")
+        val THEME_MODE = stringPreferencesKey("theme_mode")
     }
 
     override fun getSettings(): Flow<AppSettings> {
@@ -46,13 +48,21 @@ class SettingsRepositoryImpl @Inject constructor(
                 setOf(1, 2, 3, 4, 5, 6, 7)
             }
             
+            val themeModeString = preferences[PreferencesKeys.THEME_MODE] ?: ThemeMode.SYSTEM.name
+            val themeMode = try {
+                ThemeMode.valueOf(themeModeString)
+            } catch (e: IllegalArgumentException) {
+                ThemeMode.SYSTEM
+            }
+            
             AppSettings(
                 checkIntervalSeconds = preferences[PreferencesKeys.CHECK_INTERVAL] ?: 300,
                 proximityDistanceMeters = preferences[PreferencesKeys.PROXIMITY_DISTANCE] ?: 200,
                 isLocationTrackingEnabled = preferences[PreferencesKeys.LOCATION_TRACKING_ENABLED] ?: false,
                 mapLayerType = layerType,
                 activeWeekdays = activeWeekdays,
-                vibrationCount = preferences[PreferencesKeys.VIBRATION_COUNT] ?: 3
+                vibrationCount = preferences[PreferencesKeys.VIBRATION_COUNT] ?: 3,
+                themeMode = themeMode
             )
         }
     }
@@ -90,6 +100,12 @@ class SettingsRepositoryImpl @Inject constructor(
     override suspend fun updateVibrationCount(count: Int) {
         context.dataStore.edit { preferences ->
             preferences[PreferencesKeys.VIBRATION_COUNT] = count
+        }
+    }
+    
+    override suspend fun updateThemeMode(themeMode: ThemeMode) {
+        context.dataStore.edit { preferences ->
+            preferences[PreferencesKeys.THEME_MODE] = themeMode.name
         }
     }
 }

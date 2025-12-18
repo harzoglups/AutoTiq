@@ -48,6 +48,11 @@
     
     <!-- Settings screen -->
     <string name="back">Tilbake</string>
+    <string name="appearance">Utseende</string>
+    <string name="theme">Tema</string>
+    <string name="theme_system">Systemstandard</string>
+    <string name="theme_light">Lys</string>
+    <string name="theme_dark">Mørk</string>
     <string name="location_tracking">Plasseringssporing</string>
     <string name="enable_background_tracking">Aktiver bakgrunnssporing</string>
     <string name="enable_background_tracking_desc">Overvåk din plassering i bakgrunnen</string>

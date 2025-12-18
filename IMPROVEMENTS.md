@@ -390,16 +390,30 @@ This document lists potential improvements and new features to consider before m
 ## 🎨 Customization
 
 ### 22. Theme Options
-**Status**: Single Material 3 theme  
-**Description**: No theme customization.  
-**Suggestion**:
-- Dark mode toggle (currently follows system)
-- Accent color picker
-- Map style options (already have Street/Topo)
-- Custom marker colors
+**Status**: ✅ Implemented (v1.0.10)  
+**Description**: User-selectable theme mode for app appearance.  
+**Implementation**:
+- ✅ Theme mode selection in Settings screen (new "Appearance" section)
+- ✅ Three theme options:
+  - **System Default**: Follows device dark/light mode setting
+  - **Light**: Always use light theme
+  - **Dark**: Always use dark theme
+- ✅ Theme preference stored in DataStore and persists across app restarts
+- ✅ Material 3 dynamic colors maintained (adapts to device wallpaper on Android 12+)
+- ✅ Radio button UI for theme selection
+- ✅ Instant theme switching without app restart
+- ✅ Full i18n support for all 9 languages
+- ⏳ TODO: Accent color picker (future enhancement)
+- ⏳ TODO: Custom marker colors (future enhancement)
 
 **Priority**: Low  
 **Effort**: Medium
+
+**Files Modified**:
+- Domain: `AppSettings.kt` (added ThemeMode enum)
+- Data: `SettingsRepository` + `SettingsRepositoryImpl.kt` (theme persistence)
+- UI: `SettingsScreen.kt` (theme selection UI), `MainActivity.kt` (theme application)
+- i18n: All 9 language string files
 
 ---
 
