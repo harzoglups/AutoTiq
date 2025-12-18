@@ -87,6 +87,7 @@ fun MapScreen(
     var showLayerMenu by remember { mutableStateOf(false) }
     var editingPoint by remember { mutableStateOf<MapPoint?>(null) }
     var selectedPoint by remember { mutableStateOf<MapPoint?>(null) } // For showing info bubble
+    var pointToDelete by remember { mutableStateOf<MapPoint?>(null) } // For delete confirmation dialog
     
     // Force dark status bar icons (black) on map screen
     SideEffect {
@@ -157,15 +158,9 @@ fun MapScreen(
                         )
                     },
                     onAddPoint = { lat, lon -> viewModel.addPoint(lat, lon) },
-                    onDeletePoint = { id -> 
-                        // Close dialogs if deleting the currently selected/editing point
-                        if (selectedPoint?.id == id) {
-                            selectedPoint = null
-                        }
-                        if (editingPoint?.id == id) {
-                            editingPoint = null
-                        }
-                        viewModel.deletePoint(id)
+                    onRequestDeletePoint = { point -> 
+                        // Show confirmation dialog
+                        pointToDelete = point
                     },
                     onMarkerClick = { point -> 
                         // Hide keyboard when clicking on marker
@@ -451,6 +446,25 @@ fun MapScreen(
             }
         )
     }
+    
+    // Show delete confirmation dialog if a point is marked for deletion
+    pointToDelete?.let { point ->
+        DeleteConfirmationDialog(
+            point = point,
+            onConfirm = {
+                // Close dialogs if deleting the currently selected/editing point
+                if (selectedPoint?.id == point.id) {
+                    selectedPoint = null
+                }
+                if (editingPoint?.id == point.id) {
+                    editingPoint = null
+                }
+                viewModel.deletePoint(point.id)
+                pointToDelete = null
+            },
+            onDismiss = { pointToDelete = null }
+        )
+    }
 }
 
 @Composable
@@ -502,7 +516,7 @@ private fun MapContent(
     savedMapPosition: SavedMapPosition?,
     onRequestPermission: () -> Unit,
     onAddPoint: (Double, Double) -> Unit,
-    onDeletePoint: (Long) -> Unit,
+    onRequestDeletePoint: (MapPoint) -> Unit,
     onMarkerClick: (MapPoint) -> Unit,
     onMapClick: () -> Unit,
     onLocationOverlayReady: (MyLocationNewOverlay) -> Unit,
@@ -518,7 +532,7 @@ private fun MapContent(
     val currentOnMarkerClick by androidx.compose.runtime.rememberUpdatedState(onMarkerClick)
     val currentOnMapClick by androidx.compose.runtime.rememberUpdatedState(onMapClick)
     val currentOnAddPoint by androidx.compose.runtime.rememberUpdatedState(onAddPoint)
-    val currentOnDeletePoint by androidx.compose.runtime.rememberUpdatedState(onDeletePoint)
+    val currentOnRequestDeletePoint by androidx.compose.runtime.rememberUpdatedState(onRequestDeletePoint)
     val currentPoints by androidx.compose.runtime.rememberUpdatedState(points)
 
     DisposableEffect(Unit) {
@@ -705,8 +719,9 @@ private fun MapContent(
                                     if (touchedMarkerId != null) {
                                         // Touch on marker
                                         if (duration >= longPressThreshold) {
-                                            // Long press on marker - delete it
-                                            currentOnDeletePoint(touchedMarkerId!!)
+                                            // Long press on marker - show delete confirmation
+                                            val point = currentPoints.find { it.id == touchedMarkerId }
+                                            point?.let { currentOnRequestDeletePoint(it) }
                                          } else {
                                             // Short click on marker - show info card
                                             val point = currentPoints.find { it.id == touchedMarkerId }
@@ -976,4 +991,43 @@ private fun SearchBar(
             }
         }
     }
+}
+
+@Composable
+private fun DeleteConfirmationDialog(
+    point: MapPoint,
+    onConfirm: () -> Unit,
+    onDismiss: () -> Unit
+) {
+    androidx.compose.material3.AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text(stringResource(R.string.delete_marker)) },
+        text = { 
+            Column {
+                Text(stringResource(R.string.delete_marker_message))
+                if (point.name.isNotEmpty()) {
+                    Text(
+                        text = point.name,
+                        style = MaterialTheme.typography.titleMedium,
+                        modifier = Modifier.padding(top = 8.dp)
+                    )
+                }
+            }
+        },
+        confirmButton = {
+            androidx.compose.material3.Button(
+                onClick = onConfirm,
+                colors = androidx.compose.material3.ButtonDefaults.buttonColors(
+                    containerColor = MaterialTheme.colorScheme.error
+                )
+            ) {
+                Text(stringResource(R.string.delete))
+            }
+        },
+        dismissButton = {
+            androidx.compose.material3.TextButton(onClick = onDismiss) {
+                Text(stringResource(R.string.cancel))
+            }
+        }
+    )
 }

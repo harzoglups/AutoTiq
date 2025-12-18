@@ -36,6 +36,11 @@
     <string name="cancel">Abbrechen</string>
     <string name="ok">OK</string>
     
+    <!-- Delete confirmation dialog -->
+    <string name="delete_marker">Markierung löschen</string>
+    <string name="delete_marker_message">Sind Sie sicher, dass Sie diese Markierung löschen möchten?</string>
+    <string name="delete">Löschen</string>
+    
     <!-- Map layer types -->
     <string name="map_layer_street">Straßenkarte</string>
     <string name="map_layer_topo">Topografisch</string>
