@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AutoTiq - Privacy Policy</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+            line-height: 1.6;
+            max-width: 800px;
+            margin: 40px auto;
+            padding: 0 20px;
+            color: #333;
+        }
+        h1 {
+            color: #1976D2;
+            border-bottom: 3px solid #2196F3;
+            padding-bottom: 10px;
+        }
+        h2 {
+            color: #1976D2;
+            margin-top: 30px;
+        }
+        .highlight {
+            background-color: #E3F2FD;
+            padding: 15px;
+            border-left: 4px solid #2196F3;
+            margin: 20px 0;
+        }
+        .important {
+            background-color: #FFF3E0;
+            padding: 15px;
+            border-left: 4px solid #FF9800;
+            margin: 20px 0;
+        }
+        ul {
+            margin: 10px 0;
+            padding-left: 30px;
+        }
+        li {
+            margin: 8px 0;
+        }
+        code {
+            background-color: #f5f5f5;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+        }
+        a {
+            color: #2196F3;
+            text-decoration: none;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+        .footer {
+            margin-top: 50px;
+            padding-top: 20px;
+            border-top: 1px solid #ddd;
+            font-size: 0.9em;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <h1>Privacy Policy - AutoTiq</h1>
+    
+    <div class="highlight">
+        <strong>🔒 Privacy First - All Data Stays on Your Device</strong><br>
+        AutoTiq is an open-source application that respects your privacy. 
+        All data is stored locally on your device and is never transmitted to any remote server.
+    </div>
+
+    <div class="important">
+        <strong>⚠️ Legal Notice</strong><br>
+        "Fairtiq" is a registered trademark of Fairtiq AG. AutoTiq is an independent application, 
+        not affiliated with, sponsored by, or endorsed by Fairtiq AG.
+    </div>
+
+    <h2>1. Introduction</h2>
+    <p>AutoTiq is an open-source Android application designed to automatically launch the Fairtiq app 
+    when you approach your saved transit points (train stations, bus stops, etc.). This privacy policy 
+    explains what data is collected, how it is used, and your rights regarding your personal information.</p>
+
+    <h2>2. Data Collected</h2>
+    <p><strong>All data collected by AutoTiq is stored locally on your device and is never transmitted to any external server.</strong></p>
+    
+    <p>The application collects and stores the following data locally:</p>
+    <ul>
+        <li><strong>GPS Location</strong>: Your current location is used to detect when you approach saved transit points. 
+        Location data is processed locally and is never sent to any server.</li>
+        <li><strong>Saved Transit Points</strong>: The geographic coordinates, names, and active time windows 
+        of your saved transit points are stored in a local database (Room DB).</li>
+        <li><strong>Proximity States</strong>: The application tracks whether you are inside or outside 
+        each proximity zone to avoid repeated triggers (anti-spam mechanism).</li>
+        <li><strong>User Settings</strong>: Your preferences (check interval, proximity distance, vibration count, 
+        active days, map layer) are stored locally using Android DataStore.</li>
+    </ul>
+
+    <p><strong>What we DO NOT collect:</strong></p>
+    <ul>
+        <li>No user accounts or authentication</li>
+        <li>No personal identification information</li>
+        <li>No usage analytics or telemetry</li>
+        <li>No advertising data</li>
+        <li>No cloud synchronization</li>
+    </ul>
+
+    <h2>3. Permissions Used</h2>
+    <p>AutoTiq requires the following Android permissions to function properly:</p>
+    
+    <ul>
+        <li><strong>ACCESS_FINE_LOCATION</strong>: Required to detect your precise location for proximity detection.</li>
+        <li><strong>ACCESS_COARSE_LOCATION</strong>: Required for approximate location detection.</li>
+        <li><strong>ACCESS_BACKGROUND_LOCATION</strong>: Required to monitor your location in the background 
+        and automatically launch Fairtiq when you approach a saved point. This is the core functionality of the app.</li>
+        <li><strong>VIBRATE</strong>: Used to vibrate your phone when entering a transit zone.</li>
+        <li><strong>POST_NOTIFICATIONS</strong> (Android 13+): Used to display notifications when Fairtiq is launched.</li>
+        <li><strong>RECEIVE_BOOT_COMPLETED</strong>: Used to restart background tracking after device reboot (if enabled).</li>
+        <li><strong>QUERY_ALL_PACKAGES</strong>: Used to check if the Fairtiq app is installed on your device.</li>
+        <li><strong>INTERNET</strong>: Used only to download map tiles from OpenStreetMap. No personal data is transmitted.</li>
+        <li><strong>ACCESS_NETWORK_STATE</strong>: Used to check network availability for map tile downloads.</li>
+    </ul>
+
+    <h2>4. Data Storage</h2>
+    <p><strong>All data is stored locally on your device using:</strong></p>
+    <ul>
+        <li><strong>Room Database</strong>: Stores your saved transit points and proximity states.</li>
+        <li><strong>DataStore</strong>: Stores your user preferences and settings.</li>
+        <li><strong>OSMDroid Cache</strong>: Stores downloaded map tiles for offline use.</li>
+    </ul>
+    
+    <p><strong>No cloud backup, no external servers, no data transmission.</strong></p>
+    <p>If you uninstall the app, all data is automatically deleted from your device.</p>
+
+    <h2>5. Third-Party Services</h2>
+    <p>AutoTiq uses the following third-party services:</p>
+    
+    <ul>
+        <li><strong>OpenStreetMap</strong>: Map tiles are downloaded from OpenStreetMap servers to display 
+        the map interface. This is standard usage and does not transmit any personal data. 
+        Map data © <a href="https://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap contributors</a>, 
+        available under the <a href="https://opendatacommons.org/licenses/odbl/" target="_blank">Open Database License (ODbL)</a>.</li>
+        <li><strong>Google Play Services Location</strong>: Standard Android API used to access GPS location. 
+        No data is sent to Google beyond standard Android system usage.</li>
+    </ul>
+
+    <p><strong>What we DO NOT use:</strong></p>
+    <ul>
+        <li>No analytics services (Firebase, Google Analytics, etc.)</li>
+        <li>No crash reporting services</li>
+        <li>No advertising networks</li>
+        <li>No tracking or profiling services</li>
+    </ul>
+
+    <h2>6. Fairtiq Integration</h2>
+    <p>AutoTiq is designed to launch the Fairtiq application automatically when you enter a transit zone. 
+    However:</p>
+    <ul>
+        <li>AutoTiq does NOT interact with Fairtiq's data or API</li>
+        <li>AutoTiq does NOT read, modify, or transmit any data from the Fairtiq app</li>
+        <li>AutoTiq simply launches Fairtiq using a standard Android Intent</li>
+        <li>You must manually validate your journey in the Fairtiq app after it launches</li>
+        <li>AutoTiq does NOT replace Fairtiq or automate the check-in process</li>
+    </ul>
+
+    <p><strong>AutoTiq is simply a reminder tool to help you not forget to launch Fairtiq.</strong></p>
+
+    <h2>7. Background Location Usage</h2>
+    <p>AutoTiq uses background location access to monitor your position and detect when you approach 
+    saved transit points. This is the core functionality of the app.</p>
+    
+    <p><strong>How background location is used:</strong></p>
+    <ul>
+        <li>A WorkManager task checks your location at regular intervals (configurable, default 60 seconds)</li>
+        <li>Location checks only occur on active days you've configured (e.g., Monday-Friday)</li>
+        <li>Location checks only occur within time windows you've configured for each point (e.g., 7am-9am)</li>
+        <li>When you enter a proximity zone (default 100 meters), Fairtiq is launched automatically</li>
+        <li>All processing is done locally on your device</li>
+        <li>You can disable background tracking at any time in the app settings</li>
+    </ul>
+
+    <h2>8. Data Security</h2>
+    <p>Since all data is stored locally on your device:</p>
+    <ul>
+        <li>Your data is protected by your device's security mechanisms (encryption, lock screen, etc.)</li>
+        <li>No data transmission means no risk of interception or server breaches</li>
+        <li>Only you have access to your saved transit points and settings</li>
+    </ul>
+
+    <h2>9. Open Source Transparency</h2>
+    <p>AutoTiq is open-source software. The complete source code is available for review at:</p>
+    <p><strong>GitHub</strong>: <a href="https://github.com/harzoglups/AutoTiq" target="_blank">https://github.com/harzoglups/AutoTiq</a></p>
+    
+    <p>This allows anyone to:</p>
+    <ul>
+        <li>Review the code to verify privacy claims</li>
+        <li>Audit data handling and security practices</li>
+        <li>Contribute improvements and bug fixes</li>
+        <li>Build and distribute their own versions</li>
+    </ul>
+
+    <h2>10. Children's Privacy</h2>
+    <p>AutoTiq does not specifically target children under 13 years of age. Since no data is collected 
+    or transmitted, there are no special considerations for children's privacy.</p>
+
+    <h2>11. Your Rights</h2>
+    <p>Since all data is stored locally on your device, you have complete control:</p>
+    <ul>
+        <li><strong>Access</strong>: You can view all your saved points and settings within the app</li>
+        <li><strong>Modify</strong>: You can edit or delete any saved transit point at any time</li>
+        <li><strong>Delete</strong>: You can delete all data by uninstalling the app</li>
+        <li><strong>Export</strong>: Currently not supported, but may be added in future versions</li>
+    </ul>
+
+    <h2>12. Changes to This Privacy Policy</h2>
+    <p>This privacy policy may be updated occasionally to reflect changes in the app or legal requirements. 
+    The date of the last update is indicated below. Continued use of the app after changes constitutes 
+    acceptance of the updated policy.</p>
+
+    <h2>13. International Users</h2>
+    <p>AutoTiq is available worldwide wherever Fairtiq operates (Switzerland, Liechtenstein, Germany, 
+    France, Austria, Italy, Czech Republic, Sweden, Norway). Since no data is transmitted to servers, 
+    there are no cross-border data transfer concerns.</p>
+
+    <h2>14. Contact</h2>
+    <p>If you have any questions or concerns about this privacy policy or the AutoTiq application, 
+    please contact:</p>
+    <p><strong>Email</strong>: <a href="mailto:dev@cussou.com">dev@cussou.com</a></p>
+    <p><strong>GitHub Issues</strong>: <a href="https://github.com/harzoglups/AutoTiq/issues" target="_blank">https://github.com/harzoglups/AutoTiq/issues</a></p>
+
+    <div class="footer">
+        <p><strong>Last Updated</strong>: December 18, 2025</p>
+        <p><strong>Application Version</strong>: 1.0.0</p>
+        <p><strong>Effective Date</strong>: December 18, 2025</p>
+    </div>
+</body>
+</html>
