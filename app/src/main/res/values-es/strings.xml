@@ -2,7 +2,7 @@
     <string name="app_name">AutoTiq</string>
     
     <!-- Permission strings -->
-    <string name="permission_location_rationale">AutoTiq necesita acceso a tu ubicación para detectar cuándo te acercas a un punto guardado.</string>
+    <string name="permission_location_rationale">AutoTiq necesita acceso a tu ubicación para detectar cuándo te acercas a una zona guardada.</string>
     <string name="permission_background_location_rationale">Para monitorear tu ubicación en segundo plano y lanzar Fairtiq automáticamente, AutoTiq necesita el permiso \"Permitir siempre\".\n\nEste permiso permite a la app verificar tu ubicación incluso cuando la app está cerrada.</string>
     <string name="permission_background_location_required">Permiso en segundo plano requerido</string>
     <string name="permission_background_location_button">Permitir acceso en segundo plano</string>
@@ -20,13 +20,17 @@
     <string name="map_layers">Capas del mapa</string>
     <string name="settings">Ajustes</string>
     <string name="edit">Editar</string>
-    <string name="point_number">Punto #%1$d</string>
+    <string name="point_number">Zona #%1$d</string>
     <string name="active_time">Activo: %1$s - %2$s</string>
     <string name="search_location">Buscar un lugar</string>
     <string name="my_location">Mi ubicación</string>
+    <string name="empty_state_title">Aún no hay zonas</string>
+    <string name="empty_state_message">Mantén pulsado en el mapa para añadir tu primera zona</string>
+    <string name="create_zone_here">Crear zona aquí</string>
+    <string name="search_result">Resultado de búsqueda</string>
     
     <!-- Edit marker dialog -->
-    <string name="edit_marker">Editar marcador</string>
+    <string name="edit_marker">Editar zona</string>
     <string name="marker_name">Nombre</string>
     <string name="active_time_window">Ventana horaria activa</string>
     <string name="start_time">Inicio:</string>
@@ -39,6 +43,8 @@
     <!-- Map layer types -->
     <string name="map_layer_street">Mapa de calles</string>
     <string name="map_layer_topo">Topográfico</string>
+    <string name="delete_marker">Eliminar zona</string>
+    <string name="delete_marker_message">¿Estás seguro de que quieres eliminar esta zona?</string>
     
     <!-- Settings screen -->
     <string name="back">Atrás</string>
@@ -75,7 +81,7 @@
     <string name="app_version">Versión de la app</string>
     <string name="version">Versión %1$s</string>
     <string name="how_it_works">Cómo funciona</string>
-    <string name="how_it_works_content">• Mantén presionado en el mapa para agregar un punto (el diálogo de edición se abre automáticamente)\n• Toca brevemente un marcador para ver sus detalles\n• Mantén presionado un marcador para eliminarlo\n• Configura las propiedades del punto: nombre y ventana horaria activa (hora:minuto)\n• Habilita el seguimiento en segundo plano para monitorear tu ubicación\n• Cuando entras en la zona de un punto durante su ventana horaria activa:\n  - Fairtiq se inicia automáticamente\n  - El teléfono vibra (patrón de 3 ráfagas)\n  - La pantalla se enciende si está bloqueada\n• Debes salir de la zona y volver a entrar para activar nuevamente (anti-spam)</string>
+    <string name="how_it_works_content">• Mantén presionado en el mapa para agregar una zona (el diálogo de edición se abre automáticamente)\n• Toca brevemente una zona para ver sus detalles\n• Mantén presionado una zona para eliminarla\n• Configura las propiedades de la zona: nombre y ventana horaria activa (hora:minuto)\n• Habilita el seguimiento en segundo plano para monitorear tu ubicación\n• Cuando entras en una zona durante su ventana horaria activa:\n  - Fairtiq se inicia automáticamente\n  - El teléfono vibra (patrón de 3 ráfagas)\n  - La pantalla se enciende si está bloqueada\n• Debes salir de la zona y volver a entrar para activar nuevamente (anti-spam)</string>
     <string name="map_data">Map Data</string>
     <string name="map_data_osm_attribution">© OpenStreetMap contributors</string>
     
@@ -87,15 +93,15 @@
     
     <!-- Onboarding -->
     <string name="welcome_to_autotiq">¡Bienvenido a AutoTiq!</string>
-    <string name="onboarding_welcome_description">AutoTiq inicia Fairtiq automáticamente cuando te acercas a tus puntos de tránsito guardados. Configuremos los permisos necesarios.</string>
+    <string name="onboarding_welcome_description">AutoTiq inicia Fairtiq automáticamente cuando te acercas a tus zonas de tránsito guardadas. Configuremos los permisos necesarios.</string>
     <string name="get_started">Comenzar</string>
     <string name="onboarding_location_title">Acceso a la ubicación</string>
-    <string name="onboarding_location_description">AutoTiq necesita acceso a tu ubicación para detectar cuándo te acercas a un punto guardado.</string>
+    <string name="onboarding_location_description">AutoTiq necesita acceso a tu ubicación para detectar cuándo te acercas a una zona guardada.</string>
     <string name="onboarding_background_location_title">Acceso a la ubicación en segundo plano</string>
     <string name="onboarding_background_location_description">Para que la app funcione automáticamente, necesita el permiso \"Permitir siempre\". Esto permite a AutoTiq monitorear tu ubicación incluso cuando la app está cerrada.\n\nIMPORTANTE: En la siguiente pantalla, selecciona \"Permitir siempre\".</string>
     <string name="onboarding_notifications_title">Notificaciones</string>
     <string name="onboarding_notifications_description">Permite las notificaciones para ser informado cuando Fairtiq se inicia automáticamente.</string>
     <string name="onboarding_complete_title">¡Todo listo!</string>
-    <string name="onboarding_complete_description">Ahora puedes agregar tus puntos de tránsito en el mapa y habilitar el seguimiento en segundo plano en los ajustes.</string>
+    <string name="onboarding_complete_description">Ahora puedes agregar tus zonas de tránsito en el mapa y habilitar el seguimiento en segundo plano en los ajustes.</string>
     <string name="start_using_app">Comenzar a usar AutoTiq</string>
 </resources>

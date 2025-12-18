@@ -359,20 +359,8 @@ fun MapScreen(
                             }
                         },
                         onClose = { 
+                            // Only close the card, keep the red marker visible
                             selectedSearchResult = null
-                            // Also remove the search marker
-                            mapView?.let { map ->
-                                searchMarker?.let { marker ->
-                                    marker.icon?.let { drawable ->
-                                        if (drawable is android.graphics.drawable.BitmapDrawable) {
-                                            drawable.bitmap?.recycle()
-                                        }
-                                    }
-                                    map.overlays.remove(marker)
-                                }
-                                searchMarker = null
-                                map.invalidate()
-                            }
                         },
                         modifier = Modifier
                             .align(Alignment.BottomCenter)

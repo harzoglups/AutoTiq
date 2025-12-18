@@ -2,7 +2,7 @@
     <string name="app_name">AutoTiq</string>
     
     <!-- Permission strings -->
-    <string name="permission_location_rationale">AutoTiq precisa de acesso à sua localização para detectar quando você se aproxima de um ponto salvo.</string>
+    <string name="permission_location_rationale">AutoTiq precisa de acesso à sua localização para detectar quando você se aproxima de uma zona salva.</string>
     <string name="permission_background_location_rationale">Para monitorar sua localização em segundo plano e iniciar o Fairtiq automaticamente, o AutoTiq precisa da permissão \"Permitir sempre\".\n\nEsta permissão permite que o app verifique sua localização mesmo quando o app está fechado.</string>
     <string name="permission_background_location_required">Permissão em segundo plano necessária</string>
     <string name="permission_background_location_button">Permitir acesso em segundo plano</string>
@@ -20,13 +20,17 @@
     <string name="map_layers">Camadas do mapa</string>
     <string name="settings">Configurações</string>
     <string name="edit">Editar</string>
-    <string name="point_number">Ponto #%1$d</string>
+    <string name="point_number">Zona #%1$d</string>
     <string name="active_time">Ativo: %1$s - %2$s</string>
     <string name="search_location">Procurar um local</string>
     <string name="my_location">Minha localização</string>
+    <string name="empty_state_title">Ainda não há zonas</string>
+    <string name="empty_state_message">Pressione longamente no mapa para adicionar sua primeira zona</string>
+    <string name="create_zone_here">Criar zona aqui</string>
+    <string name="search_result">Resultado da pesquisa</string>
     
     <!-- Edit marker dialog -->
-    <string name="edit_marker">Editar marcador</string>
+    <string name="edit_marker">Editar zona</string>
     <string name="marker_name">Nome</string>
     <string name="active_time_window">Janela de tempo ativa</string>
     <string name="start_time">Início:</string>
@@ -39,6 +43,8 @@
     <!-- Map layer types -->
     <string name="map_layer_street">Mapa de ruas</string>
     <string name="map_layer_topo">Topográfico</string>
+    <string name="delete_marker">Excluir zona</string>
+    <string name="delete_marker_message">Tem certeza de que deseja excluir esta zona?</string>
     
     <!-- Settings screen -->
     <string name="back">Voltar</string>
@@ -75,7 +81,7 @@
     <string name="app_version">Versão do app</string>
     <string name="version">Versão %1$s</string>
     <string name="how_it_works">Como funciona</string>
-    <string name="how_it_works_content">• Pressione longamente no mapa para adicionar um ponto (o diálogo de edição abre automaticamente)\n• Toque brevemente em um marcador para ver seus detalhes\n• Pressione longamente em um marcador para excluí-lo\n• Configure as propriedades do ponto: nome e janela de tempo ativa (hora:minuto)\n• Ative o rastreamento em segundo plano para monitorar sua localização\n• Quando você entra na zona de um ponto durante sua janela de tempo ativa:\n  - Fairtiq inicia automaticamente\n  - O telefone vibra (padrão de 3 rajadas)\n  - A tela acende se estiver bloqueada\n• Você deve sair da zona e entrar novamente para acionar novamente (anti-spam)</string>
+    <string name="how_it_works_content">• Pressione longamente no mapa para adicionar uma zona (o diálogo de edição abre automaticamente)\n• Toque brevemente em uma zona para ver seus detalhes\n• Pressione longamente em uma zona para excluí-la\n• Configure as propriedades da zona: nome e janela de tempo ativa (hora:minuto)\n• Ative o rastreamento em segundo plano para monitorar sua localização\n• Quando você entra em uma zona durante sua janela de tempo ativa:\n  - Fairtiq inicia automaticamente\n  - O telefone vibra (padrão de 3 rajadas)\n  - A tela acende se estiver bloqueada\n• Você deve sair da zona e entrar novamente para acionar novamente (anti-spam)</string>
     <string name="map_data">Map Data</string>
     <string name="map_data_osm_attribution">© OpenStreetMap contributors</string>
     
@@ -87,15 +93,15 @@
     
     <!-- Onboarding -->
     <string name="welcome_to_autotiq">Bem-vindo ao AutoTiq!</string>
-    <string name="onboarding_welcome_description">O AutoTiq inicia o Fairtiq automaticamente quando você se aproxima dos seus pontos de trânsito salvos. Vamos configurar as permissões necessárias.</string>
+    <string name="onboarding_welcome_description">O AutoTiq inicia o Fairtiq automaticamente quando você se aproxima das suas zonas de trânsito salvas. Vamos configurar as permissões necessárias.</string>
     <string name="get_started">Começar</string>
     <string name="onboarding_location_title">Acesso à localização</string>
-    <string name="onboarding_location_description">O AutoTiq precisa de acesso à sua localização para detectar quando você se aproxima de um ponto salvo.</string>
+    <string name="onboarding_location_description">O AutoTiq precisa de acesso à sua localização para detectar quando você se aproxima de uma zona salva.</string>
     <string name="onboarding_background_location_title">Acesso à localização em segundo plano</string>
     <string name="onboarding_background_location_description">Para funcionar automaticamente, o app precisa da permissão \"Permitir sempre\". Isso permite ao AutoTiq monitorar sua localização mesmo quando o app está fechado.\n\nIMPORTANTE: Na próxima tela, selecione \"Permitir sempre\".</string>
     <string name="onboarding_notifications_title">Notificações</string>
     <string name="onboarding_notifications_description">Permita notificações para ser informado quando o Fairtiq for iniciado automaticamente.</string>
     <string name="onboarding_complete_title">Tudo pronto!</string>
-    <string name="onboarding_complete_description">Agora você pode adicionar seus pontos de trânsito no mapa e ativar o rastreamento em segundo plano nas configurações.</string>
+    <string name="onboarding_complete_description">Agora você pode adicionar suas zonas de trânsito no mapa e ativar o rastreamento em segundo plano nas configurações.</string>
     <string name="start_using_app">Começar a usar o AutoTiq</string>
 </resources>

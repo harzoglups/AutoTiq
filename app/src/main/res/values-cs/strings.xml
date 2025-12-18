@@ -2,7 +2,7 @@
     <string name="app_name">AutoTiq</string>
     
     <!-- Permission strings -->
-    <string name="permission_location_rationale">AutoTiq potřebuje přístup k vaší poloze, aby detekoval, když se blížíte k uloženému bodu.</string>
+    <string name="permission_location_rationale">AutoTiq potřebuje přístup k vaší poloze, aby detekoval, když se blížíte k uložené zóně.</string>
     <string name="permission_background_location_rationale">Pro sledování vaší polohy na pozadí a automatické spuštění Fairtiq potřebuje AutoTiq oprávnění \"Povolit vždy\".\n\nToto oprávnění umožňuje aplikaci kontrolovat vaši polohu i když je aplikace zavřená.</string>
     <string name="permission_background_location_required">Vyžadováno oprávnění na pozadí</string>
     <string name="permission_background_location_button">Povolit přístup na pozadí</string>
@@ -20,13 +20,17 @@
     <string name="map_layers">Vrstvy mapy</string>
     <string name="settings">Nastavení</string>
     <string name="edit">Upravit</string>
-    <string name="point_number">Bod #%1$d</string>
+    <string name="point_number">Zóna #%1$d</string>
     <string name="active_time">Aktivní: %1$s - %2$s</string>
     <string name="search_location">Hledat místo</string>
     <string name="my_location">Moje poloha</string>
+    <string name="empty_state_title">Zatím žádné zóny</string>
+    <string name="empty_state_message">Stiskněte dlouho na mapu pro přidání první zóny</string>
+    <string name="create_zone_here">Vytvořit zónu zde</string>
+    <string name="search_result">Výsledek vyhledávání</string>
     
     <!-- Edit marker dialog -->
-    <string name="edit_marker">Upravit značku</string>
+    <string name="edit_marker">Upravit zónu</string>
     <string name="marker_name">Název</string>
     <string name="active_time_window">Aktivní časové okno</string>
     <string name="start_time">Začátek:</string>
@@ -39,6 +43,8 @@
     <!-- Map layer types -->
     <string name="map_layer_street">Silniční mapa</string>
     <string name="map_layer_topo">Topografická</string>
+    <string name="delete_marker">Odstranit zónu</string>
+    <string name="delete_marker_message">Opravdu chcete odstranit tuto zónu?</string>
     
     <!-- Settings screen -->
     <string name="back">Zpět</string>
@@ -75,7 +81,7 @@
     <string name="app_version">Verze aplikace</string>
     <string name="version">Verze %1$s</string>
     <string name="how_it_works">Jak to funguje</string>
-    <string name="how_it_works_content">• Dlouhý stisk na mapu pro přidání bodu (dialog úprav se otevře automaticky)\n• Krátký stisk na značku pro zobrazení detailů\n• Dlouhý stisk na značku pro její smazání\n• Konfigurace vlastností bodu: název a aktivní časové okno (hodina:minuta)\n• Povolte sledování na pozadí pro monitorování vaší polohy\n• Když vstoupíte do zóny bodu během jeho aktivního časového okna:\n  - Fairtiq se spustí automaticky\n  - Telefon vibruje (3 vibrace)\n  - Obrazovka se probudí, pokud je zamčená\n• Musíte opustit zónu a znovu vstoupit pro opětovné spuštění (anti-spam)</string>
+    <string name="how_it_works_content">• Dlouhý stisk na mapu pro přidání zóny (dialog úprav se otevře automaticky)\n• Krátký stisk na zónu pro zobrazení detailů\n• Dlouhý stisk na zónu pro její smazání\n• Konfigurace vlastností zóny: název a aktivní časové okno (hodina:minuta)\n• Povolte sledování na pozadí pro monitorování vaší polohy\n• Když vstoupíte do zóny během jejího aktivního časového okna:\n  - Fairtiq se spustí automaticky\n  - Telefon vibruje (3 vibrace)\n  - Obrazovka se probudí, pokud je zamčená\n• Musíte opustit zónu a znovu vstoupit pro opětovné spuštění (anti-spam)</string>
     <string name="map_data">Map Data</string>
     <string name="map_data_osm_attribution">© OpenStreetMap contributors</string>
     
@@ -87,15 +93,15 @@
     
     <!-- Onboarding -->
     <string name="welcome_to_autotiq">Vítejte v AutoTiq!</string>
-    <string name="onboarding_welcome_description">AutoTiq automaticky spustí Fairtiq, když se přiblížíte k uloženým dopravním bodům. Nastavme potřebná oprávnění.</string>
+    <string name="onboarding_welcome_description">AutoTiq automaticky spustí Fairtiq, když se přiblížíte k uloženým dopravním zónám. Nastavme potřebná oprávnění.</string>
     <string name="get_started">Začít</string>
     <string name="onboarding_location_title">Přístup k poloze</string>
-    <string name="onboarding_location_description">AutoTiq potřebuje přístup k vaší poloze, aby detekoval, když se blížíte k uloženému bodu.</string>
+    <string name="onboarding_location_description">AutoTiq potřebuje přístup k vaší poloze, aby detekoval, když se blížíte k uložené zóně.</string>
     <string name="onboarding_background_location_title">Přístup k poloze na pozadí</string>
     <string name="onboarding_background_location_description">Pro automatické fungování aplikace je potřeba oprávnění \"Povolit vždy\". To umožňuje AutoTiq sledovat vaši polohu i když je aplikace zavřená.\n\nDŮLEŽITÉ: Na další obrazovce vyberte \"Povolit vždy\".</string>
     <string name="onboarding_notifications_title">Oznámení</string>
     <string name="onboarding_notifications_description">Povolte oznámení, abyste byli informováni, když je Fairtiq automaticky spuštěn.</string>
     <string name="onboarding_complete_title">Vše připraveno!</string>
-    <string name="onboarding_complete_description">Nyní můžete přidat své dopravní body na mapu a povolit sledování na pozadí v nastavení.</string>
+    <string name="onboarding_complete_description">Nyní můžete přidat své dopravní zóny na mapu a povolit sledování na pozadí v nastavení.</string>
     <string name="start_using_app">Začít používat AutoTiq</string>
 </resources>

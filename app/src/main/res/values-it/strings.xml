@@ -2,7 +2,7 @@
     <string name="app_name">AutoTiq</string>
     
     <!-- Permission strings -->
-    <string name="permission_location_rationale">AutoTiq necessita dell\'accesso alla tua posizione per rilevare quando ti avvicini a un punto salvato.</string>
+    <string name="permission_location_rationale">AutoTiq necessita dell\'accesso alla tua posizione per rilevare quando ti avvicini a una zona salvata.</string>
     <string name="permission_background_location_rationale">Per monitorare la tua posizione in background e avviare automaticamente Fairtiq, AutoTiq necessita del permesso \"Consenti sempre\".\n\nQuesto permesso consente all\'app di controllare la tua posizione anche quando l\'app è chiusa.</string>
     <string name="permission_background_location_required">Permesso background richiesto</string>
     <string name="permission_background_location_button">Consenti accesso in background</string>
@@ -20,13 +20,17 @@
     <string name="map_layers">Livelli mappa</string>
     <string name="settings">Impostazioni</string>
     <string name="edit">Modifica</string>
-    <string name="point_number">Punto #%1$d</string>
+    <string name="point_number">Zona #%1$d</string>
     <string name="active_time">Attivo: %1$s - %2$s</string>
     <string name="search_location">Cerca un luogo</string>
     <string name="my_location">La mia posizione</string>
+    <string name="empty_state_title">Nessuna zona ancora</string>
+    <string name="empty_state_message">Tieni premuto sulla mappa per aggiungere la tua prima zona</string>
+    <string name="create_zone_here">Crea zona qui</string>
+    <string name="search_result">Risultato di ricerca</string>
     
     <!-- Edit marker dialog -->
-    <string name="edit_marker">Modifica marcatore</string>
+    <string name="edit_marker">Modifica zona</string>
     <string name="marker_name">Nome</string>
     <string name="active_time_window">Finestra temporale attiva</string>
     <string name="start_time">Inizio:</string>
@@ -39,6 +43,8 @@
     <!-- Map layer types -->
     <string name="map_layer_street">Mappa stradale</string>
     <string name="map_layer_topo">Topografica</string>
+    <string name="delete_marker">Elimina zona</string>
+    <string name="delete_marker_message">Sei sicuro di voler eliminare questa zona?</string>
     
     <!-- Settings screen -->
     <string name="back">Indietro</string>
@@ -75,7 +81,7 @@
     <string name="app_version">Versione app</string>
     <string name="version">Versione %1$s</string>
     <string name="how_it_works">Come funziona</string>
-    <string name="how_it_works_content">• Premi a lungo sulla mappa per aggiungere un punto (il dialogo di modifica si apre automaticamente)\n• Tocca brevemente un marcatore per vederne i dettagli\n• Premi a lungo su un marcatore per eliminarlo\n• Configura le proprietà del punto: nome e finestra temporale attiva (ora:minuto)\n• Abilita il tracciamento in background per monitorare la tua posizione\n• Quando entri nella zona di un punto durante la sua finestra temporale attiva:\n  - Fairtiq si avvia automaticamente\n  - Il telefono vibra (pattern a 3 impulsi)\n  - Lo schermo si accende se bloccato\n• Devi uscire dalla zona e rientrare per attivare di nuovo (anti-spam)</string>
+    <string name="how_it_works_content">• Premi a lungo sulla mappa per aggiungere una zona (il dialogo di modifica si apre automaticamente)\n• Tocca brevemente una zona per vederne i dettagli\n• Premi a lungo su una zona per eliminarla\n• Configura le proprietà della zona: nome e finestra temporale attiva (ora:minuto)\n• Abilita il tracciamento in background per monitorare la tua posizione\n• Quando entri in una zona durante la sua finestra temporale attiva:\n  - Fairtiq si avvia automaticamente\n  - Il telefono vibra (pattern a 3 impulsi)\n  - Lo schermo si accende se bloccato\n• Devi uscire dalla zona e rientrare per attivare di nuovo (anti-spam)</string>
     <string name="map_data">Map Data</string>
     <string name="map_data_osm_attribution">© OpenStreetMap contributors</string>
     
@@ -87,15 +93,15 @@
     
     <!-- Onboarding -->
     <string name="welcome_to_autotiq">Benvenuto su AutoTiq!</string>
-    <string name="onboarding_welcome_description">AutoTiq avvia automaticamente Fairtiq quando ti avvicini ai tuoi punti di transito salvati. Impostiamo i permessi necessari.</string>
+    <string name="onboarding_welcome_description">AutoTiq avvia automaticamente Fairtiq quando ti avvicini alle tue zone di transito salvate. Impostiamo i permessi necessari.</string>
     <string name="get_started">Inizia</string>
     <string name="onboarding_location_title">Accesso alla posizione</string>
-    <string name="onboarding_location_description">AutoTiq necessita dell\'accesso alla tua posizione per rilevare quando ti avvicini a un punto salvato.</string>
+    <string name="onboarding_location_description">AutoTiq necessita dell\'accesso alla tua posizione per rilevare quando ti avvicini a una zona salvata.</string>
     <string name="onboarding_background_location_title">Accesso alla posizione in background</string>
     <string name="onboarding_background_location_description">Per funzionare automaticamente, l\'app necessita del permesso \"Consenti sempre\". Questo permette a AutoTiq di monitorare la tua posizione anche quando l\'app è chiusa.\n\nIMPORTANTE: Nella schermata successiva, seleziona \"Consenti sempre\".</string>
     <string name="onboarding_notifications_title">Notifiche</string>
     <string name="onboarding_notifications_description">Consenti le notifiche per essere informato quando Fairtiq viene avviato automaticamente.</string>
     <string name="onboarding_complete_title">Tutto pronto!</string>
-    <string name="onboarding_complete_description">Ora puoi aggiungere i tuoi punti di transito sulla mappa e abilitare il tracciamento in background nelle impostazioni.</string>
+    <string name="onboarding_complete_description">Ora puoi aggiungere le tue zone di transito sulla mappa e abilitare il tracciamento in background nelle impostazioni.</string>
     <string name="start_using_app">Inizia a usare AutoTiq</string>
 </resources>
