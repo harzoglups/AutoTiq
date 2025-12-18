@@ -27,9 +27,10 @@
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"
         android:maxSdkVersion="32" />
     
-    <!-- Query installed packages to check for Fairtiq -->
-    <uses-permission android:name="android.permission.QUERY_ALL_PACKAGES"
-        tools:ignore="QueryAllPackagesPermission" />
+    <!-- Query specific package: Fairtiq app -->
+    <queries>
+        <package android:name="com.fairtiq.android" />
+    </queries>
 
     <application
         android:name=".AutoTiqApplication"
