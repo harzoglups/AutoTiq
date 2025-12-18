@@ -51,6 +51,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -79,6 +80,7 @@ fun MapScreen(
 ) {
     val context = LocalContext.current
     val view = LocalView.current
+    val keyboardController = LocalSoftwareKeyboardController.current
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val lastAddedPointId by viewModel.lastAddedPointId.collectAsStateWithLifecycle()
     val savedMapPosition by viewModel.savedMapPosition.collectAsStateWithLifecycle()
@@ -166,10 +168,14 @@ fun MapScreen(
                         viewModel.deletePoint(id)
                     },
                     onMarkerClick = { point -> 
+                        // Hide keyboard when clicking on marker
+                        keyboardController?.hide()
                         // Toggle: if same point clicked, close info; otherwise show info
                         selectedPoint = if (selectedPoint?.id == point.id) null else point
                     },
                     onMapClick = { 
+                        // Hide keyboard when clicking on map
+                        keyboardController?.hide()
                         selectedPoint = null // Close info card when clicking on map
                         // Remove search marker when clicking on map
                         searchMarker?.let { marker ->
@@ -229,6 +235,9 @@ fun MapScreen(
                     searchResults = searchResults,
                     isSearching = isSearching,
                     onResultClick = { result ->
+                        // Hide keyboard when selecting a search result
+                        keyboardController?.hide()
+                        
                         mapView?.let { map ->
                             // Remove previous search marker if exists and recycle bitmap
                             searchMarker?.let { marker ->
