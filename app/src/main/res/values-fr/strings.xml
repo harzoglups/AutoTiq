@@ -2,7 +2,7 @@
     <string name="app_name">AutoTiq</string>
     
     <!-- Permission strings -->
-    <string name="permission_location_rationale">AutoTiq a besoin d\'accéder à votre position pour détecter quand vous approchez d\'un point sauvegardé.</string>
+    <string name="permission_location_rationale">AutoTiq a besoin d\'accéder à votre position pour détecter quand vous approchez d\'une zone sauvegardée.</string>
     <string name="permission_background_location_rationale">Pour surveiller votre position en arrière-plan et lancer automatiquement Fairtiq, AutoTiq a besoin de la permission \"Toujours autoriser\".\n\nCette permission permet à l\'application de vérifier votre position même quand l\'app est fermée.</string>
     <string name="permission_background_location_required">Permission arrière-plan requise</string>
     <string name="permission_background_location_button">Autoriser l\'accès en arrière-plan</string>
@@ -20,13 +20,15 @@
     <string name="map_layers">Couches de carte</string>
     <string name="settings">Paramètres</string>
     <string name="edit">Modifier</string>
-    <string name="point_number">Point #%1$d</string>
+    <string name="point_number">Zone #%1$d</string>
     <string name="active_time">Actif: %1$s - %2$s</string>
     <string name="search_location">Rechercher un lieu</string>
     <string name="my_location">Ma position</string>
+    <string name="empty_state_title">Aucune zone pour le moment</string>
+    <string name="empty_state_message">Appuyez longuement sur la carte pour ajouter votre première zone</string>
     
     <!-- Edit marker dialog -->
-    <string name="edit_marker">Modifier le marqueur</string>
+    <string name="edit_marker">Modifier la zone</string>
     <string name="marker_name">Nom</string>
     <string name="active_time_window">Fenêtre horaire active</string>
     <string name="start_time">Début:</string>
@@ -37,8 +39,8 @@
     <string name="ok">OK</string>
     
     <!-- Delete confirmation dialog -->
-    <string name="delete_marker">Supprimer le marqueur</string>
-    <string name="delete_marker_message">Êtes-vous sûr de vouloir supprimer ce marqueur ?</string>
+    <string name="delete_marker">Supprimer la zone</string>
+    <string name="delete_marker_message">Êtes-vous sûr de vouloir supprimer cette zone ?</string>
     <string name="delete">Supprimer</string>
     
     <!-- Map layer types -->
@@ -80,7 +82,7 @@
     <string name="app_version">Version de l\'app</string>
     <string name="version">Version %1$s</string>
     <string name="how_it_works">Comment ça marche</string>
-    <string name="how_it_works_content">• Appui long sur la carte pour ajouter un point (le dialogue de modification s\'ouvre automatiquement)\n• Appui court sur un marqueur pour voir ses détails\n• Appui long sur un marqueur pour le supprimer\n• Configurer les propriétés du point: nom et fenêtre horaire active (heure:minute)\n• Activer le suivi en arrière-plan pour surveiller votre position\n• Lorsque vous entrez dans la zone d\'un point pendant sa fenêtre horaire active:\n  - Fairtiq se lance automatiquement\n  - Le téléphone vibre (motif 3 salves)\n  - L\'écran s\'allume s\'il est verrouillé\n• Vous devez sortir de la zone et y entrer à nouveau pour déclencher à nouveau (anti-spam)</string>
+    <string name="how_it_works_content">• Appui long sur la carte pour ajouter une zone (le dialogue de modification s\'ouvre automatiquement)\n• Appui court sur une zone pour voir ses détails\n• Appui long sur une zone pour la supprimer\n• Configurer les propriétés de la zone: nom et fenêtre horaire active (heure:minute)\n• Activer le suivi en arrière-plan pour surveiller votre position\n• Lorsque vous entrez dans une zone pendant sa fenêtre horaire active:\n  - Fairtiq se lance automatiquement\n  - Le téléphone vibre (motif 3 salves)\n  - L\'écran s\'allume s\'il est verrouillé\n• Vous devez sortir de la zone et y entrer à nouveau pour déclencher à nouveau (anti-spam)</string>
     <string name="map_data">Map Data</string>
     <string name="map_data_osm_attribution">© OpenStreetMap contributors</string>
     
@@ -92,15 +94,15 @@
     
     <!-- Onboarding -->
     <string name="welcome_to_autotiq">Bienvenue sur AutoTiq !</string>
-    <string name="onboarding_welcome_description">AutoTiq lance automatiquement Fairtiq lorsque vous approchez de vos points de transport sauvegardés. Configurons les permissions nécessaires.</string>
+    <string name="onboarding_welcome_description">AutoTiq lance automatiquement Fairtiq lorsque vous approchez de vos zones de transport sauvegardées. Configurons les permissions nécessaires.</string>
     <string name="get_started">Commencer</string>
     <string name="onboarding_location_title">Accès à la localisation</string>
-    <string name="onboarding_location_description">AutoTiq a besoin d\'accéder à votre position pour détecter quand vous approchez d\'un point sauvegardé.</string>
+    <string name="onboarding_location_description">AutoTiq a besoin d\'accéder à votre position pour détecter quand vous approchez d\'une zone sauvegardée.</string>
     <string name="onboarding_background_location_title">Accès à la localisation en arrière-plan</string>
     <string name="onboarding_background_location_description">Pour que l\'application fonctionne automatiquement, elle a besoin de la permission \"Toujours autoriser\". Cela permet à AutoTiq de surveiller votre position même quand l\'application est fermée.\n\nIMPORTANT : Sur l\'écran suivant, sélectionnez \"Toujours autoriser\".</string>
     <string name="onboarding_notifications_title">Notifications</string>
     <string name="onboarding_notifications_description">Autorisez les notifications pour être informé lorsque Fairtiq est lancé automatiquement.</string>
     <string name="onboarding_complete_title">Tout est prêt !</string>
-    <string name="onboarding_complete_description">Vous pouvez maintenant ajouter vos points de transport sur la carte et activer le suivi en arrière-plan dans les paramètres.</string>
+    <string name="onboarding_complete_description">Vous pouvez maintenant ajouter vos zones de transport sur la carte et activer le suivi en arrière-plan dans les paramètres.</string>
     <string name="start_using_app">Commencer à utiliser AutoTiq</string>
 </resources>

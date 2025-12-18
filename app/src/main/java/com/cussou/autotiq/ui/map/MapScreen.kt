@@ -358,6 +358,38 @@ fun MapScreen(
                     }
                 }
                 
+                // Empty state message when no points exist (above buttons)
+                if (state.points.isEmpty()) {
+                    Card(
+                        modifier = Modifier
+                            .align(Alignment.BottomCenter)
+                            .padding(horizontal = 32.dp)
+                            .padding(bottom = 100.dp), // Space for buttons below (increased spacing)
+                        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
+                        colors = CardDefaults.cardColors(
+                            containerColor = MaterialTheme.colorScheme.surfaceVariant
+                        )
+                    ) {
+                        Column(
+                            modifier = Modifier.padding(16.dp),
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            verticalArrangement = androidx.compose.foundation.layout.Arrangement.spacedBy(8.dp)
+                        ) {
+                            Text(
+                                text = stringResource(R.string.empty_state_title),
+                                style = MaterialTheme.typography.titleSmall,
+                                color = androidx.compose.ui.graphics.Color(0xFFFF9800) // Orange warning color
+                            )
+                            Text(
+                                text = stringResource(R.string.empty_state_message),
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                textAlign = androidx.compose.ui.text.style.TextAlign.Center
+                            )
+                        }
+                    }
+                }
+                
                 // Floating buttons (bottom center, horizontal row)
                 Row(
                     modifier = Modifier
