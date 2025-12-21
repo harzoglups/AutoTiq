@@ -145,10 +145,18 @@ scripts/
 
 **Quick Deployment:**
 ```bash
-./scripts/deplo./scripts/deploy/deploy-privacy-policy.sh
+./scripts/deploy/deploy-privacy-policy.sh
+```
+
+**Setup** (first time only):
+```bash
+# Copy .env.example to .env and customize with your VPS settings
+cp .env.example .env
+# Edit .env with your VPS_USER (SSH username)
 ```
 
 **What it does:**
+- Loads VPS configuration from `.env` file
 - Extracts version from `app/build.gradle.kts`
 - Updates date to current date in HTML
 - Updates version number in HTML
@@ -157,14 +165,15 @@ scripts/
 
 **Manual Deployment** (if script fails):
 ```bash
-scp docs/privacy-policy.html sylvain@cussou.com:~/services/privacy-policies/www/autotiq/index.html
-curl -I https://privacy.cussou.com/autotiq/
+# Update variables from your .env file
+scp docs/privacy-policy.html $VPS_USER@$VPS_HOST:$VPS_PATH/index.html
+curl -I $PRIVACY_POLICY_URL
 ```
 
 **Location:**
 - Source: `docs/privacy-policy.html`
-- Live URL: `https://privacy.cussou.com/autotiq/`
-- VPS: Docker container `privacy-cussou` (nginx:alpine)
+- Configuration: `.env` file (copy from `.env.example`)
+- Live URL: Configured in `.env` as `PRIVACY_POLICY_URL`
 
 **When to Deploy:**
 - ✅ Before submitting new version to Play Console

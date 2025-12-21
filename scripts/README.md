@@ -68,13 +68,21 @@ Updates version numbers in `build.gradle.kts`.
 Scripts for deploying resources to external services.
 
 ### `deploy-privacy-policy.sh`
-Deploys privacy policy to VPS (https://privacy.cussou.com/autotiq/).
+Deploys privacy policy to VPS.
 
 ```bash
 ./scripts/deploy/deploy-privacy-policy.sh
 ```
 
+**Setup** (first time only):
+```bash
+# Copy .env.example to .env and customize with your VPS settings
+cp .env.example .env
+# Edit .env with your VPS_USER (SSH username)
+```
+
 **What it does:**
+- Loads VPS configuration from `.env` file
 - Extracts version from `build.gradle.kts`
 - Updates date to current date in HTML
 - Updates version number in HTML
@@ -212,7 +220,7 @@ Generates PlantUML diagrams from `.puml` files in `docs/`.
 - Scripts use relative paths from project root
 - Make sure scripts are executable: `chmod +x scripts/**/*.sh`
 - Most scripts require an Android device connected via ADB
-- VPS deployment scripts require SSH access to `sylvain@cussou.com`
+- VPS deployment scripts require SSH access (configure in `.env` file)
 
 ---
 
@@ -234,7 +242,7 @@ export JAVA_HOME="/Applications/Android Studio.app/Contents/jbr/Contents/Home"
 ```
 
 ### "SSH connection failed"
-Check VPS access:
+Check VPS access (replace with your settings from `.env`):
 ```bash
-ssh sylvain@cussou.com "echo 'Connected'"
+ssh $VPS_USER@$VPS_HOST "echo 'Connected'"
 ```

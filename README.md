@@ -110,6 +110,17 @@ adb shell am start -n com.autotiq/.MainActivity
 
 ## 🚀 Usage
 
+### Configuration (First Time Setup)
+
+For VPS deployment of privacy policy, create a `.env` file:
+
+```bash
+cp .env.example .env
+# Edit .env with your VPS_USER (SSH username for deployment)
+```
+
+**Note**: If you fork this project, update the VPS host/paths in `scripts/deploy/deploy-privacy-policy.sh` and email addresses in `docs/` HTML files.
+
 ### First Launch
 
 1. **Splash Screen**: Welcome animation (3 seconds)

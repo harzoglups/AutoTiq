@@ -7,9 +7,27 @@ set -e  # Exit on error
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
 PRIVACY_POLICY_FILE="$PROJECT_ROOT/docs/privacy-policy.html"
-VPS_USER="sylvain"
+
+# Public configuration (not sensitive)
 VPS_HOST="cussou.com"
 VPS_PATH="~/services/privacy-policies/www/autotiq/"
+PRIVACY_POLICY_URL="https://privacy.cussou.com/autotiq/"
+
+# Load VPS_USER from .env file (sensitive: SSH username)
+ENV_FILE="$PROJECT_ROOT/.env"
+if [ -f "$ENV_FILE" ]; then
+    # Source .env file (safer than export with xargs for paths with spaces)
+    set -a
+    source "$ENV_FILE"
+    set +a
+else
+    echo "⚠️  Warning: .env file not found at $ENV_FILE"
+    echo "    Copy .env.example to .env and set your VPS_USER"
+    echo "    Using default value (this will likely fail)"
+fi
+
+# Use VPS_USER from .env with fallback default
+VPS_USER="${VPS_USER:-your-username}"
 
 echo "=== AutoTiq Privacy Policy Deployment ==="
 echo ""
@@ -53,11 +71,11 @@ scp "$PRIVACY_POLICY_FILE" "$VPS_USER@$VPS_HOST:$VPS_PATH/index.html"
 if [ $? -eq 0 ]; then
     echo ""
     echo "✅ Privacy policy deployed successfully!"
-    echo "🔗 URL: https://privacy.cussou.com/autotiq/"
+    echo "🔗 URL: $PRIVACY_POLICY_URL"
     echo ""
     echo "🧪 Testing access..."
     sleep 2
-    HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" https://privacy.cussou.com/autotiq/)
+    HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" "$PRIVACY_POLICY_URL")
     if [ "$HTTP_CODE" = "200" ]; then
         echo "✅ Privacy policy is accessible (HTTP $HTTP_CODE)"
     else
