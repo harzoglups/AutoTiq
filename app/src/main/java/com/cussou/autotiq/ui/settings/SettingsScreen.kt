@@ -258,51 +258,6 @@ fun SettingsScreen(
                 Spacer(modifier = Modifier.height(16.dp))
             }
             
-            // Theme selection
-            Text(
-                text = stringResource(R.string.appearance),
-                style = MaterialTheme.typography.headlineSmall,
-                modifier = Modifier.padding(bottom = 16.dp)
-            )
-            
-            SettingCard {
-                Column {
-                    Text(
-                        text = stringResource(R.string.theme),
-                        style = MaterialTheme.typography.titleMedium,
-                        modifier = Modifier.padding(bottom = 12.dp)
-                    )
-                    
-                    val themeOptions = listOf(
-                        com.cussou.autotiq.domain.model.ThemeMode.SYSTEM to R.string.theme_system,
-                        com.cussou.autotiq.domain.model.ThemeMode.LIGHT to R.string.theme_light,
-                        com.cussou.autotiq.domain.model.ThemeMode.DARK to R.string.theme_dark
-                    )
-                    
-                    themeOptions.forEach { (mode, labelResId) ->
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .clickable { viewModel.updateThemeMode(mode) }
-                                .padding(vertical = 8.dp),
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            androidx.compose.material3.RadioButton(
-                                selected = settings.themeMode == mode,
-                                onClick = { viewModel.updateThemeMode(mode) }
-                            )
-                            Spacer(modifier = Modifier.width(12.dp))
-                            Text(
-                                text = stringResource(labelResId),
-                                style = MaterialTheme.typography.bodyLarge
-                            )
-                        }
-                    }
-                }
-            }
-            
-            Spacer(modifier = Modifier.height(16.dp))
-            
             Text(
                 text = stringResource(R.string.location_tracking),
                 style = MaterialTheme.typography.headlineSmall,
@@ -725,37 +680,6 @@ fun SettingsScreen(
             Spacer(modifier = Modifier.height(24.dp))
 
             Text(
-                text = stringResource(R.string.testing),
-                style = MaterialTheme.typography.headlineSmall,
-                modifier = Modifier.padding(bottom = 16.dp)
-            )
-
-            SettingCard {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Column(modifier = Modifier.weight(1f)) {
-                        Text(
-                            text = stringResource(R.string.test_mode),
-                            style = MaterialTheme.typography.titleMedium
-                        )
-                        Text(
-                            text = stringResource(R.string.test_mode_desc),
-                            style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
-                    }
-                    Switch(
-                        checked = settings.testModeEnabled,
-                        onCheckedChange = { viewModel.updateTestMode(it) }
-                    )
-                }
-            }
-
-            Spacer(modifier = Modifier.height(24.dp))
-
-            Text(
                 text = stringResource(R.string.backup_restore),
                 style = MaterialTheme.typography.headlineSmall,
                 modifier = Modifier.padding(bottom = 16.dp)
@@ -808,6 +732,82 @@ fun SettingsScreen(
                     ) {
                         Text(stringResource(R.string.import_zones))
                     }
+                }
+            }
+
+            Spacer(modifier = Modifier.height(24.dp))
+
+            // Theme selection
+            Text(
+                text = stringResource(R.string.appearance),
+                style = MaterialTheme.typography.headlineSmall,
+                modifier = Modifier.padding(bottom = 16.dp)
+            )
+            
+            SettingCard {
+                Column {
+                    Text(
+                        text = stringResource(R.string.theme),
+                        style = MaterialTheme.typography.titleMedium,
+                        modifier = Modifier.padding(bottom = 12.dp)
+                    )
+                    
+                    val themeOptions = listOf(
+                        com.cussou.autotiq.domain.model.ThemeMode.SYSTEM to R.string.theme_system,
+                        com.cussou.autotiq.domain.model.ThemeMode.LIGHT to R.string.theme_light,
+                        com.cussou.autotiq.domain.model.ThemeMode.DARK to R.string.theme_dark
+                    )
+                    
+                    themeOptions.forEach { (mode, labelResId) ->
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .clickable { viewModel.updateThemeMode(mode) }
+                                .padding(vertical = 8.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            androidx.compose.material3.RadioButton(
+                                selected = settings.themeMode == mode,
+                                onClick = { viewModel.updateThemeMode(mode) }
+                            )
+                            Spacer(modifier = Modifier.width(12.dp))
+                            Text(
+                                text = stringResource(labelResId),
+                                style = MaterialTheme.typography.bodyLarge
+                            )
+                        }
+                    }
+                }
+            }
+            
+            Spacer(modifier = Modifier.height(16.dp))
+            
+            Text(
+                text = stringResource(R.string.testing),
+                style = MaterialTheme.typography.headlineSmall,
+                modifier = Modifier.padding(bottom = 16.dp)
+            )
+
+            SettingCard {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Column(modifier = Modifier.weight(1f)) {
+                        Text(
+                            text = stringResource(R.string.test_mode),
+                            style = MaterialTheme.typography.titleMedium
+                        )
+                        Text(
+                            text = stringResource(R.string.test_mode_desc),
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+                    Switch(
+                        checked = settings.testModeEnabled,
+                        onCheckedChange = { viewModel.updateTestMode(it) }
+                    )
                 }
             }
 
