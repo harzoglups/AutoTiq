@@ -16,8 +16,8 @@ android {
         applicationId = "com.cussou.autotiq"
         minSdk = 26  // Aligned with Fairtiq app (Android 8.0 Oreo)
         targetSdk = 36  // Aligned with Fairtiq app
-        versionCode = 6
-        versionName = "1.8.1"
+        versionCode = 7
+        versionName = "1.9.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
