@@ -52,7 +52,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.stringResource
@@ -82,6 +84,7 @@ fun MapScreen(
 ) {
     val context = LocalContext.current
     val view = LocalView.current
+    val density = LocalDensity.current
     val keyboardController = LocalSoftwareKeyboardController.current
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val lastAddedPointId by viewModel.lastAddedPointId.collectAsStateWithLifecycle()
@@ -92,6 +95,7 @@ fun MapScreen(
     var pointToDelete by remember { mutableStateOf<MapPoint?>(null) } // For delete confirmation dialog
     var pendingNewPoint by remember { mutableStateOf<Triple<Double, Double, String?>?>(null) } // For new point creation (lat, lon, suggestedName)
     var selectedSearchResult by remember { mutableStateOf<Pair<String, GeoPoint>?>(null) } // For search result info (name, location)
+    var floatingButtonsHeight by remember { mutableStateOf(0) } // Track height of floating buttons for responsive layout
     
     // Force dark status bar icons (black) on map screen
     SideEffect {
@@ -414,11 +418,19 @@ fun MapScreen(
                 // Empty state message when no points exist (above buttons)
                 // Hide if search result card is shown
                 if (state.points.isEmpty() && selectedSearchResult == null) {
+                    // Calculate responsive bottom padding based on floating buttons height
+                    val emptyStateBottomPadding = with(density) {
+                        // Use measured height + extra spacing, with fallback to 80dp minimum
+                        val measuredPadding = floatingButtonsHeight.toDp() + 24.dp
+                        if (floatingButtonsHeight > 0) measuredPadding else 80.dp
+                    }
+                    
                     Card(
                         modifier = Modifier
                             .align(Alignment.BottomCenter)
+                            .navigationBarsPadding() // Respect system navigation bar
                             .padding(horizontal = 32.dp)
-                            .padding(bottom = 100.dp), // Space for buttons below (increased spacing)
+                            .padding(bottom = emptyStateBottomPadding), // Responsive spacing
                         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
                         colors = CardDefaults.cardColors(
                             containerColor = MaterialTheme.colorScheme.surfaceVariant
@@ -449,7 +461,11 @@ fun MapScreen(
                     modifier = Modifier
                         .align(Alignment.BottomCenter)
                         .navigationBarsPadding()
-                        .padding(16.dp),
+                        .padding(16.dp)
+                        .onGloballyPositioned { coordinates ->
+                            // Measure height for responsive layout
+                            floatingButtonsHeight = coordinates.size.height
+                        },
                     horizontalArrangement = androidx.compose.foundation.layout.Arrangement.spacedBy(12.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
