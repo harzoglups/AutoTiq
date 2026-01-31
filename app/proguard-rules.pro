@@ -59,3 +59,17 @@
 -keepclassmembers class * extends androidx.work.CoroutineWorker {
     public <init>(android.content.Context, androidx.work.WorkerParameters);
 }
+
+# Hilt Worker with AssistedInject (CRITICAL for release builds)
+# Without these rules, @HiltWorker classes may fail to instantiate in release builds
+-keep class * implements androidx.hilt.work.HiltWorkerFactory { *; }
+-keep @androidx.hilt.work.HiltWorker class * { *; }
+-keepclassmembers @androidx.hilt.work.HiltWorker class * {
+    @dagger.assisted.AssistedInject <init>(...);
+}
+-keep class dagger.assisted.** { *; }
+
+# Geofencing
+-keep class com.google.android.gms.location.Geofence { *; }
+-keep class com.google.android.gms.location.GeofencingRequest { *; }
+-keep class com.google.android.gms.location.GeofencingClient { *; }

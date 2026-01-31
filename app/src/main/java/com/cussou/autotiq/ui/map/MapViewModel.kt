@@ -13,6 +13,7 @@ import com.cussou.autotiq.domain.usecase.GetSettingsUseCase
 import com.cussou.autotiq.domain.usecase.UpdateMapPointUseCase
 import com.cussou.autotiq.domain.usecase.UpdateSettingsUseCase
 import com.cussou.autotiq.domain.util.Result
+import com.cussou.autotiq.geofence.GeofenceManager
 import com.cussou.autotiq.worker.LocationWorkScheduler
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -37,7 +38,8 @@ class MapViewModel @Inject constructor(
     private val getSettingsUseCase: GetSettingsUseCase,
     private val updateSettingsUseCase: UpdateSettingsUseCase,
     private val locationWorkScheduler: LocationWorkScheduler,
-    private val mapPointRepository: MapPointRepository
+    private val mapPointRepository: MapPointRepository,
+    private val geofenceManager: GeofenceManager,
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow<MapUiState>(MapUiState.Loading)
@@ -66,6 +68,25 @@ class MapViewModel @Inject constructor(
                 is Result.Success -> {
                     // Point added successfully, return the new point ID
                     _lastAddedPointId.value = result.data
+                    
+                    // Register geofence for the new point if tracking is enabled
+                    val currentState = _uiState.value
+                    if (currentState is MapUiState.Success && currentState.settings.isLocationTrackingEnabled) {
+                        val point = MapPoint(
+                            id = result.data,
+                            latitude = latitude,
+                            longitude = longitude,
+                            name = "",
+                            startHour = 0,
+                            startMinute = 0,
+                            endHour = 23,
+                            endMinute = 59
+                        )
+                        geofenceManager.registerGeofence(
+                            point,
+                            currentState.settings.proximityDistanceMeters.toFloat()
+                        )
+                    }
                 }
                 is Result.Error -> {
                     // Handle error if needed
@@ -101,6 +122,15 @@ class MapViewModel @Inject constructor(
             when (val result = mapPointRepository.insertPoint(point)) {
                 is Result.Success -> {
                     // Point added successfully with all details
+                    // Register geofence for the new point if tracking is enabled
+                    val currentState = _uiState.value
+                    if (currentState is MapUiState.Success && currentState.settings.isLocationTrackingEnabled) {
+                        val pointWithId = point.copy(id = result.data)
+                        geofenceManager.registerGeofence(
+                            pointWithId,
+                            currentState.settings.proximityDistanceMeters.toFloat()
+                        )
+                    }
                 }
                 is Result.Error -> {
                     // Handle error if needed
@@ -127,6 +157,8 @@ class MapViewModel @Inject constructor(
 
     fun deletePoint(id: Long) {
         viewModelScope.launch {
+            // Unregister geofence before deleting the point
+            geofenceManager.unregisterGeofence(id)
             deleteMapPointUseCase(id)
         }
     }
@@ -136,6 +168,16 @@ class MapViewModel @Inject constructor(
             when (updateMapPointUseCase(point)) {
                 is Result.Success -> {
                     // Point updated successfully, flow will update automatically
+                    // Update geofence with new location if tracking is enabled
+                    val currentState = _uiState.value
+                    if (currentState is MapUiState.Success && currentState.settings.isLocationTrackingEnabled) {
+                        // Remove old geofence and add new one with updated location
+                        geofenceManager.unregisterGeofence(point.id)
+                        geofenceManager.registerGeofence(
+                            point,
+                            currentState.settings.proximityDistanceMeters.toFloat()
+                        )
+                    }
                 }
                 is Result.Error -> {
                     // Handle error if needed
@@ -153,12 +195,25 @@ class MapViewModel @Inject constructor(
                 // Get current settings to know the interval
                 val currentState = _uiState.value
                 if (currentState is MapUiState.Success) {
+                    // Schedule WorkManager for backup polling
                     locationWorkScheduler.scheduleLocationChecks(
                         currentState.settings.checkIntervalSeconds
                     )
+                    
+                    // Register geofences for all existing points (primary detection)
+                    if (currentState.points.isNotEmpty()) {
+                        geofenceManager.registerAllGeofences(
+                            currentState.points,
+                            currentState.settings.proximityDistanceMeters.toFloat()
+                        )
+                    }
                 }
             } else {
+                // Cancel WorkManager
                 locationWorkScheduler.cancelLocationChecks()
+                
+                // Unregister all geofences
+                geofenceManager.unregisterAllGeofences()
             }
         }
     }

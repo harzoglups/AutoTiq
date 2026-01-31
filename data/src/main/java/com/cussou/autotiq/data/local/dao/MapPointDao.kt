@@ -13,6 +13,9 @@ interface MapPointDao {
     @Query("SELECT * FROM map_points ORDER BY createdAt DESC")
     fun getAllPoints(): Flow<List<MapPointEntity>>
     
+    @Query("SELECT * FROM map_points ORDER BY createdAt DESC")
+    suspend fun getAllPointsOnce(): List<MapPointEntity>
+    
     @Query("SELECT * FROM map_points WHERE id = :id")
     suspend fun getPointById(id: Long): MapPointEntity?
     

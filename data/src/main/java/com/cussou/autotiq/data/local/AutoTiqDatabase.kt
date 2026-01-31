@@ -1,6 +1,8 @@
 package com.cussou.autotiq.data.local
 
+import android.content.Context
 import androidx.room.Database
+import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
@@ -17,6 +19,29 @@ import com.cussou.autotiq.data.local.entity.ProximityStateEntity
 abstract class AutoTiqDatabase : RoomDatabase() {
     abstract fun mapPointDao(): MapPointDao
     abstract fun proximityStateDao(): ProximityStateDao
+    
+    companion object {
+        @Volatile
+        private var INSTANCE: AutoTiqDatabase? = null
+        
+        /**
+         * Returns a singleton instance of the database.
+         * This is used by BroadcastReceivers that can't use Hilt injection.
+         * The Hilt-provided instance will also use this singleton.
+         */
+        fun getInstance(context: Context): AutoTiqDatabase {
+            return INSTANCE ?: synchronized(this) {
+                INSTANCE ?: Room.databaseBuilder(
+                    context.applicationContext,
+                    AutoTiqDatabase::class.java,
+                    "autotiq_database"
+                )
+                    .addMigrations(MIGRATION_1_2, MIGRATION_2_3)
+                    .build()
+                    .also { INSTANCE = it }
+            }
+        }
+    }
 }
 
 val MIGRATION_1_2 = object : Migration(1, 2) {

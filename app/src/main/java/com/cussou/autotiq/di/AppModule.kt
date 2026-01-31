@@ -16,6 +16,7 @@ import com.cussou.autotiq.domain.usecase.GetMapPointsUseCase
 import com.cussou.autotiq.domain.usecase.GetSettingsUseCase
 import com.cussou.autotiq.domain.usecase.UpdateMapPointUseCase
 import com.cussou.autotiq.domain.usecase.UpdateSettingsUseCase
+import com.cussou.autotiq.geofence.GeofenceManager
 import com.cussou.autotiq.worker.LocationWorkScheduler
 import dagger.Module
 import dagger.Provides
@@ -98,5 +99,11 @@ object AppModule {
     @Singleton
     fun provideLocationWorkScheduler(@ApplicationContext context: Context): LocationWorkScheduler {
         return LocationWorkScheduler(context)
+    }
+
+    @Provides
+    @Singleton
+    fun provideGeofenceManager(@ApplicationContext context: Context): GeofenceManager {
+        return GeofenceManager(context)
     }
 }
