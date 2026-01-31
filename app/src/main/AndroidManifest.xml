@@ -65,6 +65,16 @@
             </intent-filter>
         </receiver>
 
+        <!-- Geofence transition receiver for instant zone detection -->
+        <receiver
+            android:name=".geofence.GeofenceBroadcastReceiver"
+            android:enabled="true"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.cussou.autotiq.GEOFENCE_TRANSITION" />
+            </intent-filter>
+        </receiver>
+
         <!-- Disable automatic WorkManager initialization -->
         <provider
             android:name="androidx.startup.InitializationProvider"

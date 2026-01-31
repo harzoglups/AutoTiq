@@ -12,6 +12,9 @@ interface ProximityStateDao {
     @Query("SELECT * FROM proximity_states WHERE pointId = :pointId")
     fun getProximityState(pointId: Long): Flow<ProximityStateEntity?>
     
+    @Query("SELECT * FROM proximity_states WHERE pointId = :pointId")
+    suspend fun getProximityStateOnce(pointId: Long): ProximityStateEntity?
+    
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertProximityState(state: ProximityStateEntity)
     

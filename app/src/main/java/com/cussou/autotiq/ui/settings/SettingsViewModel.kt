@@ -13,6 +13,7 @@ import androidx.lifecycle.viewModelScope
 import com.cussou.autotiq.domain.model.AppSettings
 import com.cussou.autotiq.domain.usecase.GetSettingsUseCase
 import com.cussou.autotiq.domain.usecase.UpdateSettingsUseCase
+import com.cussou.autotiq.geofence.GeofenceManager
 import com.cussou.autotiq.worker.LocationWorkScheduler
 import dagger.hilt.android.lifecycle.HiltViewModel
 import org.json.JSONArray
@@ -50,6 +51,7 @@ class SettingsViewModel @Inject constructor(
     getSettingsUseCase: GetSettingsUseCase,
     private val updateSettingsUseCase: UpdateSettingsUseCase,
     private val locationWorkScheduler: LocationWorkScheduler,
+    private val geofenceManager: GeofenceManager,
     private val getMapPointsUseCase: com.cussou.autotiq.domain.usecase.GetMapPointsUseCase,
     private val mapPointRepository: com.cussou.autotiq.domain.repository.MapPointRepository
 ) : ViewModel() {
@@ -188,6 +190,17 @@ class SettingsViewModel @Inject constructor(
     fun updateProximityDistance(meters: Int) {
         viewModelScope.launch {
             updateSettingsUseCase.updateProximityDistance(meters)
+            
+            // If tracking is enabled, re-register geofences with new radius
+            if (settings.value.isLocationTrackingEnabled) {
+                val points = getMapPointsUseCase().first()
+                if (points.isNotEmpty()) {
+                    // Unregister old geofences and register with new radius
+                    geofenceManager.unregisterAllGeofences()
+                    val registered = geofenceManager.registerAllGeofences(points, meters.toFloat())
+                    Log.d(TAG, "Re-registered $registered geofences with new radius: ${meters}m")
+                }
+            }
         }
     }
 
@@ -197,9 +210,25 @@ class SettingsViewModel @Inject constructor(
             updateSettingsUseCase.updateLocationTrackingEnabled(enabled)
             
             if (enabled) {
+                // Schedule WorkManager for backup polling
                 locationWorkScheduler.scheduleLocationChecks(settings.value.checkIntervalSeconds)
+                
+                // Register geofences for all existing points (primary detection)
+                val points = getMapPointsUseCase().first()
+                if (points.isNotEmpty()) {
+                    val registered = geofenceManager.registerAllGeofences(
+                        points,
+                        settings.value.proximityDistanceMeters.toFloat()
+                    )
+                    Log.d(TAG, "Registered $registered geofences for ${points.size} points")
+                }
             } else {
+                // Cancel WorkManager
                 locationWorkScheduler.cancelLocationChecks()
+                
+                // Unregister all geofences
+                geofenceManager.unregisterAllGeofences()
+                Log.d(TAG, "Unregistered all geofences")
             }
         }
     }

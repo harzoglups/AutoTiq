@@ -1,28 +1,21 @@
 package com.cussou.autotiq.worker
 
 import android.Manifest
-import android.app.NotificationChannel
 import android.app.NotificationManager
-import android.app.PendingIntent
 import android.content.Context
-import android.content.Intent
 import android.content.pm.PackageManager
 import android.location.Location
-import android.os.Build
-import android.os.VibrationEffect
-import android.os.Vibrator
-import android.os.VibratorManager
-import android.media.AudioAttributes
 import android.util.Log
 import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationCompat
 import androidx.hilt.work.HiltWorker
 import androidx.work.CoroutineWorker
+import androidx.work.ForegroundInfo
 import androidx.work.WorkerParameters
 import com.cussou.autotiq.R
 import com.cussou.autotiq.domain.usecase.CheckProximityUseCase
 import com.cussou.autotiq.domain.usecase.GetSettingsUseCase
-import com.google.android.gms.location.LocationRequest
+import com.cussou.autotiq.geofence.GeofenceHelper
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.Priority
 import dagger.assisted.Assisted
@@ -43,13 +36,29 @@ class LocationCheckWorker @AssistedInject constructor(
     companion object {
         private const val TAG = "LocationCheckWorker"
         const val WORK_NAME = "location_check_work"
-        private const val FAIRTIQ_PACKAGE = "com.fairtiq.android"
         private const val LOCATION_TIMEOUT_MS = 30000L // 30 seconds timeout for GPS cold start
-        private const val NOTIFICATION_CHANNEL_ID = "proximity_alerts"
-        private const val NOTIFICATION_ID = 1001
     }
 
-    override suspend fun doWork(): androidx.work.ListenableWorker.Result {
+    /**
+     * Required for expedited work on Android < 12.
+     * WorkManager calls this to get the foreground notification when running as expedited.
+     * On Android 12+, expedited jobs use JobScheduler's expedited quota instead.
+     */
+    override suspend fun getForegroundInfo(): ForegroundInfo {
+        GeofenceHelper.createExpeditedChannel(context)
+        
+        val notification = NotificationCompat.Builder(context, GeofenceHelper.EXPEDITED_CHANNEL_ID)
+            .setSmallIcon(android.R.drawable.ic_menu_mylocation)
+            .setContentTitle(context.getString(R.string.app_name))
+            .setContentText("Checking location...")
+            .setPriority(NotificationCompat.PRIORITY_LOW)
+            .setOngoing(true)
+            .build()
+        
+        return ForegroundInfo(GeofenceHelper.EXPEDITED_NOTIFICATION_ID, notification)
+    }
+
+    override suspend fun doWork(): Result {
         Log.d(TAG, "Starting location check...")
 
         // Check location permission
@@ -59,7 +68,7 @@ class LocationCheckWorker @AssistedInject constructor(
             ) != PackageManager.PERMISSION_GRANTED
         ) {
             Log.e(TAG, "Location permission not granted")
-            return androidx.work.ListenableWorker.Result.failure()
+            return Result.failure()
         }
 
         try {
@@ -70,7 +79,7 @@ class LocationCheckWorker @AssistedInject constructor(
             // If tracking is disabled, don't reschedule
             if (!settings.isLocationTrackingEnabled) {
                 Log.d(TAG, "Tracking disabled, stopping worker")
-                return androidx.work.ListenableWorker.Result.success()
+                return Result.success()
             }
             
             // Check if today is an active weekday
@@ -82,7 +91,7 @@ class LocationCheckWorker @AssistedInject constructor(
             if (!settings.activeWeekdays.contains(isoDayOfWeek)) {
                 Log.d(TAG, "Today (ISO day $isoDayOfWeek) is not an active day, skipping check. Active days: ${settings.activeWeekdays}")
                 rescheduleIfNeeded(settings.checkIntervalSeconds)
-                return androidx.work.ListenableWorker.Result.success()
+                return Result.success()
             }
             
             Log.d(TAG, "Today (ISO day $isoDayOfWeek) is an active day, checking time windows...")
@@ -93,7 +102,7 @@ class LocationCheckWorker @AssistedInject constructor(
             if (allPoints.isEmpty()) {
                 Log.d(TAG, "No map points defined, skipping check")
                 rescheduleIfNeeded(settings.checkIntervalSeconds)
-                return androidx.work.ListenableWorker.Result.success()
+                return Result.success()
             }
             
             // Check if current time is within any point's time window
@@ -110,18 +119,18 @@ class LocationCheckWorker @AssistedInject constructor(
                     Log.d(TAG, "  '${point.name}': ${point.startHour}:${point.startMinute.toString().padStart(2, '0')}-${point.endHour}:${point.endMinute.toString().padStart(2, '0')}")
                 }
                 rescheduleIfNeeded(settings.checkIntervalSeconds)
-                return androidx.work.ListenableWorker.Result.success()
+                return Result.success()
             }
             
             Log.d(TAG, "Current time is within at least one marker's time window, proceeding with GPS scan")
             
             // Get current location with fresh request
-            val location = getCurrentLocation()
+            val location = getCurrentLocation(settings.checkIntervalSeconds)
 
             if (location == null) {
                 Log.w(TAG, "Location is null after timeout, will retry at next interval")
                 rescheduleIfNeeded(settings.checkIntervalSeconds)
-                return androidx.work.ListenableWorker.Result.success()
+                return Result.success()
             }
 
             Log.d(TAG, "Current location: ${location.latitude}, ${location.longitude}, accuracy: ${location.accuracy}m")
@@ -148,7 +157,7 @@ class LocationCheckWorker @AssistedInject constructor(
             }
 
             if (pointsToTrigger.isNotEmpty()) {
-                // Filter points that are within their time window (currentHour and currentMinute already declared above)
+                // Filter points that are within their time window
                 val activePoints = pointsToTrigger.filter { point ->
                     isWithinTimeWindow(currentHour, currentMinute, point.startHour, point.startMinute, point.endHour, point.endMinute)
                 }
@@ -159,7 +168,8 @@ class LocationCheckWorker @AssistedInject constructor(
                     activePoints.forEach { point ->
                         Log.d(TAG, "  Point '${point.name}' (${point.startHour}:${point.startMinute.toString().padStart(2, '0')}-${point.endHour}:${point.endMinute.toString().padStart(2, '0')})")
                     }
-                    launchFairtiqAndVibrate(settings.vibrationCount)
+                    // Use shared alert helper
+                    GeofenceHelper.triggerProximityAlert(context, settings.vibrationCount)
                 } else {
                     Log.d(TAG, "Entered ${pointsToTrigger.size} proximity zone(s) but none are active at current time: $currentHour:${currentMinute.toString().padStart(2, '0')}")
                 }
@@ -170,7 +180,7 @@ class LocationCheckWorker @AssistedInject constructor(
             // Reschedule for next check if interval < 15 minutes
             rescheduleIfNeeded(settings.checkIntervalSeconds)
             
-            return androidx.work.ListenableWorker.Result.success()
+            return Result.success()
         } catch (e: Exception) {
             Log.e(TAG, "Error during location check", e)
             // Try to reschedule even on error
@@ -182,18 +192,18 @@ class LocationCheckWorker @AssistedInject constructor(
             } catch (ex: Exception) {
                 Log.e(TAG, "Failed to reschedule after error", ex)
             }
-            return androidx.work.ListenableWorker.Result.failure()
+            return Result.failure()
         }
     }
     
-    private suspend fun getCurrentLocation(): Location? {
+    private suspend fun getCurrentLocation(checkIntervalSeconds: Int): Location? {
         return withTimeoutOrNull(LOCATION_TIMEOUT_MS) {
             try {
                 val fusedLocationClient = LocationServices.getFusedLocationProviderClient(context)
                 
                 // Try to get last known location first
                 val lastLocation = fusedLocationClient.lastLocation.await()
-                if (lastLocation != null && isLocationRecent(lastLocation)) {
+                if (lastLocation != null && isLocationRecent(lastLocation, checkIntervalSeconds)) {
                     Log.d(TAG, "Using recent cached location (age: ${(System.currentTimeMillis() - lastLocation.time) / 1000}s, accuracy: ${lastLocation.accuracy}m)")
                     return@withTimeoutOrNull lastLocation
                 }
@@ -233,11 +243,25 @@ class LocationCheckWorker @AssistedInject constructor(
         }
     }
     
-    private fun isLocationRecent(location: Location): Boolean {
+    /**
+     * Determines if a cached location is recent enough to use.
+     * 
+     * The threshold is adaptive based on check interval:
+     * - For 120s interval: max 60s cache (half of interval)
+     * - For 30s interval: max 15s cache (half of interval)
+     * - Never more than 60s regardless of interval
+     * 
+     * This ensures we don't use stale location data that might show us
+     * outside a zone when we've already entered it.
+     */
+    private fun isLocationRecent(location: Location, checkIntervalSeconds: Int): Boolean {
         val ageMs = System.currentTimeMillis() - location.time
-        // Consider location recent if less than 2 minutes old
-        // This is reasonable for train station detection
-        return ageMs < 120000
+        // Cache threshold = min(60 seconds, half of check interval)
+        // This ensures location is fresher than the check interval would suggest
+        val maxAgeMs = minOf(60000L, (checkIntervalSeconds * 1000L) / 2)
+        val isRecent = ageMs < maxAgeMs
+        Log.d(TAG, "Location age: ${ageMs / 1000}s, max allowed: ${maxAgeMs / 1000}s, recent: $isRecent")
+        return isRecent
     }
     
     private fun rescheduleIfNeeded(intervalSeconds: Int) {
@@ -267,189 +291,5 @@ class LocationCheckWorker @AssistedInject constructor(
             // Wraps around midnight: e.g., 22:30 - 6:15
             currentTimeInMinutes >= startTimeInMinutes || currentTimeInMinutes <= endTimeInMinutes
         }
-    }
-    
-    private fun isAppInForeground(): Boolean {
-        return try {
-            val activityManager = context.getSystemService(Context.ACTIVITY_SERVICE) as android.app.ActivityManager
-            val runningProcesses = activityManager.runningAppProcesses ?: return false
-            
-            runningProcesses.any { processInfo ->
-                processInfo.processName == context.packageName && 
-                processInfo.importance == android.app.ActivityManager.RunningAppProcessInfo.IMPORTANCE_FOREGROUND
-            }
-        } catch (e: Exception) {
-            Log.e(TAG, "Error checking if app is in foreground", e)
-            false
-        }
-    }
-
-    private fun launchFairtiqAndVibrate(vibrationCount: Int) {
-        try {
-            // Vibrate directly FIRST (before notification to ensure it works)
-            vibratePhone(vibrationCount)
-            
-            // Check if our app is in foreground
-            val isAppInForeground = isAppInForeground()
-            Log.d(TAG, "App in foreground: $isAppInForeground")
-            
-            // Create notification channel
-            createNotificationChannel()
-            
-            // Create intent to launch Fairtiq
-            val fairtiqIntent = context.packageManager.getLaunchIntentForPackage(FAIRTIQ_PACKAGE)
-            if (fairtiqIntent == null) {
-                Log.w(TAG, "Fairtiq app not installed")
-                return
-            }
-            
-            fairtiqIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP)
-            
-            // If app is in foreground, try direct launch (will work!)
-            if (isAppInForeground) {
-                try {
-                    context.startActivity(fairtiqIntent)
-                    Log.d(TAG, "Direct Fairtiq launch attempted (app was in foreground)")
-                } catch (e: Exception) {
-                    Log.e(TAG, "Direct launch failed even though app in foreground", e)
-                }
-            }
-            
-            // Create PendingIntent for full-screen intent
-            val pendingIntent = PendingIntent.getActivity(
-                context,
-                0,
-                fairtiqIntent,
-                PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
-            )
-            
-            val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-            
-            // Check if we have permission to use full-screen intents (Android 14+)
-            val canUseFullScreenIntent = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
-                notificationManager.canUseFullScreenIntent()
-            } else {
-                true // Automatically granted on Android 13 and below
-            }
-            
-            Log.d(TAG, "Full-screen intent permission: $canUseFullScreenIntent")
-            
-            // Build notification with full-screen intent (no vibration here, done separately)
-            val notificationBuilder = NotificationCompat.Builder(context, NOTIFICATION_CHANNEL_ID)
-                .setSmallIcon(android.R.drawable.ic_dialog_info) // Use system icon for now
-                .setContentTitle(context.getString(R.string.notification_transport_zone_detected))
-                .setContentText(context.getString(R.string.notification_tap_to_launch_fairtiq))
-                .setPriority(NotificationCompat.PRIORITY_MAX)
-                .setCategory(NotificationCompat.CATEGORY_ALARM)
-                .setAutoCancel(true)
-                .setContentIntent(pendingIntent)
-                // Make notification "heads-up" style (pops down from top even when screen is on)
-                .setDefaults(NotificationCompat.DEFAULT_SOUND)
-                .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
-                .setOngoing(false) // Allow user to dismiss
-            
-            // Only use full-screen intent if we have permission
-            if (canUseFullScreenIntent) {
-                notificationBuilder.setFullScreenIntent(pendingIntent, true)
-                Log.d(TAG, "Full-screen intent added to notification (will auto-launch Fairtiq when screen is locked)")
-            } else {
-                Log.w(TAG, "Cannot use full-screen intent, user needs to grant permission in system settings")
-            }
-            
-            val notification = notificationBuilder.build()
-            notificationManager.notify(NOTIFICATION_ID, notification)
-            Log.d(TAG, "Notification sent (user must tap it to launch Fairtiq when screen is unlocked)")
-        } catch (e: Exception) {
-            Log.e(TAG, "Error launching Fairtiq or vibrating", e)
-        }
-    }
-    
-    private fun vibratePhone(vibrationCount: Int) {
-        try {
-            Log.d(TAG, "vibratePhone called with count=$vibrationCount")
-            
-            val vibrator = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-                val vibratorManager = context.getSystemService(Context.VIBRATOR_MANAGER_SERVICE) as? VibratorManager
-                if (vibratorManager == null) {
-                    Log.e(TAG, "VibratorManager is null")
-                    return
-                }
-                vibratorManager.defaultVibrator
-            } else {
-                @Suppress("DEPRECATION")
-                context.getSystemService(Context.VIBRATOR_SERVICE) as? Vibrator
-            }
-            
-            if (vibrator == null) {
-                Log.e(TAG, "Vibrator is null")
-                return
-            }
-            
-            if (!vibrator.hasVibrator()) {
-                Log.e(TAG, "Device has no vibrator")
-                return
-            }
-            
-            Log.d(TAG, "Vibrator available, creating pattern for $vibrationCount vibrations")
-            
-            // Create vibration pattern based on count: vibrate 500ms, pause 200ms, repeat
-            val pattern = mutableListOf<Long>()
-            val amplitudes = mutableListOf<Int>()
-            
-            pattern.add(0) // Initial delay
-            amplitudes.add(0)
-            
-            for (i in 0 until vibrationCount) {
-                pattern.add(500) // Vibrate 500ms
-                amplitudes.add(255) // Max amplitude
-                
-                if (i < vibrationCount - 1) { // Don't add pause after last vibration
-                    pattern.add(200) // Pause 200ms
-                    amplitudes.add(0)
-                }
-            }
-            
-            Log.d(TAG, "Pattern: ${pattern.toLongArray().contentToString()}, Amplitudes: ${amplitudes.toIntArray().contentToString()}")
-            
-            // minSdk 26+ guarantees VibrationEffect availability
-            // Create AudioAttributes for ALARM usage - this allows vibration from background
-            val audioAttributes = AudioAttributes.Builder()
-                .setUsage(AudioAttributes.USAGE_ALARM)
-                .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
-                .build()
-            
-            val effect = VibrationEffect.createWaveform(
-                pattern.toLongArray(),
-                amplitudes.toIntArray(),
-                -1 // Don't repeat
-            )
-            
-            // Note: vibrate(VibrationEffect, AudioAttributes) is deprecated in Android 13+
-            // but it's the only way to vibrate from background on Android 12
-            // The new API requires VibratorManager which is more complex
-            @Suppress("DEPRECATION")
-            vibrator.vibrate(effect, audioAttributes)
-            Log.d(TAG, "vibrate(effect, audioAttributes) called successfully with USAGE_ALARM")
-            
-            Log.d(TAG, "Direct vibration triggered ($vibrationCount times)")
-        } catch (e: Exception) {
-            Log.e(TAG, "Error vibrating phone", e)
-        }
-    }
-    
-    private fun createNotificationChannel() {
-        // minSdk 26+ requires NotificationChannel
-        val channel = NotificationChannel(
-            NOTIFICATION_CHANNEL_ID,
-            context.getString(R.string.notification_channel_name),
-            NotificationManager.IMPORTANCE_HIGH
-        ).apply {
-            description = context.getString(R.string.notification_channel_desc)
-            // Don't set vibration here - we do it manually
-            enableVibration(false)
-        }
-        
-        val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-        notificationManager.createNotificationChannel(channel)
     }
 }
