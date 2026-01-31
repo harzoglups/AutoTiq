@@ -16,7 +16,7 @@ android {
         applicationId = "com.cussou.autotiq"
         minSdk = 26  // Aligned with Fairtiq app (Android 8.0 Oreo)
         targetSdk = 36  // Aligned with Fairtiq app
-        versionCode = 10
+        versionCode = 11
         versionName = "1.10.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
