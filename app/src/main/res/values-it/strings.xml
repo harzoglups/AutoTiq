@@ -150,4 +150,10 @@
     <string name="onboarding_complete_title">Tutto pronto!</string>
     <string name="onboarding_complete_description">Ora puoi aggiungere le tue zone di transito sulla mappa e abilitare il tracciamento in background nelle impostazioni.</string>
     <string name="start_using_app">Inizia a usare AutoTiq</string>
+    <string name="event_log">Registro eventi</string>
+    <string name="event_log_description">Eventi recenti in background (ingressi e uscite dalle zone, avvisi, esecuzioni del worker). Utile per capire perché un avviso è mancato.</string>
+    <string name="event_log_open">Apri il registro eventi</string>
+    <string name="event_log_share">Condividi il registro eventi</string>
+    <string name="event_log_clear">Cancella il registro eventi</string>
+    <string name="event_log_empty">Nessun evento registrato finora.</string>
 </resources>

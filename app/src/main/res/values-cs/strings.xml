@@ -150,4 +150,10 @@
     <string name="onboarding_complete_title">Vše připraveno!</string>
     <string name="onboarding_complete_description">Nyní můžete přidat své dopravní zóny na mapu a povolit sledování na pozadí v nastavení.</string>
     <string name="start_using_app">Začít používat AutoTiq</string>
+    <string name="event_log">Protokol událostí</string>
+    <string name="event_log_description">Nedávné události na pozadí (vstupy a výstupy ze zón, upozornění, běhy workeru). Pomáhá zjistit, proč upozornění nepřišlo.</string>
+    <string name="event_log_open">Otevřít protokol událostí</string>
+    <string name="event_log_share">Sdílet protokol událostí</string>
+    <string name="event_log_clear">Vymazat protokol událostí</string>
+    <string name="event_log_empty">Zatím nebyly zaznamenány žádné události.</string>
 </resources>

@@ -153,4 +153,10 @@
     <string name="onboarding_complete_title">All Set!</string>
     <string name="onboarding_complete_description">You can now add your transit zones on the map and enable background tracking in the settings.</string>
     <string name="start_using_app">Start Using AutoTiq</string>
+    <string name="event_log">Event log</string>
+    <string name="event_log_description">Recent background events (zone entries and exits, alerts, worker runs). Useful to understand why an alert was missed.</string>
+    <string name="event_log_open">Open event log</string>
+    <string name="event_log_share">Share event log</string>
+    <string name="event_log_clear">Clear event log</string>
+    <string name="event_log_empty">No events recorded yet.</string>
 </resources>

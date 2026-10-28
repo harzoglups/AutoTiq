@@ -13,6 +13,8 @@ import androidx.work.CoroutineWorker
 import androidx.work.ForegroundInfo
 import androidx.work.WorkerParameters
 import com.cussou.autotiq.R
+import com.cussou.autotiq.domain.model.EventType
+import com.cussou.autotiq.domain.repository.EventLogRepository
 import com.cussou.autotiq.domain.usecase.CheckProximityUseCase
 import com.cussou.autotiq.domain.usecase.GetSettingsUseCase
 import com.cussou.autotiq.geofence.GeofenceHelper
@@ -30,7 +32,8 @@ class LocationCheckWorker @AssistedInject constructor(
     @Assisted workerParams: WorkerParameters,
     private val checkProximityUseCase: CheckProximityUseCase,
     private val getSettingsUseCase: GetSettingsUseCase,
-    private val getMapPointsUseCase: com.cussou.autotiq.domain.usecase.GetMapPointsUseCase
+    private val getMapPointsUseCase: com.cussou.autotiq.domain.usecase.GetMapPointsUseCase,
+    private val eventLog: EventLogRepository
 ) : CoroutineWorker(context, workerParams) {
 
     companion object {
@@ -68,6 +71,7 @@ class LocationCheckWorker @AssistedInject constructor(
             ) != PackageManager.PERMISSION_GRANTED
         ) {
             Log.e(TAG, "Location permission not granted")
+            eventLog.log(EventType.ERROR, "Worker: location permission not granted")
             // Keep the chain alive so checks resume once the permission is granted again
             try {
                 val settings = getSettingsUseCase().first()
@@ -88,6 +92,7 @@ class LocationCheckWorker @AssistedInject constructor(
             // If tracking is disabled, don't reschedule
             if (!settings.isLocationTrackingEnabled) {
                 Log.d(TAG, "Tracking disabled, stopping worker")
+                recordRun("tracking disabled, worker stopped")
                 return Result.success()
             }
             
@@ -99,6 +104,7 @@ class LocationCheckWorker @AssistedInject constructor(
             
             if (!settings.activeWeekdays.contains(isoDayOfWeek)) {
                 Log.d(TAG, "Today (ISO day $isoDayOfWeek) is not an active day, skipping check. Active days: ${settings.activeWeekdays}")
+                recordRun("skipped, today is not an active day")
                 rescheduleIfNeeded(settings.checkIntervalSeconds)
                 return Result.success()
             }
@@ -110,6 +116,7 @@ class LocationCheckWorker @AssistedInject constructor(
             
             if (allPoints.isEmpty()) {
                 Log.d(TAG, "No map points defined, skipping check")
+                recordRun("skipped, no zones defined")
                 rescheduleIfNeeded(settings.checkIntervalSeconds)
                 return Result.success()
             }
@@ -124,6 +131,7 @@ class LocationCheckWorker @AssistedInject constructor(
             
             if (!isWithinAnyTimeWindow) {
                 Log.d(TAG, "Current time $currentHour:${currentMinute.toString().padStart(2, '0')} is outside all marker time windows, skipping GPS scan")
+                recordRun("skipped, outside all zone time windows")
                 allPoints.forEach { point ->
                     Log.d(TAG, "  '${point.name}': ${point.startHour}:${point.startMinute.toString().padStart(2, '0')}-${point.endHour}:${point.endMinute.toString().padStart(2, '0')}")
                 }
@@ -138,6 +146,7 @@ class LocationCheckWorker @AssistedInject constructor(
 
             if (location == null) {
                 Log.w(TAG, "Location is null after timeout, will retry at next interval")
+                eventLog.log(EventType.ERROR, "Worker: no location obtained within ${LOCATION_TIMEOUT_MS / 1000}s")
                 rescheduleIfNeeded(settings.checkIntervalSeconds)
                 return Result.success()
             }
@@ -178,12 +187,18 @@ class LocationCheckWorker @AssistedInject constructor(
                         Log.d(TAG, "  Point '${point.name}' (${point.startHour}:${point.startMinute.toString().padStart(2, '0')}-${point.endHour}:${point.endMinute.toString().padStart(2, '0')})")
                     }
                     // Use shared alert helper
-                    GeofenceHelper.triggerProximityAlert(context, settings.vibrationCount)
+                    val outcome = GeofenceHelper.triggerProximityAlert(context, settings.vibrationCount)
+                    eventLog.log(
+                        EventType.ALERT_SENT,
+                        "Worker alert for ${activePoints.joinToString { "'${it.name}'" }}: $outcome"
+                    )
                 } else {
                     Log.d(TAG, "Entered ${pointsToTrigger.size} proximity zone(s) but none are active at current time: $currentHour:${currentMinute.toString().padStart(2, '0')}")
+                    recordRun("entered ${pointsToTrigger.size} zone(s) outside their time window, no alert")
                 }
             } else {
                 Log.d(TAG, "No proximity zones entered")
+                recordRun("checked ${checkResult.allPointsDetails.size} zones, none newly entered")
             }
 
             // Reschedule for next check if interval < 15 minutes
@@ -192,6 +207,7 @@ class LocationCheckWorker @AssistedInject constructor(
             return Result.success()
         } catch (e: Exception) {
             Log.e(TAG, "Error during location check", e)
+            eventLog.log(EventType.ERROR, "Worker failed: ${e.javaClass.simpleName}: ${e.message}")
             // Try to reschedule even on error
             try {
                 val settings = getSettingsUseCase().first()
@@ -205,6 +221,14 @@ class LocationCheckWorker @AssistedInject constructor(
         }
     }
     
+    /**
+     * Records the outcome of the latest run. Only one WORKER_RUN row is kept, so frequent runs
+     * show "when did the worker last run and what did it do" without flooding the journal.
+     */
+    private suspend fun recordRun(outcome: String) {
+        eventLog.log(EventType.WORKER_RUN, "Worker: $outcome", replaceSameType = true)
+    }
+
     private suspend fun getCurrentLocation(checkIntervalSeconds: Int): Location? {
         return withTimeoutOrNull(LOCATION_TIMEOUT_MS) {
             try {

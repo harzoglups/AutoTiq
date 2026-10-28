@@ -10,6 +10,8 @@ import androidx.datastore.preferences.core.stringPreferencesKey
 import com.cussou.autotiq.data.local.AutoTiqDatabase
 import com.cussou.autotiq.data.local.entity.ProximityStateEntity
 import com.cussou.autotiq.data.local.settingsDataStore
+import com.cussou.autotiq.data.repository.eventLog
+import com.cussou.autotiq.domain.model.EventType
 import com.google.android.gms.location.Geofence
 import com.google.android.gms.location.GeofenceStatusCodes
 import com.google.android.gms.location.GeofencingEvent
@@ -50,12 +52,14 @@ class GeofenceBroadcastReceiver : BroadcastReceiver() {
         
         if (geofencingEvent == null) {
             Log.e(TAG, "GeofencingEvent is null")
+            logAsync(context, EventType.ERROR, "Geofence broadcast received without a valid GeofencingEvent")
             return
         }
         
         if (geofencingEvent.hasError()) {
             val errorMessage = GeofenceStatusCodes.getStatusCodeString(geofencingEvent.errorCode)
             Log.e(TAG, "Geofence error: $errorMessage (code: ${geofencingEvent.errorCode})")
+            logAsync(context, EventType.ERROR, "Geofence error: $errorMessage (code ${geofencingEvent.errorCode})")
             return
         }
 
@@ -89,6 +93,18 @@ class GeofenceBroadcastReceiver : BroadcastReceiver() {
                 }
             } catch (e: Exception) {
                 Log.e(TAG, "Error processing geofence transition", e)
+                context.eventLog().log(EventType.ERROR, "Error processing $transitionName: ${e.message}")
+            } finally {
+                pendingResult.finish()
+            }
+        }
+    }
+
+    private fun logAsync(context: Context, type: EventType, message: String) {
+        val pendingResult = goAsync()
+        scope.launch {
+            try {
+                context.eventLog().log(type, message)
             } finally {
                 pendingResult.finish()
             }
@@ -99,7 +115,10 @@ class GeofenceBroadcastReceiver : BroadcastReceiver() {
      * Marks every exited zone as "outside" so the next ENTER can trigger an alert again.
      */
     private suspend fun processGeofenceExit(context: Context, geofences: List<Geofence>) {
-        val proximityDao = AutoTiqDatabase.getInstance(context).proximityStateDao()
+        val database = AutoTiqDatabase.getInstance(context)
+        val proximityDao = database.proximityStateDao()
+        val mapPointDao = database.mapPointDao()
+        val eventLog = context.eventLog()
 
         for (geofence in geofences) {
             val pointId = geofence.requestId.toLongOrNull()
@@ -108,6 +127,7 @@ class GeofenceBroadcastReceiver : BroadcastReceiver() {
                 continue
             }
 
+            val previousState = proximityDao.getProximityStateOnce(pointId)
             proximityDao.insertProximityState(
                 ProximityStateEntity(
                     pointId = pointId,
@@ -115,16 +135,24 @@ class GeofenceBroadcastReceiver : BroadcastReceiver() {
                     lastChecked = System.currentTimeMillis()
                 )
             )
+            val pointName = mapPointDao.getPointById(pointId)?.name ?: "id=$pointId"
             Log.d(TAG, "Point id=$pointId exited, proximity state reset to outside")
+            eventLog.log(
+                EventType.GEOFENCE_EXIT,
+                "EXIT '$pointName': state reset to outside (was inside=${previousState?.isInside})"
+            )
         }
     }
 
     private suspend fun processGeofenceTransition(context: Context, geofences: List<Geofence>) {
+        val eventLog = context.eventLog()
+
         // Read settings directly from DataStore file to avoid dependency injection complexity
         val settings = readSettingsFromDataStore(context)
         
         if (!settings.isTrackingEnabled) {
             Log.d(TAG, "Tracking disabled, ignoring geofence transition")
+            eventLog.log(EventType.ALERT_SKIPPED, "ENTER ignored: background tracking is disabled")
             return
         }
 
@@ -135,6 +163,7 @@ class GeofenceBroadcastReceiver : BroadcastReceiver() {
         
         if (!settings.activeWeekdays.contains(isoDayOfWeek)) {
             Log.d(TAG, "Today (ISO day $isoDayOfWeek) is not an active day, ignoring geofence")
+            eventLog.log(EventType.ALERT_SKIPPED, "ENTER ignored: today (ISO day $isoDayOfWeek) is not an active day")
             return
         }
 
@@ -162,6 +191,7 @@ class GeofenceBroadcastReceiver : BroadcastReceiver() {
             val pointEntity = mapPointDao.getPointById(pointId)
             if (pointEntity == null) {
                 Log.w(TAG, "Point $pointId not found in database")
+                eventLog.log(EventType.ERROR, "ENTER for unknown point id=$pointId (geofence without a saved zone)")
                 continue
             }
 
@@ -173,6 +203,12 @@ class GeofenceBroadcastReceiver : BroadcastReceiver() {
                     "(current: $currentHour:${currentMinute.toString().padStart(2, '0')}, " +
                     "window: ${pointEntity.startHour}:${pointEntity.startMinute.toString().padStart(2, '0')}-" +
                     "${pointEntity.endHour}:${pointEntity.endMinute.toString().padStart(2, '0')})")
+                eventLog.log(
+                    EventType.GEOFENCE_ENTER,
+                    "ENTER '${pointEntity.name}': outside its time window " +
+                        "(${formatTime(pointEntity.startHour, pointEntity.startMinute)}-" +
+                        "${formatTime(pointEntity.endHour, pointEntity.endMinute)}), no alert"
+                )
                 continue
             }
 
@@ -182,12 +218,18 @@ class GeofenceBroadcastReceiver : BroadcastReceiver() {
 
             if (settings.testModeEnabled) {
                 Log.d(TAG, "TEST MODE: Triggering for '${pointEntity.name}' regardless of previous state")
+                eventLog.log(EventType.GEOFENCE_ENTER, "ENTER '${pointEntity.name}': test mode, alerting")
                 shouldTrigger = true
             } else if (!wasInside) {
                 Log.d(TAG, "Point '${pointEntity.name}' transition: outside → inside, will trigger")
+                eventLog.log(EventType.GEOFENCE_ENTER, "ENTER '${pointEntity.name}': outside -> inside, alerting")
                 shouldTrigger = true
             } else {
                 Log.d(TAG, "Point '${pointEntity.name}' was already inside, skipping (wasInside=$wasInside)")
+                eventLog.log(
+                    EventType.ALERT_SKIPPED,
+                    "ENTER '${pointEntity.name}': state was still 'inside' (no EXIT seen since last alert), no alert"
+                )
             }
 
             // Update proximity state
@@ -202,10 +244,15 @@ class GeofenceBroadcastReceiver : BroadcastReceiver() {
 
         if (shouldTrigger) {
             Log.d(TAG, "Triggering proximity alert from geofence")
-            GeofenceHelper.triggerProximityAlert(context, settings.vibrationCount)
+            val outcome = GeofenceHelper.triggerProximityAlert(context, settings.vibrationCount)
+            eventLog.log(EventType.ALERT_SENT, "Geofence alert: $outcome")
         } else {
             Log.d(TAG, "No alert triggered (all points filtered by time window or state)")
         }
+    }
+
+    private fun formatTime(hour: Int, minute: Int): String {
+        return "$hour:${minute.toString().padStart(2, '0')}"
     }
 
     /**
@@ -244,6 +291,7 @@ class GeofenceBroadcastReceiver : BroadcastReceiver() {
                 // Timeout - DataStore might be locked, assume tracking is enabled
                 // (better to trigger than to miss a notification)
                 Log.w(TAG, "DataStore read timeout, assuming tracking is enabled")
+                context.eventLog().log(EventType.ERROR, "Settings read timed out, using default settings")
                 GeofenceSettings(
                     isTrackingEnabled = true,
                     vibrationCount = 3,
@@ -253,6 +301,7 @@ class GeofenceBroadcastReceiver : BroadcastReceiver() {
             }
         } catch (e: Exception) {
             Log.e(TAG, "Error reading settings from DataStore: ${e.message}", e)
+            context.eventLog().log(EventType.ERROR, "Settings read failed (${e.javaClass.simpleName}), using defaults")
             // On error, assume tracking is enabled (better to trigger than to miss)
             // The WorkManager will also check and won't double-trigger due to proximity state
             GeofenceSettings(

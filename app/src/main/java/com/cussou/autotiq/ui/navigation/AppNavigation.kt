@@ -10,6 +10,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import com.cussou.autotiq.ui.eventlog.EventLogScreen
 import com.cussou.autotiq.ui.map.MapScreen
 import com.cussou.autotiq.ui.onboarding.OnboardingScreen
 import com.cussou.autotiq.ui.settings.SettingsScreen
@@ -64,6 +65,13 @@ fun AppNavigation(navController: NavHostController) {
 
         composable(Screen.Settings.route) {
             SettingsScreen(
+                onNavigateBack = { navController.popBackStack() },
+                onNavigateToEventLog = { navController.navigate(Screen.EventLog.route) }
+            )
+        }
+
+        composable(Screen.EventLog.route) {
+            EventLogScreen(
                 onNavigateBack = { navController.popBackStack() }
             )
         }

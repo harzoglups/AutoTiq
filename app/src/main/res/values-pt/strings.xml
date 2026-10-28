@@ -150,4 +150,10 @@
     <string name="onboarding_complete_title">Tudo pronto!</string>
     <string name="onboarding_complete_description">Agora você pode adicionar suas zonas de trânsito no mapa e ativar o rastreamento em segundo plano nas configurações.</string>
     <string name="start_using_app">Começar a usar o AutoTiq</string>
+    <string name="event_log">Registo de eventos</string>
+    <string name="event_log_description">Eventos recentes em segundo plano (entradas e saídas de zona, alertas, execuções do worker). Útil para perceber porque falhou um alerta.</string>
+    <string name="event_log_open">Abrir o registo de eventos</string>
+    <string name="event_log_share">Partilhar o registo de eventos</string>
+    <string name="event_log_clear">Limpar o registo de eventos</string>
+    <string name="event_log_empty">Ainda não há eventos registados.</string>
 </resources>

@@ -10,6 +10,8 @@ import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkManager
 import com.cussou.autotiq.data.local.AutoTiqDatabase
 import com.cussou.autotiq.data.local.settingsDataStore
+import com.cussou.autotiq.data.repository.eventLog
+import com.cussou.autotiq.domain.model.EventType
 import com.cussou.autotiq.geofence.GeofenceManager
 import com.cussou.autotiq.worker.LocationCheckWorker
 import kotlinx.coroutines.CoroutineScope
@@ -34,6 +36,7 @@ class BootReceiver : BroadcastReceiver() {
             
             scope.launch {
                 try {
+                    val eventLog = context.eventLog()
                     // Check if the datastore file exists to avoid creating a new instance
                     val datastoreFile = File(context.filesDir, "datastore/settings.preferences_pb")
                     
@@ -71,8 +74,17 @@ class BootReceiver : BroadcastReceiver() {
                                     proximityDistance.toFloat()
                                 )
                                 Log.d("BootReceiver", "Re-registered $registered geofences")
+                                eventLog.log(
+                                    EventType.BOOT,
+                                    "${intent.action?.substringAfterLast('.')}: re-registered $registered/${points.size} " +
+                                        "geofences, worker scheduled"
+                                )
                             } else {
                                 Log.d("BootReceiver", "No points to register geofences for")
+                                eventLog.log(
+                                    EventType.BOOT,
+                                    "${intent.action?.substringAfterLast('.')}: no zones to register, worker scheduled"
+                                )
                             }
                             
                             // Schedule worker with delay to let GPS initialize after boot
@@ -84,12 +96,17 @@ class BootReceiver : BroadcastReceiver() {
                             Log.d("BootReceiver", "Worker scheduled successfully with 30s delay")
                         } else {
                             Log.d("BootReceiver", "Tracking is disabled, not scheduling worker or geofences")
+                            eventLog.log(
+                                EventType.BOOT,
+                                "${intent.action?.substringAfterLast('.')}: tracking is disabled, nothing restored"
+                            )
                         }
                     } else {
                         Log.d("BootReceiver", "No settings file found, tracking was never enabled")
                     }
                 } catch (e: Exception) {
                     Log.e("BootReceiver", "Error scheduling worker after boot", e)
+                    context.eventLog().log(EventType.ERROR, "Boot restore failed: ${e.javaClass.simpleName}: ${e.message}")
                 } finally {
                     pendingResult.finish()
                 }

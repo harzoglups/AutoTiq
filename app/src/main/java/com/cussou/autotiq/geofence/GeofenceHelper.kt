@@ -35,9 +35,11 @@ object GeofenceHelper {
      * 1. Vibrates the phone
      * 2. Shows notification with Fairtiq launch intent
      * 3. Attempts direct Fairtiq launch if app is in foreground
+     *
+     * @return a short description of what happened, for the diagnostic event log
      */
-    fun triggerProximityAlert(context: Context, vibrationCount: Int) {
-        try {
+    fun triggerProximityAlert(context: Context, vibrationCount: Int): String {
+        return try {
             // Vibrate directly FIRST (before notification to ensure it works)
             vibratePhone(context, vibrationCount)
             
@@ -52,7 +54,7 @@ object GeofenceHelper {
             val fairtiqIntent = context.packageManager.getLaunchIntentForPackage(FAIRTIQ_PACKAGE)
             if (fairtiqIntent == null) {
                 Log.w(TAG, "Fairtiq app not installed")
-                return
+                return "vibrated, but Fairtiq is not installed so no notification was posted"
             }
             
             fairtiqIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP)
@@ -110,8 +112,13 @@ object GeofenceHelper {
             val notification = notificationBuilder.build()
             notificationManager.notify(NOTIFICATION_ID, notification)
             Log.d(TAG, "Notification sent (user must tap it to launch Fairtiq when screen is unlocked)")
+
+            "vibrated, notification posted (appInForeground=$isAppInForeground, " +
+                "fullScreenIntent=$canUseFullScreenIntent, " +
+                "notificationsEnabled=${notificationManager.areNotificationsEnabled()})"
         } catch (e: Exception) {
             Log.e(TAG, "Error triggering proximity alert", e)
+            "alert failed: ${e.javaClass.simpleName}: ${e.message}"
         }
     }
 

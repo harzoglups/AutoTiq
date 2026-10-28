@@ -65,6 +65,7 @@ import com.cussou.autotiq.R
 @Composable
 fun SettingsScreen(
     onNavigateBack: () -> Unit,
+    onNavigateToEventLog: () -> Unit,
     viewModel: SettingsViewModel = hiltViewModel()
 ) {
     val settings by viewModel.settings.collectAsStateWithLifecycle()
@@ -848,6 +849,27 @@ fun SettingsScreen(
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
+                }
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            SettingCard {
+                Column {
+                    Text(
+                        text = stringResource(R.string.event_log),
+                        style = MaterialTheme.typography.titleMedium,
+                        modifier = Modifier.padding(bottom = 8.dp)
+                    )
+                    Text(
+                        text = stringResource(R.string.event_log_description),
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        modifier = Modifier.padding(bottom = 8.dp)
+                    )
+                    OutlinedButton(onClick = onNavigateToEventLog) {
+                        Text(stringResource(R.string.event_log_open))
+                    }
                 }
             }
 

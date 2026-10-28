@@ -1,11 +1,14 @@
 package com.cussou.autotiq.di
 
 import android.content.Context
+import com.cussou.autotiq.data.local.dao.EventLogDao
 import com.cussou.autotiq.data.local.dao.MapPointDao
 import com.cussou.autotiq.data.local.dao.ProximityStateDao
+import com.cussou.autotiq.data.repository.EventLogRepositoryImpl
 import com.cussou.autotiq.data.repository.MapPointRepositoryImpl
 import com.cussou.autotiq.data.repository.ProximityRepositoryImpl
 import com.cussou.autotiq.data.repository.SettingsRepositoryImpl
+import com.cussou.autotiq.domain.repository.EventLogRepository
 import com.cussou.autotiq.domain.repository.MapPointRepository
 import com.cussou.autotiq.domain.repository.ProximityRepository
 import com.cussou.autotiq.domain.repository.SettingsRepository
@@ -39,6 +42,12 @@ object AppModule {
     @Singleton
     fun provideProximityRepository(dao: ProximityStateDao): ProximityRepository {
         return ProximityRepositoryImpl(dao)
+    }
+
+    @Provides
+    @Singleton
+    fun provideEventLogRepository(dao: EventLogDao): EventLogRepository {
+        return EventLogRepositoryImpl(dao)
     }
 
     @Provides

@@ -11,6 +11,8 @@ import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.cussou.autotiq.domain.model.AppSettings
+import com.cussou.autotiq.domain.model.EventType
+import com.cussou.autotiq.domain.repository.EventLogRepository
 import com.cussou.autotiq.domain.usecase.GetSettingsUseCase
 import com.cussou.autotiq.domain.usecase.UpdateSettingsUseCase
 import com.cussou.autotiq.geofence.GeofenceManager
@@ -53,7 +55,8 @@ class SettingsViewModel @Inject constructor(
     private val locationWorkScheduler: LocationWorkScheduler,
     private val geofenceManager: GeofenceManager,
     private val getMapPointsUseCase: com.cussou.autotiq.domain.usecase.GetMapPointsUseCase,
-    private val mapPointRepository: com.cussou.autotiq.domain.repository.MapPointRepository
+    private val mapPointRepository: com.cussou.autotiq.domain.repository.MapPointRepository,
+    private val eventLog: EventLogRepository
 ) : ViewModel() {
 
     companion object {
@@ -208,6 +211,7 @@ class SettingsViewModel @Inject constructor(
         Log.d(TAG, "Updating location tracking: $enabled")
         viewModelScope.launch {
             updateSettingsUseCase.updateLocationTrackingEnabled(enabled)
+            eventLog.log(EventType.TRACKING_CHANGED, "Background tracking turned ${if (enabled) "ON" else "OFF"}")
             
             if (enabled) {
                 // Schedule WorkManager for backup polling

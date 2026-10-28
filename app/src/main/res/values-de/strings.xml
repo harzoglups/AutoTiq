@@ -153,4 +153,10 @@
     <string name="onboarding_complete_title">Alles fertig!</string>
     <string name="onboarding_complete_description">Sie können jetzt Ihre Transitzonen auf der Karte hinzufügen und das Hintergrund-Tracking in den Einstellungen aktivieren.</string>
     <string name="start_using_app">AutoTiq verwenden</string>
+    <string name="event_log">Ereignisprotokoll</string>
+    <string name="event_log_description">Letzte Hintergrundereignisse (Zonen-Ein- und -Austritte, Warnungen, Worker-Läufe). Hilfreich, um zu verstehen, warum eine Warnung ausgeblieben ist.</string>
+    <string name="event_log_open">Ereignisprotokoll öffnen</string>
+    <string name="event_log_share">Ereignisprotokoll teilen</string>
+    <string name="event_log_clear">Ereignisprotokoll löschen</string>
+    <string name="event_log_empty">Noch keine Ereignisse aufgezeichnet.</string>
 </resources>

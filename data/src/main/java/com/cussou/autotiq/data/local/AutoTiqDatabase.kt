@@ -6,19 +6,22 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
+import com.cussou.autotiq.data.local.dao.EventLogDao
 import com.cussou.autotiq.data.local.dao.MapPointDao
 import com.cussou.autotiq.data.local.dao.ProximityStateDao
+import com.cussou.autotiq.data.local.entity.EventLogEntity
 import com.cussou.autotiq.data.local.entity.MapPointEntity
 import com.cussou.autotiq.data.local.entity.ProximityStateEntity
 
 @Database(
-    entities = [MapPointEntity::class, ProximityStateEntity::class],
-    version = 3,
+    entities = [MapPointEntity::class, ProximityStateEntity::class, EventLogEntity::class],
+    version = 4,
     exportSchema = false
 )
 abstract class AutoTiqDatabase : RoomDatabase() {
     abstract fun mapPointDao(): MapPointDao
     abstract fun proximityStateDao(): ProximityStateDao
+    abstract fun eventLogDao(): EventLogDao
     
     companion object {
         @Volatile
@@ -36,7 +39,7 @@ abstract class AutoTiqDatabase : RoomDatabase() {
                     AutoTiqDatabase::class.java,
                     "autotiq_database"
                 )
-                    .addMigrations(MIGRATION_1_2, MIGRATION_2_3)
+                    .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4)
                     .build()
                     .also { INSTANCE = it }
             }
@@ -82,5 +85,19 @@ val MIGRATION_2_3 = object : Migration(2, 3) {
         // Add minute fields to map_points table
         db.execSQL("ALTER TABLE map_points ADD COLUMN startMinute INTEGER NOT NULL DEFAULT 0")
         db.execSQL("ALTER TABLE map_points ADD COLUMN endMinute INTEGER NOT NULL DEFAULT 59")
+    }
+}
+
+val MIGRATION_3_4 = object : Migration(3, 4) {
+    override fun migrate(db: SupportSQLiteDatabase) {
+        // Diagnostic event journal
+        db.execSQL("""
+            CREATE TABLE IF NOT EXISTS event_log (
+                id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+                timestamp INTEGER NOT NULL,
+                type TEXT NOT NULL,
+                message TEXT NOT NULL
+            )
+        """.trimIndent())
     }
 }

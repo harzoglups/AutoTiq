@@ -7,6 +7,8 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.util.Log
 import androidx.core.app.ActivityCompat
+import com.cussou.autotiq.data.repository.eventLog
+import com.cussou.autotiq.domain.model.EventType
 import com.cussou.autotiq.domain.model.MapPoint
 import com.google.android.gms.location.Geofence
 import com.google.android.gms.location.GeofencingClient
@@ -105,6 +107,7 @@ class GeofenceManager(private val context: Context) {
 
         if (!hasLocationPermission()) {
             Log.e(TAG, "Cannot register geofences: location permission not granted")
+            context.eventLog().log(EventType.ERROR, "Geofences not registered: location permission missing")
             return 0
         }
 
@@ -119,12 +122,18 @@ class GeofenceManager(private val context: Context) {
         return try {
             geofencingClient.addGeofences(request, geofencePendingIntent).await()
             Log.d(TAG, "Registered ${geofences.size} geofences (radius=${radiusMeters}m)")
+            context.eventLog().log(
+                EventType.GEOFENCES_REGISTERED,
+                "Registered ${geofences.size} geofences (radius ${radiusMeters.toInt()} m)"
+            )
             geofences.size
         } catch (e: SecurityException) {
             Log.e(TAG, "Security exception registering geofences", e)
+            context.eventLog().log(EventType.ERROR, "Geofence registration refused (SecurityException): ${e.message}")
             0
         } catch (e: Exception) {
             Log.e(TAG, "Error registering geofences", e)
+            context.eventLog().log(EventType.ERROR, "Geofence registration failed: ${e.javaClass.simpleName}: ${e.message}")
             0
         }
     }

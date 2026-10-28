@@ -2,6 +2,7 @@ package com.cussou.autotiq.di
 
 import android.content.Context
 import com.cussou.autotiq.data.local.AutoTiqDatabase
+import com.cussou.autotiq.data.local.dao.EventLogDao
 import com.cussou.autotiq.data.local.dao.MapPointDao
 import com.cussou.autotiq.data.local.dao.ProximityStateDao
 import dagger.Module
@@ -32,5 +33,11 @@ object DatabaseModule {
     @Singleton
     fun provideProximityStateDao(database: AutoTiqDatabase): ProximityStateDao {
         return database.proximityStateDao()
+    }
+
+    @Provides
+    @Singleton
+    fun provideEventLogDao(database: AutoTiqDatabase): EventLogDao {
+        return database.eventLogDao()
     }
 }
