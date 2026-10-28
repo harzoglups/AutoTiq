@@ -22,9 +22,13 @@ This document describes the process for building and releasing AutoTiq on Google
 
 ## Current Status
 
-- **Current git tag**: `v1.5.0`
-- **Current build.gradle.kts**: `versionCode = 1`, `versionName = "1.0.0"` (out of sync)
-- **Next calculated version**: `v1.6.0` (based on commits since v1.5.0 containing features)
+- **Last published to Play Store**: `1.10.0` (versionCode 11)
+- **Current build.gradle.kts**: `versionCode = 12`, `versionName = "1.11.0"`
+- **Latest git tag**: `v1.9.0` (no `v1.10.0` tag was created)
+- **Because the latest tag is stale**, the automatic version calculation would start again from `v1.9.0`
+  and compute `1.10.0`, which already exists. Force the version instead:
+  `./scripts/build/build-play-store.sh --version 1.11.0 --skip-commit`
+  (`--skip-commit` avoids the script's automatic `chore: bump version` commit; see AGENTS.md commit policy)
 
 ---
 

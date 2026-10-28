@@ -22,6 +22,25 @@ package "Domain Models" {
     + isInside: Boolean
   }
   
+  class EventLogEntry {
+    + id: Long
+    + timestamp: Long
+    + type: EventType
+    + message: String
+  }
+
+  enum EventType {
+    GEOFENCE_ENTER
+    GEOFENCE_EXIT
+    ALERT_SENT
+    ALERT_SKIPPED
+    WORKER_RUN
+    TRACKING_CHANGED
+    GEOFENCES_REGISTERED
+    BOOT
+    ERROR
+  }
+
   class AppSettings {
     + checkIntervalSeconds: Int
     + proximityDistanceMeters: Int
@@ -46,6 +65,12 @@ package "Repository Interfaces" {
     + updateState(state: ProximityState): Result<Unit>
   }
   
+  interface EventLogRepository {
+    + getRecentEvents(): Flow<List<EventLogEntry>>
+    + log(type: EventType, message: String, replaceSameType: Boolean)
+    + clear()
+  }
+
   interface SettingsRepository {
     + getSettings(): Flow<AppSettings>
     + updateCheckInterval(seconds: Int): Result<Unit>
@@ -117,6 +142,8 @@ UpdateSettingsUseCase --> SettingsRepository
 MapPointRepository ..> MapPoint : returns
 ProximityRepository ..> ProximityState : returns
 SettingsRepository ..> AppSettings : returns
+EventLogRepository ..> EventLogEntry : returns
+EventLogEntry --> EventType
 
 CheckProximityUseCase ..> MapPoint : uses
 

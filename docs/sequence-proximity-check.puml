@@ -7,6 +7,9 @@ title AutoTiq - Proximity Check Sequence
 actor User
 participant "Android System" as System
 participant BootReceiver
+participant GeofenceManager
+participant GeofenceBroadcastReceiver
+participant EventLogRepository
 participant LocationWorkScheduler
 participant LocationCheckWorker
 participant GetSettingsUseCase
@@ -16,10 +19,12 @@ participant ProximityRepository
 participant FusedLocationClient
 participant "Fairtiq App" as Fairtiq
 
-== Device Boot ==
-System -> BootReceiver: BOOT_COMPLETED broadcast
+== Device Boot or App Update ==
+System -> BootReceiver: BOOT_COMPLETED or MY_PACKAGE_REPLACED
 activate BootReceiver
 BootReceiver -> BootReceiver: Check if DataStore exists
+BootReceiver -> GeofenceManager: registerAllGeofences(ENTER + EXIT)
+BootReceiver -> EventLogRepository: log(BOOT)
 BootReceiver -> LocationWorkScheduler: scheduleLocationCheck()
 activate LocationWorkScheduler
 LocationWorkScheduler -> LocationWorkScheduler: Schedule with 30s delay\n(for GPS cold start)
@@ -27,7 +32,25 @@ LocationWorkScheduler --> BootReceiver: Scheduled
 deactivate LocationWorkScheduler
 deactivate BootReceiver
 
-== Periodic Location Check ==
+== Geofence transition (primary detection) ==
+System -> GeofenceBroadcastReceiver: Geofence transition (Play Services)
+activate GeofenceBroadcastReceiver
+alt EXIT
+  GeofenceBroadcastReceiver -> ProximityRepository: state = outside\n(no settings or time window check)
+  GeofenceBroadcastReceiver -> EventLogRepository: log(GEOFENCE_EXIT)
+else ENTER
+  GeofenceBroadcastReceiver -> GeofenceBroadcastReceiver: Read settings (shared DataStore),\ncheck weekday, time window, state
+  alt Was outside and within time window
+    GeofenceBroadcastReceiver -> ProximityRepository: state = inside
+    GeofenceBroadcastReceiver -> System: Vibrate + notification (Fairtiq)
+    GeofenceBroadcastReceiver -> EventLogRepository: log(ALERT_SENT)
+  else Skipped
+    GeofenceBroadcastReceiver -> EventLogRepository: log(ALERT_SKIPPED, reason)
+  end
+end
+deactivate GeofenceBroadcastReceiver
+
+== Periodic Location Check (backup) ==
 System -> LocationCheckWorker: Execute work
 activate LocationCheckWorker
 
@@ -116,6 +139,7 @@ LocationWorkScheduler -> LocationWorkScheduler: Schedule next check\n(OneTimeWor
 LocationWorkScheduler --> LocationCheckWorker: Scheduled
 deactivate LocationWorkScheduler
 
+LocationCheckWorker -> EventLogRepository: log(WORKER_RUN)
 LocationCheckWorker --> System: Result.success()
 deactivate LocationCheckWorker
 

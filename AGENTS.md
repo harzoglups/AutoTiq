@@ -99,6 +99,12 @@ Clean Architecture with 3 layers: **domain** (pure Kotlin), **data** (Android), 
 - Permissions: FINE_LOCATION, COARSE_LOCATION, BACKGROUND_LOCATION, VIBRATE
 
 ## Background Service
+- Geofencing is the primary detection: GeofenceManager registers ENTER+EXIT geofences, GeofenceBroadcastReceiver alerts on ENTER and resets the proximity state on EXIT (never skip the EXIT handling, or alerts stop after the first trigger)
+- Settings DataStore: always use `Context.settingsDataStore` (data module); never declare another `preferencesDataStore(name = "settings")`
+- Event log (Room `event_log`, Settings → Event log): record meaningful background decisions through `EventLogRepository` (`context.eventLog()` outside Hilt); it must never throw
+- BootReceiver restores geofences and the worker on boot and after an app update (`MY_PACKAGE_REPLACED`)
+- Android "Pause app activity if unused" must be off for the app, otherwise Android cancels geofences and work after weeks without opening it
+- The Play Store build cannot be replaced by a debug APK (different signature): never uninstall it on the user's phone (it erases the zones); test on an emulator, see DEVELOPMENT.md
 - LocationCheckWorker runs periodically based on user settings (seconds, not minutes)
 - For intervals < 900s: Uses OneTimeWorkRequest with auto-rescheduling (WorkManager PeriodicWork min is 15min)
 - Checks proximity to all saved points using Haversine formula (pure Kotlin, no Android deps in domain)
@@ -113,6 +119,9 @@ Clean Architecture with 3 layers: **domain** (pure Kotlin), **data** (Android), 
 - Structure: Given/When/Then comments for clarity
 
 ## Debugging
+- Event log in the app: Settings → Event log (share button)
+- Geofence logs: `~/Library/Android/sdk/platform-tools/adb logcat | grep -E "(GeofenceManager|GeofenceReceiver|GeofenceHelper)"`
+- With several adb targets (emulator + phone) always pass `-s <serial>`; do not run test commands against the user's phone
 - View Worker logs: `~/Library/Android/sdk/platform-tools/adb logcat | grep LocationCheckWorker`
 - Check devices: `~/Library/Android/sdk/platform-tools/adb devices`
 - Launch app: `~/Library/Android/sdk/platform-tools/adb shell am start -n com.autotiq/.MainActivity`

@@ -30,6 +30,11 @@
 - ✅ Proper state management with StateFlow
 - ✅ Background service continues after app closure
 - ✅ Fairtiq package name: `com.fairtiq.android` (verified and working)
+- ✅ Geofencing as primary detection (ENTER and EXIT), polling worker kept as backup
+- ✅ Zone state reset on geofence EXIT (fixes alerts silently stopping after the first trigger)
+- ✅ Single shared settings DataStore (receivers no longer fall back to default settings)
+- ✅ Geofences and worker restored after reboot and after an app update
+- ✅ On-device event log (Settings → Event log) to diagnose missed alerts
 
 ## 📝 Optional Improvements
 

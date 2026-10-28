@@ -20,6 +20,12 @@ export JAVA_HOME="/Applications/Android Studio.app/Contents/jbr/Contents/Home"
 # View Worker logs
 ~/Library/Android/sdk/platform-tools/adb logcat | grep LocationCheckWorker
 
+# View geofence registration and ENTER/EXIT handling
+~/Library/Android/sdk/platform-tools/adb logcat | grep -E "(GeofenceManager|GeofenceReceiver|GeofenceHelper)"
+
+# On a device with several adb targets, always pick one explicitly
+~/Library/Android/sdk/platform-tools/adb -s <serial> logcat
+
 # View boot and worker logs
 ~/Library/Android/sdk/platform-tools/adb logcat | grep -E "(BootReceiver|LocationCheckWorker)"
 
@@ -100,12 +106,34 @@ export JAVA_HOME="/Applications/Android Studio.app/Contents/jbr/Contents/Home"
   - Time window determines when point can trigger Fairtiq launch
   - Active time displayed in info card (e.g., "Active: 08:30 - 18:45")
 
-### 7. Boot Auto-Start
-- **BootReceiver**: Triggers on `ACTION_BOOT_COMPLETED`
+### 7. Boot / Update Restore
+- **BootReceiver**: Triggers on `ACTION_BOOT_COMPLETED` and `ACTION_MY_PACKAGE_REPLACED`
+- **Geofences**: Re-registered from the Room points (they are cleared on reboot, and geofences created
+  by an older version only had ENTER, so they are re-registered after an update)
+- **Worker**: Backup worker rescheduled
 - **Delay**: 30 seconds initial delay to allow GPS initialization (cold start)
 - **GPS timeout**: 30 seconds for first location request after boot
 - **Verification**: Checks DataStore file existence to avoid premature initialization
 - **Location**: `BootReceiver.kt` with 30s `setInitialDelay()`
+
+### 7b. Geofencing (primary detection)
+- **GeofenceManager**: Registers one geofence per point (radius = proximity distance) with ENTER and EXIT transitions
+- **GeofenceBroadcastReceiver**: ENTER checks settings, active weekday, the point's time window and the
+  proximity state, then alerts. EXIT resets the proximity state to "outside" unconditionally, so the next
+  ENTER can alert again. Before EXIT was handled, the state stayed "inside" once the polling worker stopped,
+  and every later ENTER was skipped ("already inside")
+- **Registered**: when tracking is turned on, when a point is added/moved, when the radius changes, on boot
+  and after an app update
+- **Settings access**: receivers use the shared `Context.settingsDataStore` (data module). Declaring a second
+  `preferencesDataStore(name = "settings")` makes DataStore throw "multiple DataStores active for the same file"
+
+### 7c. Event log
+- **Storage**: Room table `event_log` (database version 4), last 200 rows, written through `EventLogRepository`
+- **Components without Hilt** (receivers, GeofenceManager) use `context.eventLog()`; logging never throws
+- **Types**: GEOFENCE_ENTER, GEOFENCE_EXIT, ALERT_SENT, ALERT_SKIPPED, WORKER_RUN (single row, replaced on each
+  run), TRACKING_CHANGED, GEOFENCES_REGISTERED, BOOT, ERROR
+- **UI**: Settings → Event log, with share (plain text) and clear
+- **Location**: `ui/eventlog/`, `EventLogRepositoryImpl.kt`
 
 ### 8. Notifications and Alerts
 - **Full-screen intent**: Launches Fairtiq and wakes screen even when locked
@@ -141,6 +169,10 @@ active_weekdays: String = "1,2,3,4,5,6,7"  // CSV: 1=Monday, 7=Sunday
 ```
 
 ### Room Database
+Version 4 (migrations 1→2, 2→3, 3→4 in `AutoTiqDatabase.kt`).
+
+**Table: event_log** (id PK auto-increment, timestamp, type, message)
+
 **Table: map_points**
 - id (PK, auto-increment)
 - latitude (Double)
@@ -295,3 +327,29 @@ Commit made with all main features.
 
 ## Contact / Support
 Personal project - Sylvain
+
+## Testing Geofences Without Moving
+
+The Play Store build is signed with Google's key and is not debuggable, so a debug APK cannot be installed
+over it (`INSTALL_FAILED_UPDATE_INCOMPATIBLE`) and `run-as` does not work on it. Do **not** uninstall it to
+test: that erases the saved zones. Use an emulator with Google Play instead (e.g. `Pixel_Fold_API_35`):
+
+```bash
+ADB=~/Library/Android/sdk/platform-tools/adb
+# Allow the shell to inject test locations, then create test providers
+$ADB -s emulator-5554 shell appops set com.android.shell android:mock_location allow
+for p in gps network; do
+  $ADB -s emulator-5554 shell cmd location providers add-test-provider $p
+  $ADB -s emulator-5554 shell cmd location providers set-test-provider-enabled $p true
+done
+# Move the device (latitude,longitude); repeat every few seconds while waiting for a transition
+for p in gps network; do
+  $ADB -s emulator-5554 shell cmd location providers set-test-provider-location $p --location 46.2044,6.1432 --accuracy 5
+done
+```
+
+`adb emu geo fix` is unreliable for geofences: the emulated GPS only applies fixes while a client requests it.
+Expected sequence for a zone: far away → inside (ENTER, alert) → far away (EXIT) → inside (ENTER, alert again).
+Fairtiq is not installed on emulators, so only the vibration is exercised; the notification must be checked
+on a real phone. To verify a database migration, install the previous version, open the map screen so the
+database is created, then install the new APK over it.

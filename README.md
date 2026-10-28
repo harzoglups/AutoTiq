@@ -33,20 +33,24 @@ This way, you'll never forget to start your journey in Fairtiq, avoiding unneces
   - Visual proximity circles (red semi-transparent) around each point
   - Persistent local storage of points (Room)
 - **Background Tracking**:
-  - Periodic GPS position checking
+  - Geofencing (Google Play Services) as primary detection: event-driven, low battery, reacts to both zone entry and exit
+  - Periodic GPS position checking as a backup (WorkManager)
   - Configurable proximity detection
   - Time-based activation: points only trigger within their configured time window
   - Automatic launch of Fairtiq application
   - Configurable vibration on trigger (default: 3 bursts)
   - Screen wake-up even when locked
-  - Auto-start on device boot
+  - Auto-start on device boot, and automatic restore after an app update
+- **Event Log** (Settings → Event log): on-device journal of the last 200 background events
+  (zone entries/exits, alerts sent or skipped and why, worker runs, restores, errors) with a share button,
+  to understand why an alert was missed without needing adb
 - **Configurable Settings**:
   - Position check frequency (seconds or minutes)
   - Proximity distance (meters)
   - Vibration count (number of vibration bursts)
   - Enable/disable tracking
   - Weekday selection: choose which days GPS monitoring is active (battery saving)
-- **Anti-spam**: Only triggers once per zone entry (requires leaving and returning)
+- **Anti-spam**: Only triggers once per zone entry (requires leaving and returning; the exit is detected by the geofence EXIT transition)
 - **Multilingual**: English, French, German, Spanish, Italian, Portuguese
 
 ## 📱 Installation
@@ -189,6 +193,20 @@ cp .env.example .env
 - You must leave and re-enter the zone to trigger again
 - **Tracking persists after device reboot** (auto-restart if enabled)
 
+### Keeping it reliable over time
+
+For detection to keep working without ever opening the app, check these Android settings
+(Settings → Apps → AutoTiq):
+
+- **Location**: "Allow all the time"
+- **Battery**: "Unrestricted" / not optimized (the app offers a shortcut)
+- **Unused app settings**: turn **off** "Pause app activity if unused" / "Manage app if unused".
+  When it is on, Android force-stops apps that are not opened for weeks, cancels their geofences and
+  scheduled work, and can revoke their permissions.
+
+If an alert is ever missed, open **Settings → Event log** and use the share button: it shows whether the
+geofence fired, and if not alerting, the reason.
+
 ## 🔒 Permissions
 
 The app requires the following permissions, explained during onboarding:
@@ -255,7 +273,8 @@ AutoTiq follows Clean Architecture principles with 3 distinct layers:
 - `usecase/` - Business logic: Add/Delete points, Check proximity, Settings management
 
 ### Data Layer
-- `local/dao/` - Room DAOs (MapPointDao, ProximityStateDao)
+- `local/dao/` - Room DAOs (MapPointDao, ProximityStateDao, EventLogDao)
+- `local/SettingsDataStore.kt` - The single shared settings DataStore (never declare another one for the "settings" file)
 - `local/entity/` - Room entities
 - `repository/` - Repository implementations
 - `mapper/` - Entity ↔ Domain mappers
@@ -265,7 +284,10 @@ AutoTiq follows Clean Architecture principles with 3 distinct layers:
 - `ui/onboarding/` - Guided permission setup
 - `ui/map/` - Map screen with OpenStreetMap
 - `ui/settings/` - Settings screen
-- `worker/` - WorkManager for background tracking
+- `ui/eventlog/` - Event log screen
+- `geofence/` - Geofence registration, transition receiver (ENTER/EXIT) and alert helper
+- `receiver/` - Boot / app update receiver that restores geofences and the worker
+- `worker/` - WorkManager for backup background tracking
 - `di/` - Hilt modules
 
 ## 🛠️ Tech Stack
@@ -276,11 +298,11 @@ AutoTiq follows Clean Architecture principles with 3 distinct layers:
 - **Map**: OpenStreetMap (osmdroid)
 - **Geocoding**: Photon API (Komoot) for location search
 - **Location**: Google Play Services Location
-- **Background Tasks**: WorkManager
+- **Background Tasks**: Geofencing API (primary) + WorkManager (backup)
 - **DI**: Hilt
 - **Async**: Coroutines + Flow
 - **Database**: Room
-- **Preferences**: DataStore (settings) + SharedPreferences (onboarding flag)
+- **Preferences**: DataStore (settings, single shared instance) + SharedPreferences (onboarding flag)
 - **Icon**: Custom vector drawable (white "L" on adaptive icon)
 
 ## 📂 Project Structure
@@ -290,13 +312,15 @@ AutoTiq/
 ├── app/                    # UI layer
 │   └── src/main/java/com/autotiq/
 │       ├── di/            # Dependency injection
-│       ├── receiver/      # Boot receiver for auto-start
-│       ├── worker/        # Background location worker (WorkManager)
+│       ├── receiver/      # Boot / app update receiver (restores geofences and worker)
+│       ├── geofence/      # Geofence manager, transition receiver, alert helper
+│       ├── worker/        # Backup location worker (WorkManager)
 │       ├── ui/
 │       │   ├── splash/    # Splash screen with animation
 │       │   ├── onboarding/ # Guided permission setup
 │       │   ├── map/       # Map screen with proximity circles
 │       │   ├── settings/  # Settings screen
+│       │   ├── eventlog/  # Event log screen
 │       │   ├── navigation/ # Navigation graph
 │       │   └── theme/     # Compose theme
 │       └── MainActivity.kt

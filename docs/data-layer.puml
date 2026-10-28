@@ -22,6 +22,14 @@ package "Repository Implementations" {
     + updateState(state: ProximityState): Result<Unit>
   }
   
+  class EventLogRepositoryImpl {
+    - dao: EventLogDao
+    + getRecentEvents(): Flow<List<EventLogEntry>>
+    + log(type: EventType, message: String, replaceSameType: Boolean)
+    + clear()
+    <<keeps the last 200 events, never throws>>
+  }
+
   class SettingsRepositoryImpl {
     - dataStore: DataStore<Preferences>
     + getSettings(): Flow<AppSettings>
@@ -38,6 +46,23 @@ package "Room Database" {
   class AutoTiqDatabase {
     + mapPointDao(): MapPointDao
     + proximityStateDao(): ProximityStateDao
+    + eventLogDao(): EventLogDao
+    <<version 4>>
+  }
+
+  interface EventLogDao {
+    + getAll(): Flow<List<EventLogEntity>>
+    + insert(entity: EventLogEntity)
+    + deleteByType(type: String)
+    + trimTo(keep: Int)
+    + clear()
+  }
+
+  class EventLogEntity {
+    + id: Long <<PK>>
+    + timestamp: Long
+    + type: String
+    + message: String
   }
   
   interface MapPointDao {
@@ -88,6 +113,8 @@ package "Mappers" {
 package "Preferences" {
   class DataStore {
     <<Android DataStore>>
+    Single shared instance:
+    Context.settingsDataStore
   }
 }
 
@@ -97,6 +124,10 @@ MapPointRepositoryImpl --> MapPointMapper
 
 ProximityRepositoryImpl --> ProximityStateDao
 ProximityRepositoryImpl --> ProximityStateMapper
+
+EventLogRepositoryImpl --> EventLogDao
+EventLogDao ..> EventLogEntity : uses
+AutoTiqDatabase --> EventLogDao : provides
 
 SettingsRepositoryImpl --> DataStore
 

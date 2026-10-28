@@ -97,6 +97,11 @@
         each proximity zone to avoid repeated triggers (anti-spam mechanism).</li>
         <li><strong>User Settings</strong>: Your preferences (check interval, proximity distance, vibration count, 
         active days, map layer) are stored locally using Android DataStore.</li>
+        <li><strong>Event Log</strong>: To help you understand why an alert did or did not trigger, the application keeps 
+        a short journal on your device of its recent background activity (the last 200 events, such as entering or leaving 
+        one of your saved zones, alerts, and errors, with the zone name and the time). It is stored locally, is never sent 
+        anywhere, and only leaves your device if you choose to share it yourself from the Event log screen. 
+        You can clear it at any time.</li>
     </ul>
 
     <p><strong>What we DO NOT collect:</strong></p>
@@ -127,7 +132,7 @@
     <h2>4. Data Storage</h2>
     <p><strong>All data is stored locally on your device using:</strong></p>
     <ul>
-        <li><strong>Room Database</strong>: Stores your saved transit points and proximity states.</li>
+        <li><strong>Room Database</strong>: Stores your saved transit points, proximity states, and the event log.</li>
         <li><strong>DataStore</strong>: Stores your user preferences and settings.</li>
         <li><strong>OSMDroid Cache</strong>: Stores downloaded map tiles for offline use.</li>
     </ul>
@@ -232,9 +237,9 @@
     <p><strong>GitHub Issues</strong>: <a href="https://github.com/harzoglups/AutoTiq/issues" target="_blank">https://github.com/harzoglups/AutoTiq/issues</a></p>
 
     <div class="footer">
-        <p><strong>Last Updated</strong>: December 18, 2025</p>
-        <p><strong>Application Version</strong>: 1.0.0</p>
-        <p><strong>Effective Date</strong>: December 18, 2025</p>
+        <p><strong>Last Updated</strong>: October 28, 2026</p>
+        <p><strong>Application Version</strong>: 1.11.0</p>
+        <p><strong>Effective Date</strong>: October 28, 2026</p>
     </div>
 </body>
 </html>
