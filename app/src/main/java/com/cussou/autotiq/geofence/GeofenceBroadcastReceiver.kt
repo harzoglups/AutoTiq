@@ -9,6 +9,7 @@ import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import com.cussou.autotiq.data.local.AutoTiqDatabase
 import com.cussou.autotiq.data.local.entity.ProximityStateEntity
+import com.cussou.autotiq.data.local.settingsDataStore
 import com.google.android.gms.location.Geofence
 import com.google.android.gms.location.GeofenceStatusCodes
 import com.google.android.gms.location.GeofencingEvent
@@ -27,6 +28,10 @@ import java.util.Calendar
  * 1. Validates the transition (checks settings, time windows, proximity state)
  * 2. Updates proximity state in database to prevent duplicate triggers
  * 3. Triggers the alert (vibration + notification)
+ *
+ * When the device leaves a zone, it resets the proximity state so the next entry triggers again.
+ * EXIT is handled unconditionally (no settings or time window check) so the state can never stay
+ * stuck on "inside".
  * 
  * This provides near-instant zone detection compared to WorkManager polling.
  */
@@ -56,8 +61,10 @@ class GeofenceBroadcastReceiver : BroadcastReceiver() {
 
         val transitionType = geofencingEvent.geofenceTransition
 
-        if (transitionType != Geofence.GEOFENCE_TRANSITION_ENTER) {
-            Log.d(TAG, "Ignoring non-ENTER transition: $transitionType")
+        if (transitionType != Geofence.GEOFENCE_TRANSITION_ENTER &&
+            transitionType != Geofence.GEOFENCE_TRANSITION_EXIT
+        ) {
+            Log.d(TAG, "Ignoring unsupported transition: $transitionType")
             return
         }
 
@@ -67,19 +74,48 @@ class GeofenceBroadcastReceiver : BroadcastReceiver() {
             return
         }
 
-        Log.d(TAG, "ENTER transition for ${triggeringGeofences.size} geofence(s)")
+        val transitionName = if (transitionType == Geofence.GEOFENCE_TRANSITION_ENTER) "ENTER" else "EXIT"
+        Log.d(TAG, "$transitionName transition for ${triggeringGeofences.size} geofence(s)")
 
         // Process asynchronously to not block the main thread
         val pendingResult = goAsync()
         
         scope.launch {
             try {
-                processGeofenceTransition(context, triggeringGeofences)
+                if (transitionType == Geofence.GEOFENCE_TRANSITION_EXIT) {
+                    processGeofenceExit(context, triggeringGeofences)
+                } else {
+                    processGeofenceTransition(context, triggeringGeofences)
+                }
             } catch (e: Exception) {
                 Log.e(TAG, "Error processing geofence transition", e)
             } finally {
                 pendingResult.finish()
             }
+        }
+    }
+
+    /**
+     * Marks every exited zone as "outside" so the next ENTER can trigger an alert again.
+     */
+    private suspend fun processGeofenceExit(context: Context, geofences: List<Geofence>) {
+        val proximityDao = AutoTiqDatabase.getInstance(context).proximityStateDao()
+
+        for (geofence in geofences) {
+            val pointId = geofence.requestId.toLongOrNull()
+            if (pointId == null) {
+                Log.w(TAG, "Invalid geofence requestId: ${geofence.requestId}")
+                continue
+            }
+
+            proximityDao.insertProximityState(
+                ProximityStateEntity(
+                    pointId = pointId,
+                    isInside = false,
+                    lastChecked = System.currentTimeMillis()
+                )
+            )
+            Log.d(TAG, "Point id=$pointId exited, proximity state reset to outside")
         }
     }
 
@@ -182,7 +218,7 @@ class GeofenceBroadcastReceiver : BroadcastReceiver() {
         return try {
             // Use withTimeout to avoid hanging if DataStore is locked
             kotlinx.coroutines.withTimeoutOrNull(2000L) {
-                val dataStore = context.dataStore
+                val dataStore = context.settingsDataStore
                 val preferences = dataStore.data.first()
                 
                 val isTrackingEnabled = preferences[booleanPreferencesKey("location_tracking_enabled")] ?: false
@@ -257,6 +293,3 @@ class GeofenceBroadcastReceiver : BroadcastReceiver() {
         val activeWeekdays: Set<Int>
     )
 }
-
-// DataStore singleton accessor (same pattern as SettingsRepositoryImpl)
-private val Context.dataStore by androidx.datastore.preferences.preferencesDataStore(name = "settings")

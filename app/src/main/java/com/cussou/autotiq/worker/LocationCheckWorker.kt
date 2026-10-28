@@ -68,6 +68,15 @@ class LocationCheckWorker @AssistedInject constructor(
             ) != PackageManager.PERMISSION_GRANTED
         ) {
             Log.e(TAG, "Location permission not granted")
+            // Keep the chain alive so checks resume once the permission is granted again
+            try {
+                val settings = getSettingsUseCase().first()
+                if (settings.isLocationTrackingEnabled) {
+                    rescheduleIfNeeded(settings.checkIntervalSeconds)
+                }
+            } catch (e: Exception) {
+                Log.e(TAG, "Failed to reschedule without permission", e)
+            }
             return Result.failure()
         }
 

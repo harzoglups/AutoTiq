@@ -6,10 +6,10 @@ import android.content.Intent
 import android.util.Log
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.intPreferencesKey
-import androidx.datastore.preferences.preferencesDataStore
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkManager
 import com.cussou.autotiq.data.local.AutoTiqDatabase
+import com.cussou.autotiq.data.local.settingsDataStore
 import com.cussou.autotiq.geofence.GeofenceManager
 import com.cussou.autotiq.worker.LocationCheckWorker
 import kotlinx.coroutines.CoroutineScope
@@ -19,16 +19,15 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import java.io.File
 
-// DataStore singleton accessor (same pattern as SettingsRepositoryImpl)
-private val Context.dataStore by preferencesDataStore(name = "settings")
-
 class BootReceiver : BroadcastReceiver() {
 
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
 
     override fun onReceive(context: Context, intent: Intent) {
-        if (intent.action == Intent.ACTION_BOOT_COMPLETED) {
-            Log.d("BootReceiver", "Device booted, checking if tracking was enabled")
+        // MY_PACKAGE_REPLACED: geofences registered by a previous version must be re-registered
+        // (e.g. to pick up new transition types) and the worker chain restarted after an update.
+        if (intent.action == Intent.ACTION_BOOT_COMPLETED || intent.action == Intent.ACTION_MY_PACKAGE_REPLACED) {
+            Log.d("BootReceiver", "Received ${intent.action}, checking if tracking was enabled")
             
             // Use goAsync to allow async operations in BroadcastReceiver
             val pendingResult = goAsync()
@@ -40,7 +39,7 @@ class BootReceiver : BroadcastReceiver() {
                     
                     if (datastoreFile.exists()) {
                         // Read settings to check if tracking is enabled
-                        val dataStore = context.dataStore
+                        val dataStore = context.settingsDataStore
                         val preferences = dataStore.data.first()
                         val isTrackingEnabled = preferences[booleanPreferencesKey("location_tracking_enabled")] ?: false
                         val proximityDistance = preferences[intPreferencesKey("proximity_distance_meters")] ?: 200

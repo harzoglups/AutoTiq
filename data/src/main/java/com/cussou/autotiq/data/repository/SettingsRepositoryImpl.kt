@@ -1,13 +1,11 @@
 package com.cussou.autotiq.data.repository
 
 import android.content.Context
-import androidx.datastore.core.DataStore
-import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
-import androidx.datastore.preferences.preferencesDataStore
+import com.cussou.autotiq.data.local.settingsDataStore
 import com.cussou.autotiq.domain.model.AppSettings
 import com.cussou.autotiq.domain.model.MapLayerType
 import com.cussou.autotiq.domain.model.ThemeMode
@@ -15,8 +13,6 @@ import com.cussou.autotiq.domain.repository.SettingsRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
-
-private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "settings")
 
 class SettingsRepositoryImpl @Inject constructor(
     private val context: Context
@@ -34,7 +30,7 @@ class SettingsRepositoryImpl @Inject constructor(
     }
 
     override fun getSettings(): Flow<AppSettings> {
-        return context.dataStore.data.map { preferences ->
+        return context.settingsDataStore.data.map { preferences ->
             val layerTypeString = preferences[PreferencesKeys.MAP_LAYER_TYPE] ?: MapLayerType.STREET.name
             val layerType = try {
                 MapLayerType.valueOf(layerTypeString)
@@ -70,49 +66,49 @@ class SettingsRepositoryImpl @Inject constructor(
     }
 
     override suspend fun updateCheckInterval(seconds: Int) {
-        context.dataStore.edit { preferences ->
+        context.settingsDataStore.edit { preferences ->
             preferences[PreferencesKeys.CHECK_INTERVAL] = seconds
         }
     }
 
     override suspend fun updateProximityDistance(meters: Int) {
-        context.dataStore.edit { preferences ->
+        context.settingsDataStore.edit { preferences ->
             preferences[PreferencesKeys.PROXIMITY_DISTANCE] = meters
         }
     }
 
     override suspend fun updateLocationTrackingEnabled(enabled: Boolean) {
-        context.dataStore.edit { preferences ->
+        context.settingsDataStore.edit { preferences ->
             preferences[PreferencesKeys.LOCATION_TRACKING_ENABLED] = enabled
         }
     }
 
     override suspend fun updateMapLayerType(layerType: MapLayerType) {
-        context.dataStore.edit { preferences ->
+        context.settingsDataStore.edit { preferences ->
             preferences[PreferencesKeys.MAP_LAYER_TYPE] = layerType.name
         }
     }
     
     override suspend fun updateActiveWeekdays(weekdays: Set<Int>) {
-        context.dataStore.edit { preferences ->
+        context.settingsDataStore.edit { preferences ->
             preferences[PreferencesKeys.ACTIVE_WEEKDAYS] = weekdays.sorted().joinToString(",")
         }
     }
     
     override suspend fun updateVibrationCount(count: Int) {
-        context.dataStore.edit { preferences ->
+        context.settingsDataStore.edit { preferences ->
             preferences[PreferencesKeys.VIBRATION_COUNT] = count
         }
     }
     
     override suspend fun updateThemeMode(themeMode: ThemeMode) {
-        context.dataStore.edit { preferences ->
+        context.settingsDataStore.edit { preferences ->
             preferences[PreferencesKeys.THEME_MODE] = themeMode.name
         }
     }
     
     override suspend fun updateTestModeEnabled(enabled: Boolean) {
-        context.dataStore.edit { preferences ->
+        context.settingsDataStore.edit { preferences ->
             preferences[PreferencesKeys.TEST_MODE_ENABLED] = enabled
         }
     }

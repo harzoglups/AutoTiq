@@ -174,7 +174,9 @@ class GeofenceManager(private val context: Context) {
                 radiusMeters
             )
             .setExpirationDuration(GEOFENCE_EXPIRATION_MS)
-            .setTransitionTypes(Geofence.GEOFENCE_TRANSITION_ENTER)
+            .setTransitionTypes(
+                Geofence.GEOFENCE_TRANSITION_ENTER or Geofence.GEOFENCE_TRANSITION_EXIT
+            )
             .setLoiteringDelay(GEOFENCE_LOITERING_DELAY_MS)
             .build()
     }
