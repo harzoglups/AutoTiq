@@ -24,9 +24,18 @@ if [ ! -f "$BUILD_GRADLE" ]; then
   exit 1
 fi
 
-# Get current versionCode and increment it
+# Get current versionName and versionCode
+CURRENT_VERSION_NAME=$(grep "versionName = " "$BUILD_GRADLE" | sed 's/.*versionName = "\(.*\)".*/\1/')
 CURRENT_VERSION_CODE=$(grep "versionCode = " "$BUILD_GRADLE" | sed 's/.*versionCode = \([0-9]*\).*/\1/')
-NEW_VERSION_CODE=$((CURRENT_VERSION_CODE + 1))
+
+# Increment versionCode, unless this version is already set: build-play-store.sh bumps both before
+# the tag is created, and bumping again here would make the CI build differ from the Play Store build.
+if [ "$CURRENT_VERSION_NAME" = "$VERSION" ]; then
+  NEW_VERSION_CODE=$CURRENT_VERSION_CODE
+  echo "versionName is already $VERSION, keeping versionCode $CURRENT_VERSION_CODE"
+else
+  NEW_VERSION_CODE=$((CURRENT_VERSION_CODE + 1))
+fi
 
 echo "Updating version in $BUILD_GRADLE"
 echo "  versionName: $VERSION"
